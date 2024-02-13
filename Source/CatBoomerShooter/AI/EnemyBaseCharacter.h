@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "EnemyBase.h"
 #include "EnemyBaseCharacter.generated.h"
 
 UCLASS()
-class CATBOOMERSHOOTER_API AEnemyBaseCharacter : public ACharacter
+class CATBOOMERSHOOTER_API AEnemyBaseCharacter : public ACharacter, public IEnemyBase
 {
 	GENERATED_BODY()
 
