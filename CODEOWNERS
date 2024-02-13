@@ -1,0 +1,24 @@
+# Main Project Primarily managed my programming leads
+* @Derby-2024/programming-leads
+
+# Files inside content project folder managed by all leads
+/Content/ @Derby-2024/programming-leads @Derby-2024/cgma-leads
+
+# Blueprints and C++ managed by programming leads
+/Source/ @Derby-2024/programming-leads
+
+# These are implied by /Source/
+# *.cpp  @Derby-2024/programming-leads
+# *.h    @Derby-2024/programming-leads
+# *.cs   @Derby-2024/programming-leads
+
+# Programmers take ownership of Blueprint Related Files
+AC_*   @Derby-2024/programming-leads
+ABP_*  @Derby-2024/programming-leads
+BI_*   @Derby-2024/programming-leads
+BP_*   @Derby-2024/programming-leads
+CT_*   @Derby-2024/programming-leads
+DT_*   @Derby-2024/programming-leads
+E_*    @Derby-2024/programming-leads
+F_*    @Derby-2024/programming-leads
+WBP_*  @Derby-2024/programming-leads
