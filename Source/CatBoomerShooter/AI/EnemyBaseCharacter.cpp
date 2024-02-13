@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "EnemyCharacterBase.h"
+#include "EnemyBaseCharacter.h"
 
 // Sets default values
-AEnemyCharacterBase::AEnemyCharacterBase()
+AEnemyBaseCharacter::AEnemyBaseCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -12,21 +12,21 @@ AEnemyCharacterBase::AEnemyCharacterBase()
 }
 
 // Called when the game starts or when spawned
-void AEnemyCharacterBase::BeginPlay()
+void AEnemyBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
 // Called every frame
-void AEnemyCharacterBase::Tick(float DeltaTime)
+void AEnemyBaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
 // Called to bind functionality to input
-void AEnemyCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AEnemyBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 

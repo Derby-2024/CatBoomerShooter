@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "EnemyCharacterBase.generated.h"
+#include "EnemyBaseCharacter.generated.h"
 
 UCLASS()
-class CATBOOMERSHOOTER_API AEnemyCharacterBase : public ACharacter
+class CATBOOMERSHOOTER_API AEnemyBaseCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	AEnemyCharacterBase();
+	AEnemyBaseCharacter();
 
 protected:
 	// Called when the game starts or when spawned
