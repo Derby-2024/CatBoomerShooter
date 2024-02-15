@@ -31,3 +31,12 @@ void AEnemyBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 
 }
 
+int AEnemyBaseCharacter::GetEnemyHealth_Implementation() 
+{
+	return EnemyHealth;
+}
+
+EEnemySize AEnemyBaseCharacter::GetEnemySize_Implementation()
+{
+	return EnemySize;
+}

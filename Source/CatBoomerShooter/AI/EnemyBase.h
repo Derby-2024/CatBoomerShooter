@@ -8,12 +8,12 @@
 /**
  *
  */
-/*UENUM(BlueprintType)
+UENUM(BlueprintType)
 enum class EEnemySize : uint8 {
 	Small,
 	Medium,
 	Large
-};*/
+};
 
 /**
  * 
@@ -32,6 +32,9 @@ class IEnemyBase
 	 GENERATED_BODY()
 
 public:
-	/*UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	EEnemySize GetEnemySize();*/
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "EnemyData")
+	int GetEnemyHealth();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "EnemyData")
+	EEnemySize GetEnemySize();
 };
