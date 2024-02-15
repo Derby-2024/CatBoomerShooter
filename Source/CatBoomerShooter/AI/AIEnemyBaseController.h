@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "AIEnemyBaseController.generated.h"
 
 /**
@@ -16,6 +17,8 @@ class CATBOOMERSHOOTER_API AAIEnemyBaseController : public AAIController
 
 public:
 	AAIEnemyBaseController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
-	
+
+	UPROPERTY(EditDefaultsOnly, Category = "EnemyBase")
+	UBehaviorTree* DefaultBehaviorTree;
 };
 
