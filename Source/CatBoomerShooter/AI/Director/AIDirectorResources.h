@@ -35,11 +35,12 @@ enum class ETokenPriority : uint8
 /**
 * 
 */
-USTRUCT(BlueprintType)
-struct CATBOOMERSHOOTER_API FEnemyToken
+UCLASS(BlueprintType)
+class CATBOOMERSHOOTER_API UEnemyToken : public UObject
 {
 	GENERATED_BODY()
 
+public:
 	// Will usually be a player 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	AActor* Owner;
@@ -53,10 +54,6 @@ struct CATBOOMERSHOOTER_API FEnemyToken
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	ETokenPriority ClaimPriority;
-
-	// Used to manage token cooldown and timeout - Todo
-	// UPROPERTY(VisibleAnywhere)
-	// FTimerHandle TimerHandle;
 };
 
 /**
@@ -68,10 +65,10 @@ struct CATBOOMERSHOOTER_API FTokenCollection
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TArray<FEnemyToken> FreeTokens;
+	TArray<UEnemyToken*> FreeTokens;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	TArray<FEnemyToken> ClaimedTokens;
+	TArray<UEnemyToken*> ClaimedTokens;
 };
 
 /**

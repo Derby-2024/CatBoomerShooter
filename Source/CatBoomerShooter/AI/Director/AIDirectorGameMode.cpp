@@ -4,7 +4,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 
 //FEnemyToken AAIDirectorGameMode::RequestToken(ETokenType TokenType, AAIEnemyBaseController* EnemyController, AActor* TargetActor)
-void AAIDirectorGameMode::RequestToken(AAIEnemyBaseController* EnemyController, const AActor* TargetActor, const ETokenType TokenType, const ETokenPriority TokenPriority, FEnemyToken& Token, bool& Success)
+void AAIDirectorGameMode::RequestToken(AAIEnemyBaseController* EnemyController, const AActor* TargetActor, const ETokenType TokenType, const ETokenPriority TokenPriority, UEnemyToken*& Token, bool& Success)
 {
 	if (!IsValid(EnemyController))
 	{
@@ -32,8 +32,8 @@ void AAIDirectorGameMode::RequestToken(AAIEnemyBaseController* EnemyController, 
 	// There is a valid token that can be claimed
 	if (TokenCollection->FreeTokens.Num() > 0)
 	{
-		FEnemyToken ClaimedToken = TokenCollection->FreeTokens.Pop();
-		ClaimedToken.ClaimedBy = EnemyController;
+		UEnemyToken* ClaimedToken = TokenCollection->FreeTokens.Pop();
+		ClaimedToken->ClaimedBy = EnemyController;
 
 		TokenCollection->ClaimedTokens.Add(ClaimedToken);
 
@@ -51,10 +51,10 @@ void AAIDirectorGameMode::RequestToken(AAIEnemyBaseController* EnemyController, 
 	}
 }
 
-void AAIDirectorGameMode::ReleaseToken(const FEnemyToken ReleasedToken, const float CustomCooldown)
+void AAIDirectorGameMode::ReleaseToken(UEnemyToken* ReleasedToken, const float CustomCooldown)
 {
 	// Get storage for token owner
-	FActorTokensCollection* TargetTokens = ActorTokens.Find(ReleasedToken.Owner);
+	FActorTokensCollection* TargetTokens = ActorTokens.Find(ReleasedToken->Owner);
 
 	if (TargetTokens == nullptr)
 	{
@@ -63,40 +63,23 @@ void AAIDirectorGameMode::ReleaseToken(const FEnemyToken ReleasedToken, const fl
 	}
 
 	// Get storege of token type for target actor
-	FTokenCollection* TokenCollection = TargetTokens->GetCollectionOfType(ReleasedToken.TokenType);
+	FTokenCollection* TokenCollection = TargetTokens->GetCollectionOfType(ReleasedToken->TokenType);
 
-	int FoundIndex;
-	//for (const FEnemyToken& ClaimedToken : TokenCollection->ClaimedTokens) 
-	for (int i = 0; i < TokenCollection->ClaimedTokens.Num(); i++)
+	if (TokenCollection->ClaimedTokens.Remove(ReleasedToken) == 0)
 	{
-		//if (ClaimedToken.ClaimedBy == ReleasedToken.ClaimedBy)
-		if (TokenCollection->ClaimedTokens[i].ClaimedBy == ReleasedToken.ClaimedBy) 
-		{
-			FoundIndex = i;
-			break;
-		}
-	}
-
-	if (FoundIndex >= TokenCollection->ClaimedTokens.Num()) 
-	{
-		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::ReleaseToken: Could not find claimed token."));
+		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::ReleaseToken: Could not find claimed token to release."));
 		return;
 	}
 
 	UE_LOG(
 		LogTemp, Log,
 		TEXT("AIDirectorGameMode::ReleaseToken: Enemy %s released a token against actor %s."),
-		*UKismetSystemLibrary::GetDisplayName(ReleasedToken.ClaimedBy),
-		*UKismetSystemLibrary::GetDisplayName(ReleasedToken.Owner)
+		*UKismetSystemLibrary::GetDisplayName(ReleasedToken->ClaimedBy),
+		*UKismetSystemLibrary::GetDisplayName(ReleasedToken->Owner)
 	);
 
-	// This should be same as ReleasedToken in theory???
-	FEnemyToken InnerReleasedToken = TokenCollection->ClaimedTokens[FoundIndex];
-	TokenCollection->ClaimedTokens.RemoveAt(FoundIndex);
-
-	InnerReleasedToken.ClaimedBy = nullptr;
-
-	TokenCollection->FreeTokens.Add(InnerReleasedToken);
+	ReleasedToken->ClaimedBy = nullptr;
+	TokenCollection->FreeTokens.Add(ReleasedToken);
 }
 
 void AAIDirectorGameMode::AddTokensToActor(AActor* TargetActor, ETokenType TokenType, int Amount)
@@ -136,18 +119,16 @@ void AAIDirectorGameMode::AddTokensToActor(AActor* TargetActor, ETokenType Token
 		);
 	}
 
-	// Create new token to add to token array
-	FEnemyToken NewToken{
-		TargetActor,	// Owner
-		TokenType,
-		nullptr			// User
-	};
-
 	// Get the collection for tokens of requested type
 	FTokenCollection* TokenCollection = TargetTokens->GetCollectionOfType(TokenType);
 
 	for (int i = 0; i < Amount; i++)
 	{
+		// Create new token to add to token array
+		UEnemyToken* NewToken = NewObject<UEnemyToken>();
+		NewToken->Owner = TargetActor;
+		NewToken->TokenType = TokenType;
+
 		// Add "amount" number of tokens
 		TokenCollection->FreeTokens.Add(NewToken);
 	}

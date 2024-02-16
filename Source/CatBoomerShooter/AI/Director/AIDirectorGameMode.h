@@ -25,11 +25,11 @@ public:
 	/** Requests an enemy token of a given type. 
 	*	Token Priority is currently unimplemented. */
 	UFUNCTION(BlueprintCallable, Category = "Tokens")
-	void RequestToken(AAIEnemyBaseController* EnemyController, const AActor* TargetActor, const ETokenType TokenType, const ETokenPriority TokenPriority, FEnemyToken& Token, bool& Success);
+	void RequestToken(AAIEnemyBaseController* EnemyController, const AActor* TargetActor, const ETokenType TokenType, const ETokenPriority TokenPriority, UEnemyToken*& Token, bool& Success);
 
 	/** Returns a token from being used by an enemy */
 	UFUNCTION(BlueprintCallable, Category = "Tokens")
-	void ReleaseToken(const FEnemyToken Token, const float CustomCooldown);
+	void ReleaseToken(UEnemyToken* Token, const float CustomCooldown);
 
 	/** Adds a set amount of tokens to an actor  */
 	UFUNCTION(BlueprintCallable, Category = "Tokens")
