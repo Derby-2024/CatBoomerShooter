@@ -1,15 +1,185 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "AIDirectorGameMode.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 //FEnemyToken AAIDirectorGameMode::RequestToken(ETokenType TokenType, AAIEnemyBaseController* EnemyController, AActor* TargetActor)
-void AAIDirectorGameMode::RequestToken(const AAIEnemyBaseController* EnemyController, const AActor* TargetActor, const ETokenType TokenType, const ETokenPriority TokenPriority, FEnemyToken& Token, bool& Success)
+void AAIDirectorGameMode::RequestToken(AAIEnemyBaseController* EnemyController, const AActor* TargetActor, const ETokenType TokenType, const ETokenPriority TokenPriority, FEnemyToken& Token, bool& Success)
 {
-	Success = true;
-	Token = BasicToken;
+	if (!IsValid(EnemyController))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AIDirectorGameMode::RequestToken: Invalid Enemy controller provided."));
+		return;
+	}
+	if (!IsValid(TargetActor))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AIDirectorGameMode::RequestToken: Invalid target actor provided."));
+		return;
+	}
+
+	// Get storage for target actor
+	FActorTokensCollection* TargetTokens = ActorTokens.Find(TargetActor);
+
+	if (TargetTokens == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AIDirectorGameMode::RequestToken: Target actor doesn't have any associated tokens."));
+		return;
+	}
+
+	// Get storage of token type for target actor
+	FTokenCollection* TokenCollection = TargetTokens->GetCollectionOfType(TokenType);
+
+	// There is a valid token that can be claimed
+	if (TokenCollection->FreeTokens.Num() > 0)
+	{
+		FEnemyToken ClaimedToken = TokenCollection->FreeTokens.Pop();
+		ClaimedToken.ClaimedBy = EnemyController;
+
+		TokenCollection->ClaimedTokens.Add(ClaimedToken);
+
+		UE_LOG(
+			LogTemp, Log, 
+			TEXT("AIDirectorGameMode::RequestToken: Enemy %s claimed a token of type %s and priority %s against actor %s."),
+			*UKismetSystemLibrary::GetDisplayName(EnemyController), 
+			*UEnum::GetValueAsString(TokenType),
+			*UEnum::GetValueAsString(TokenPriority),
+			*UKismetSystemLibrary::GetDisplayName(TargetActor)
+		);
+
+		Success = true;
+		Token = ClaimedToken;
+	}
 }
 
-bool AAIDirectorGameMode::ReleaseToken()
+void AAIDirectorGameMode::ReleaseToken(const FEnemyToken ReleasedToken, const float CustomCooldown)
 {
-	return false;
+	// Get storage for token owner
+	FActorTokensCollection* TargetTokens = ActorTokens.Find(ReleasedToken.Owner);
+
+	if (TargetTokens == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::ReleaseToken: Released token doesn't have a valid owner."));
+		return;
+	}
+
+	// Get storege of token type for target actor
+	FTokenCollection* TokenCollection = TargetTokens->GetCollectionOfType(ReleasedToken.TokenType);
+
+	int FoundIndex;
+	//for (const FEnemyToken& ClaimedToken : TokenCollection->ClaimedTokens) 
+	for (int i = 0; i < TokenCollection->ClaimedTokens.Num(); i++)
+	{
+		//if (ClaimedToken.ClaimedBy == ReleasedToken.ClaimedBy)
+		if (TokenCollection->ClaimedTokens[i].ClaimedBy == ReleasedToken.ClaimedBy) 
+		{
+			FoundIndex = i;
+			break;
+		}
+	}
+
+	if (FoundIndex >= TokenCollection->ClaimedTokens.Num()) 
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::ReleaseToken: Could not find claimed token."));
+		return;
+	}
+
+	UE_LOG(
+		LogTemp, Log,
+		TEXT("AIDirectorGameMode::ReleaseToken: Enemy %s released a token against actor %s."),
+		*UKismetSystemLibrary::GetDisplayName(ReleasedToken.ClaimedBy),
+		*UKismetSystemLibrary::GetDisplayName(ReleasedToken.Owner)
+	);
+
+	// This should be same as ReleasedToken in theory???
+	FEnemyToken InnerReleasedToken = TokenCollection->ClaimedTokens[FoundIndex];
+	TokenCollection->ClaimedTokens.RemoveAt(FoundIndex);
+
+	InnerReleasedToken.ClaimedBy = nullptr;
+
+	TokenCollection->FreeTokens.Add(InnerReleasedToken);
+}
+
+void AAIDirectorGameMode::AddTokensToActor(AActor* TargetActor, ETokenType TokenType, int Amount)
+{
+	// Only accept positive number of tokens
+	if (Amount <= 0)
+	{
+		UE_LOG(
+			LogTemp, Warning, 
+			TEXT("AIDirectorGameMode::AddTokensToActor: Invalid number of tokens (%d) requested to add to actor %s."),
+			Amount, *UKismetSystemLibrary::GetDisplayName(TargetActor)
+		);
+		return;
+	}
+	
+	// Check if actor is invalid or pending destroy
+	if (!IsValid(TargetActor))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AIDirectorGameMode::AddTokensToActor: Invalid target actor provided."));
+		return;
+	}
+
+	FActorTokensCollection* TargetTokens = ActorTokens.Find(TargetActor);
+
+	if (TargetTokens == nullptr)
+	{
+		// Actor Tokens don't exist. Create a new collection and store it.
+		FActorTokensCollection NewActorTokens;
+		ActorTokens.Add(TargetActor, NewActorTokens);
+		// Get pointer to new tokens
+		TargetTokens = ActorTokens.Find(TargetActor);
+
+		UE_LOG(
+			LogTemp, Log,
+			TEXT("AIDirectorGameMode::AddTokensToActor: Added new actor (%s) to ActorTokens."),
+			*UKismetSystemLibrary::GetDisplayName(TargetActor)
+		);
+	}
+
+	// Create new token to add to token array
+	FEnemyToken NewToken{
+		TargetActor,	// Owner
+		TokenType,
+		nullptr			// User
+	};
+
+	// Get the collection for tokens of requested type
+	FTokenCollection* TokenCollection = TargetTokens->GetCollectionOfType(TokenType);
+
+	for (int i = 0; i < Amount; i++)
+	{
+		// Add "amount" number of tokens
+		TokenCollection->FreeTokens.Add(NewToken);
+	}
+
+	UE_LOG(
+		LogTemp,
+		Log,
+		TEXT("AIDirectorGameMode::AddTokensToActor: Added %d tokens of type %s to actor %s"),
+		Amount, *UEnum::GetValueAsString(TokenType), *UKismetSystemLibrary::GetDisplayName(TargetActor)
+	);
+}
+
+void AAIDirectorGameMode::AddDefaultTokensToActor(AActor* TargetActor) 
+{
+	UE_LOG(
+		LogTemp,
+		Log,
+		TEXT("AIDirectorGameMode::AddDefaultTokensToActor: Adding default tokens to actor %s"),
+		*UKismetSystemLibrary::GetDisplayName(TargetActor)
+	);
+
+	AddTokensToActor(TargetActor, ETokenType::Normal, 3);
+	AddTokensToActor(TargetActor, ETokenType::Heavy, 1);
+}
+
+void AAIDirectorGameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+}
+
+void AAIDirectorGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+	UE_LOG(LogTemp, Log, TEXT("AIDirectorGameMode::BeginPlay: Began Play"));
 }

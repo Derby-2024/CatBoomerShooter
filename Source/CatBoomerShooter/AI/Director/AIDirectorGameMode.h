@@ -8,9 +8,6 @@
 #include "AIDirectorResources.h"
 #include "AIDirectorGameMode.generated.h"
 
-// Forward Declaration until merge with branch
-//class ABasePlayerCharacter;
-
 /**
  * 
  */
@@ -20,12 +17,31 @@ class CATBOOMERSHOOTER_API AAIDirectorGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 private:
-	FEnemyToken BasicToken;
-	TMap<ACharacter*, FEnemyTokenCollection> Tokens;
+	/** All current tokens and their assigned characters */
+	UPROPERTY(VisibleAnywhere, Category = "Tokens")
+	TMap<AActor*, FActorTokensCollection> ActorTokens;
 
 public:
-	/** Requests an enemy token of a given type. */
+	/** Requests an enemy token of a given type. 
+	*	Token Priority is currently unimplemented. */
 	UFUNCTION(BlueprintCallable, Category = "Tokens")
-	void RequestToken(const AAIEnemyBaseController* EnemyController, const AActor* TargetActor, const ETokenType TokenType, const ETokenPriority TokenPriority, FEnemyToken& Token, bool& Success);
-	bool ReleaseToken();
+	void RequestToken(AAIEnemyBaseController* EnemyController, const AActor* TargetActor, const ETokenType TokenType, const ETokenPriority TokenPriority, FEnemyToken& Token, bool& Success);
+
+	/** Returns a token from being used by an enemy */
+	UFUNCTION(BlueprintCallable, Category = "Tokens")
+	void ReleaseToken(const FEnemyToken Token, const float CustomCooldown);
+
+	/** Adds a set amount of tokens to an actor  */
+	UFUNCTION(BlueprintCallable, Category = "Tokens")
+	void AddTokensToActor(AActor* TargetActor, ETokenType TokenType, int Amount);
+
+	/** Adds the default amount of tokens to an actor based on current difficulty */
+	UFUNCTION(BlueprintCallable, Category = "Tokens")
+	void AddDefaultTokensToActor(AActor* TargetActor);
+
+public:
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+
+protected:
+	virtual void BeginPlay() override;
 };
