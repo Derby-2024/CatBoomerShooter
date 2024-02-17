@@ -26,6 +26,8 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere)
 	class UCameraComponent* Camera;
+	UPROPERTY(EditAnywhere)
+	class UArrowComponent* WishDirArrow;
 
 	// Inputs
 	// Move to player controller later
@@ -38,6 +40,13 @@ protected:
 	UInputAction* JumpAction;	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* CameraMoveAction;
+
+	// Input Variables
+	UPROPERTY(EditAnywhere, Category = Input)
+	bool EnableAutoJump = true;
+
+	struct FEnhancedInputActionValueBinding* InputMoveVal;
+	struct FEnhancedInputActionValueBinding* InputCameraMoveVal;
 	
 	// Input Functions
 	void InputMove(const FInputActionValue& Value);
@@ -50,6 +59,15 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void Landed(const FHitResult& Hit) override;
 
+private:
+	UPROPERTY(EditAnywhere, Category = Input)
+	float MaxVel = 600;
+	UPROPERTY(EditAnywhere, Category = Input)
+	float MaxAcceleration = 6000;
 
+	bool IsOnGround = true;
+
+	FVector Accelerate(FVector WishedDirection, FVector PrevVelocity) const;
 };
