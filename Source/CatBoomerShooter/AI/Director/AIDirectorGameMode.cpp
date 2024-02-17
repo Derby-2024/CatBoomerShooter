@@ -37,6 +37,11 @@ void AAIDirectorGameMode::RequestToken(AAIEnemyBaseController* EnemyController, 
 
 		TokenCollection->ClaimedTokens.Add(ClaimedToken);
 
+		FTimerDelegate TimerDelegate;
+		TimerDelegate.BindUObject(this, &AAIDirectorGameMode::TokenTimeout, ClaimedToken);
+		// Do we really need to check if timer manager is valid???
+		GetWorldTimerManager().SetTimer(ClaimedToken->TimerHandle, TimerDelegate, TOKEN_TIMEOUT, false);
+
 		UE_LOG(
 			LogTemp, Log, 
 			TEXT("AIDirectorGameMode::RequestToken: Enemy %s claimed a token of type %s and priority %s against actor %s."),
@@ -53,6 +58,12 @@ void AAIDirectorGameMode::RequestToken(AAIEnemyBaseController* EnemyController, 
 
 void AAIDirectorGameMode::ReleaseToken(UEnemyToken* ReleasedToken, const float CustomCooldown)
 {
+	if (ReleasedToken == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::ReleaseToken: nullptr provided for token."));
+		return;
+	}
+
 	// Get storage for token owner
 	FActorTokensCollection* TargetTokens = ActorTokens.Find(ReleasedToken->Owner);
 
@@ -78,9 +89,33 @@ void AAIDirectorGameMode::ReleaseToken(UEnemyToken* ReleasedToken, const float C
 		*UKismetSystemLibrary::GetDisplayName(ReleasedToken->Owner)
 	);
 
+	// Stop token timeout
+	GetWorldTimerManager().ClearTimer(ReleasedToken->TimerHandle);
+
 	ReleasedToken->ClaimedBy = nullptr;
 	TokenCollection->FreeTokens.Add(ReleasedToken);
 }
+
+void AAIDirectorGameMode::TokenTimeout(UEnemyToken* Token)
+{
+	if (Token == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("AIDirectorGameMode::TokenTimeout: Token is invalid"));
+		return;
+	}
+
+	UE_LOG(
+		LogTemp, Warning,
+		TEXT("AIDirectorGameMode::TokenTimeout: Token %s (owned by %s) has timed out while being held by %s."),
+		*UKismetSystemLibrary::GetDisplayName(Token),
+		*UKismetSystemLibrary::GetDisplayName(Token->Owner),
+		*UKismetSystemLibrary::GetDisplayName(Token->ClaimedBy)
+	);
+
+	ReleaseToken(Token);
+}
+
+
 
 void AAIDirectorGameMode::AddTokensToActor(AActor* TargetActor, ETokenType TokenType, int Amount)
 {
@@ -95,7 +130,7 @@ void AAIDirectorGameMode::AddTokensToActor(AActor* TargetActor, ETokenType Token
 		return;
 	}
 	
-	// Check if actor is invalid or pending destroy
+	// Check if actor is pending destroy or pointer invalid
 	if (!IsValid(TargetActor))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("AIDirectorGameMode::AddTokensToActor: Invalid target actor provided."));
@@ -143,6 +178,13 @@ void AAIDirectorGameMode::AddTokensToActor(AActor* TargetActor, ETokenType Token
 
 void AAIDirectorGameMode::AddDefaultTokensToActor(AActor* TargetActor) 
 {
+	// Check if actor is pending destroy or pointer invalid
+	if (!IsValid(TargetActor))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AIDirectorGameMode::AddDefaultTokensToActor: Invalid target actor provided."));
+		return;
+	}
+
 	UE_LOG(
 		LogTemp,
 		Log,

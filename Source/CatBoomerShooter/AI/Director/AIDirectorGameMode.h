@@ -8,6 +8,8 @@
 #include "AIDirectorResources.h"
 #include "AIDirectorGameMode.generated.h"
 
+const float TOKEN_TIMEOUT = 10.0f;
+
 /**
  * 
  */
@@ -29,7 +31,7 @@ public:
 
 	/** Returns a token from being used by an enemy */
 	UFUNCTION(BlueprintCallable, Category = "Tokens")
-	void ReleaseToken(UEnemyToken* Token, const float CustomCooldown);
+	void ReleaseToken(UEnemyToken* Token, const float CustomCooldown = -1.0f);
 
 	/** Adds a set amount of tokens to an actor  */
 	UFUNCTION(BlueprintCallable, Category = "Tokens")
@@ -38,6 +40,9 @@ public:
 	/** Adds the default amount of tokens to an actor based on current difficulty */
 	UFUNCTION(BlueprintCallable, Category = "Tokens")
 	void AddDefaultTokensToActor(AActor* TargetActor);
+
+private:
+	void TokenTimeout(UEnemyToken* Token);
 
 public:
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;

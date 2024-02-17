@@ -54,6 +54,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	ETokenPriority ClaimPriority;
+
+	FTimerHandle TimerHandle;
 };
 
 /**
