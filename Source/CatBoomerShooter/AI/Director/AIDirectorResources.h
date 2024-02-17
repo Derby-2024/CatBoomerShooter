@@ -73,6 +73,9 @@ struct CATBOOMERSHOOTER_API FTokenCollection
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	TArray<UEnemyToken*> ClaimedTokens;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<UEnemyToken*> CooldownTokens;
 };
 
 /**

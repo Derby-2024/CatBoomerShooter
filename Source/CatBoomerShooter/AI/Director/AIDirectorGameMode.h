@@ -9,6 +9,8 @@
 #include "AIDirectorGameMode.generated.h"
 
 const float TOKEN_TIMEOUT = 10.0f;
+// Change this to a difficulty option later
+const float TOKEN_COOLDOWN = 1.5f;
 
 /**
  * 
@@ -43,6 +45,7 @@ public:
 
 private:
 	void TokenTimeout(UEnemyToken* Token);
+	void TokenCooldownEnd(UEnemyToken* Token);
 
 public:
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;

@@ -44,8 +44,9 @@ void AAIDirectorGameMode::RequestToken(AAIEnemyBaseController* EnemyController, 
 
 		UE_LOG(
 			LogTemp, Log, 
-			TEXT("AIDirectorGameMode::RequestToken: Enemy %s claimed a token of type %s and priority %s against actor %s."),
+			TEXT("AIDirectorGameMode::RequestToken: Enemy %s claimed token %s of type %s and priority %s against actor %s."),
 			*UKismetSystemLibrary::GetDisplayName(EnemyController), 
+			*UKismetSystemLibrary::GetDisplayName(ClaimedToken),
 			*UEnum::GetValueAsString(TokenType),
 			*UEnum::GetValueAsString(TokenPriority),
 			*UKismetSystemLibrary::GetDisplayName(TargetActor)
@@ -92,8 +93,25 @@ void AAIDirectorGameMode::ReleaseToken(UEnemyToken* ReleasedToken, const float C
 	// Stop token timeout
 	GetWorldTimerManager().ClearTimer(ReleasedToken->TimerHandle);
 
-	ReleasedToken->ClaimedBy = nullptr;
-	TokenCollection->FreeTokens.Add(ReleasedToken);
+	float Cooldown = CustomCooldown < 0.0f ? TOKEN_COOLDOWN : CustomCooldown;
+
+	// We want the token to go straight back to the pool
+	if (Cooldown == 0)
+	{
+		ReleasedToken->ClaimedBy = nullptr;
+		TokenCollection->FreeTokens.Add(ReleasedToken);
+		return;
+	}
+
+	//UE_LOG(LogTemp, Log, TEXT("AIDirectorGameMode::ReleaseToken: Token on cooldown for %f seconds."), Cooldown);
+
+	// We want the token to be temporarily unavailable
+	FTimerDelegate TimerDelegate;
+	TimerDelegate.BindUObject(this, &AAIDirectorGameMode::TokenCooldownEnd, ReleasedToken);
+	// Do we really need to check if timer manager is valid???
+	GetWorldTimerManager().SetTimer(ReleasedToken->TimerHandle, TimerDelegate, Cooldown, false);
+
+	TokenCollection->CooldownTokens.Add(ReleasedToken);
 }
 
 void AAIDirectorGameMode::TokenTimeout(UEnemyToken* Token)
@@ -115,7 +133,43 @@ void AAIDirectorGameMode::TokenTimeout(UEnemyToken* Token)
 	ReleaseToken(Token);
 }
 
+void AAIDirectorGameMode::TokenCooldownEnd(UEnemyToken* Token)
+{
+	if (Token == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("AIDirectorGameMode::TokenCooldownEnd: Token is invalid"));
+		return;
+	}
 
+	// Get storage for token owner
+	FActorTokensCollection* TargetTokens = ActorTokens.Find(Token->Owner);
+
+	if (TargetTokens == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::TokenCooldownEnd: Released token doesn't have a valid owner."));
+		return;
+	}
+
+	// Get storege of token type for target actor
+	FTokenCollection* TokenCollection = TargetTokens->GetCollectionOfType(Token->TokenType);
+
+	if (TokenCollection->CooldownTokens.Remove(Token) == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::TokenCooldownEnd: Token was not marked as on cooldown."));
+		return;
+	}
+
+	UE_LOG(
+		LogTemp, Log,
+		TEXT("AIDirectorGameMode::TokenCooldownEnd: Token %s (owned by %s) has finished cooldown after being held by %s."),
+		*UKismetSystemLibrary::GetDisplayName(Token),
+		*UKismetSystemLibrary::GetDisplayName(Token->Owner),
+		*UKismetSystemLibrary::GetDisplayName(Token->ClaimedBy)
+	);
+
+	Token->ClaimedBy = nullptr;
+	TokenCollection->FreeTokens.Add(Token);
+}
 
 void AAIDirectorGameMode::AddTokensToActor(AActor* TargetActor, ETokenType TokenType, int Amount)
 {
