@@ -3,12 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "../AIEnemyBaseController.h"
 #include "AIDirectorResources.generated.h"
 
 // Token system references
 // https://www.gamedeveloper.com/design/cyber-demons-the-ai-of-doom-2016-
 // https://youtu.be/2KQNpQD8Ayo?si=zc6b-AJQagwvrBvr&t=2503
+
+// Forward declaration of Enemy base AIController
+class AAIEnemyBaseController;
 
 /** Type of attack a token is used for.
 *	Currently just a concept.
