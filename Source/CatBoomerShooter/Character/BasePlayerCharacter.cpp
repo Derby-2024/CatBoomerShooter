@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "Components/InputComponent.h"
+#include "CatBoomerShooter/Whip/BaseWhip.h"
 
 // Sets default values
 ABasePlayerCharacter::ABasePlayerCharacter()
@@ -17,6 +18,8 @@ ABasePlayerCharacter::ABasePlayerCharacter()
 	Camera->SetupAttachment(RootComponent);
 	Camera->bUsePawnControlRotation = true;
 
+	WhipLocation = CreateDefaultSubobject<USceneComponent>(TEXT("WhipLocation"));
+	WhipLocation->SetupAttachment(Camera);
 }
 
 // Called when the game starts or when spawned
@@ -29,6 +32,8 @@ void ABasePlayerCharacter::BeginPlay()
 			Subsystem->AddMappingContext(InputMappingContext, 0);
 		}
 	}
+
+	
 }
 
 void ABasePlayerCharacter::InputMove(const FInputActionValue& Value)
@@ -57,6 +62,11 @@ void ABasePlayerCharacter::InputCameraMove(const FInputActionValue& Value)
 	}
 }
 
+void ABasePlayerCharacter::InputMelee(const FInputActionValue& Value)
+{
+	Whip->Attack();
+}
+
 // Called every frame
 void ABasePlayerCharacter::Tick(float DeltaTime)
 {
@@ -75,6 +85,16 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputMove);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputJump);
 		EnhancedInputComponent->BindAction(CameraMoveAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputCameraMove);
+		EnhancedInputComponent->BindAction(MeleeAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputMelee);
 	}
 }
 
+USceneComponent *ABasePlayerCharacter::GetPlayerWhipLocation_Implementation()
+{
+    return WhipLocation;
+}
+
+ABaseWhip *ABasePlayerCharacter::GetPlayerWhip_Implementation()
+{
+    return Whip;
+}
