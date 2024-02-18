@@ -28,6 +28,8 @@ protected:
 	class UCameraComponent* Camera;
 	UPROPERTY(EditAnywhere)
 	class UArrowComponent* WishDirArrow;
+	UPROPERTY(EditAnywhere)
+	class UArrowComponent* AccelDirArrow;
 
 	// Inputs
 	// Move to player controller later
@@ -45,12 +47,16 @@ protected:
 	UPROPERTY(EditAnywhere, Category = Input)
 	bool EnableAutoJump = true;
 
+	UPROPERTY(EditAnywhere, Category = Input)
+	float MouseSensitivity = 1.0f;
+
 	struct FEnhancedInputActionValueBinding* InputMoveVal;
 	struct FEnhancedInputActionValueBinding* InputCameraMoveVal;
 	
 	// Input Functions
 	void InputMove(const FInputActionValue& Value);
 	void InputJump(const FInputActionValue& Value);
+	void InputJumpEnd(const FInputActionValue& Value);
 	void InputCameraMove(const FInputActionValue& Value);
 
 public:	
