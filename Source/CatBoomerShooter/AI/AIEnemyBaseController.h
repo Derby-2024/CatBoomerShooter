@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Director/AIDirectorResources.h"
 #include "AIEnemyBaseController.generated.h"
 
 /**
@@ -20,5 +21,14 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = "EnemyBase")
 	UBehaviorTree* DefaultBehaviorTree;
-};
 
+private:
+	/** Requests an enemy token of a given type.
+	*	Token Priority is currently unimplemented. */
+	UFUNCTION(BlueprintCallable, Category = "Tokens")
+	void RequestToken(const AActor* TargetActor, const ETokenType TokenType, const ETokenPriority TokenPriority, UEnemyToken*& Token, bool& Success);
+
+	/** Returns a token from being used by an enemy */
+	UFUNCTION(BlueprintCallable, Category = "Tokens")
+	void ReleaseToken(UEnemyToken* Token, const float CustomCooldown = -1.0f);
+};
