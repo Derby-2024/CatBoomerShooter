@@ -38,11 +38,14 @@ protected:
 	UInputAction* JumpAction;	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* CameraMoveAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* DashAction;
 	
 	// Input Functions
 	void InputMove(const FInputActionValue& Value);
 	void InputJump(const FInputActionValue& Value);
 	void InputCameraMove(const FInputActionValue& Value);
+	void Dash(const FInputActionValue& Value);
 
 public:	
 	// Called every frame
