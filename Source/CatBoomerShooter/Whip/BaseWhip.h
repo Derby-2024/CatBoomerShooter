@@ -39,11 +39,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	float Damage = 5.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
-	TArray<AActor*> EnemiesHit = {};
+	TArray<ACharacter*> EnemiesHit = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	int KnockbackPower = 1000;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	int AttackCombo = 1;
+
+	ACharacter* PlayerCharacter;
+	FVector LaunchVelocity;
+	FTimerHandle CountdownTimer;
 
 
 
@@ -52,5 +56,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void Attack();
+	void AttackFinished();
+	void ResetCombo();
 
 };

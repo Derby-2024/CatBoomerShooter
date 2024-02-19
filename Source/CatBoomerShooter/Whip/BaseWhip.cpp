@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "CatBoomerShooter/Character/BasePlayerCharacter.h"
 #include "CatBoomerShooter/Character/BasePlayerInterface.h"
+#include "CatBoomerShooter/Enemy/EnemyDamage.h"
 
 
 // Sets default values
@@ -35,13 +36,13 @@ void ABaseWhip::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(),0);
+	PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(),0);
 	USceneComponent* WhipLocation = IBasePlayerInterface::Execute_GetPlayerWhipLocation(PlayerCharacter);
 	
 	if(IsValid(WhipLocation))
 	{
 		this->AttachToComponent(WhipLocation, FAttachmentTransformRules::SnapToTargetIncludingScale, "GripPoint");
-		this->SetActorHiddenInGame(true);
+		//this->SetActorHiddenInGame(true);
 	}
 	
 }
@@ -62,4 +63,79 @@ void ABaseWhip::Attack()
 	UE_LOG(LogTemp, Warning, TEXT("Attacking"));
 	isAttacking = true;
 	this->SetActorHiddenInGame(false);
+
+	TArray<AActor*> Result = {};
+	if (AttackCombo < 3)
+	{
+		AttackOneCollision->GetOverlappingActors(Result);
+			for (AActor* actor : Result)
+			{
+				if (actor->ActorHasTag("Enemy"))
+				{
+					EnemiesHit.AddUnique(Cast<ACharacter>(actor));
+				}
+			}
+	}
+	else
+	{
+		AttackTwoCollision->GetOverlappingActors(Result);
+			for (AActor* actor : Result)
+			{
+				if (actor->ActorHasTag("Enemy"))
+				{
+					EnemiesHit.AddUnique(Cast<ACharacter>(actor));
+				}
+			}
+	}
+
+	for (ACharacter* enemy : EnemiesHit)
+	{
+		IEnemyDamage::Execute_TakeHealthDamage(enemy, Damage);
+		if (AttackCombo < 3)
+		{
+			LaunchVelocity = PlayerCharacter->GetActorForwardVector() * KnockbackPower;
+		}
+		else
+		{
+			LaunchVelocity = PlayerCharacter->GetActorForwardVector() * KnockbackPower * 5;
+		}
+		enemy->LaunchCharacter(LaunchVelocity, false, false);
+	}
+	UE_LOG(LogTemp, Warning, TEXT("DEBUG1"));
+	if (EnemiesHit.IsEmpty())
+	{
+		AttackFinished();
+		return;
+	}
+	AttackCombo++;
+	if (AttackCombo > 3)
+	{
+		GetWorldTimerManager().ClearTimer(CountdownTimer);
+		ResetCombo();
+	}
+	else
+	{
+		if(GetWorldTimerManager().IsTimerActive(CountdownTimer))
+		{
+			GetWorldTimerManager().ClearTimer(CountdownTimer);
+		}
+		GetWorldTimerManager().SetTimer(CountdownTimer, this, &ABaseWhip::ResetCombo, 2.0f, false);
+	}
+	AttackFinished();
+
+	//FTimerHandle TimerHandle;
+    //GetWorldTimerManager().SetTimer(TimerHandle, this, &ABaseWhip::AttackFinished, 2.0f, false);
+}
+
+void ABaseWhip::AttackFinished()
+{
+	isAttacking = false;
+	EnemiesHit = {};
+	//this->SetActorHiddenInGame(true);
+	UE_LOG(LogTemp, Warning, TEXT("Attack Ended"));
+}
+
+void ABaseWhip::ResetCombo()
+{
+	AttackCombo = 1;
 }
