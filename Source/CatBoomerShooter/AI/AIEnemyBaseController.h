@@ -19,6 +19,9 @@ class CATBOOMERSHOOTER_API AAIEnemyBaseController : public AAIController
 public:
 	AAIEnemyBaseController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+protected:
+	virtual void BeginPlay() override;
+
 	UPROPERTY(EditDefaultsOnly, Category = "EnemyBase")
 	UBehaviorTree* DefaultBehaviorTree;
 

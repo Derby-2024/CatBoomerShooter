@@ -9,6 +9,11 @@
 AAIEnemyBaseController::AAIEnemyBaseController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent")))
 {
+	
+}
+
+void AAIEnemyBaseController::BeginPlay()
+{
 	if (DefaultBehaviorTree != nullptr)
 	{
 		if (!RunBehaviorTree(DefaultBehaviorTree))
