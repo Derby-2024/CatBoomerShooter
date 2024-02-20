@@ -21,6 +21,8 @@ void AAIEnemyBaseController::BeginPlay()
 			UE_LOG(LogTemp, Warning, TEXT("AIEnemyBaseController Constructor: Failed to run provided default behavior tree."));
 		}
 	}
+
+	Super::BeginPlay();
 }
 
 void AAIEnemyBaseController::RequestToken(const AActor* TargetActor, const ETokenType TokenType, const ETokenPriority TokenPriority, UEnemyToken*& Token, bool& Success)
@@ -45,4 +47,14 @@ void AAIEnemyBaseController::ReleaseToken(UEnemyToken* Token, const float Custom
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("AAIEnemyBaseController::ReleaseToken: Could not get AIDirector Gamemode from current Gamemode."));
+}
+
+void AAIEnemyBaseController::SetGenericTeamId(const FGenericTeamId& InTeamID)
+{
+	GameTeam = (EGameTeam)InTeamID.GetId();
+}
+
+FGenericTeamId AAIEnemyBaseController::GetGenericTeamId() const
+{
+	return uint8(GameTeam);
 }
