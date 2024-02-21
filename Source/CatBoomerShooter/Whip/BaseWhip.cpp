@@ -5,7 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "CatBoomerShooter/Character/BasePlayerCharacter.h"
 #include "CatBoomerShooter/Character/BasePlayerInterface.h"
-#include "CatBoomerShooter/Enemy/EnemyDamage.h"
+#include "CatBoomerShooter/Enemy/DamageInterface.h"
 
 
 // Sets default values
@@ -23,11 +23,8 @@ ABaseWhip::ABaseWhip()
 	Arrow = CreateDefaultSubobject<UArrowComponent>("Arrow");
 	Arrow->SetupAttachment(RootComponent);
 
-	AttackOneCollision = CreateDefaultSubobject<UBoxComponent>("Attack One Collider");
+	AttackOneCollision = CreateDefaultSubobject<UBoxComponent>("Attack Collider");
 	AttackOneCollision->SetupAttachment(RootComponent);
-
-	AttackTwoCollision = CreateDefaultSubobject<UBoxComponent>("Attack Two Collider");
-	AttackTwoCollision->SetupAttachment(RootComponent);
 
 }
 
@@ -65,70 +62,37 @@ void ABaseWhip::Attack()
 	this->SetActorHiddenInGame(false);
 
 	TArray<AActor*> Result = {};
-	if (AttackCombo < 3)
+	AttackOneCollision->GetOverlappingActors(Result);
+	for (AActor* actor : Result)
 	{
-		AttackOneCollision->GetOverlappingActors(Result);
-			for (AActor* actor : Result)
-			{
-				if (actor->ActorHasTag("Enemy"))
-				{
-					EnemiesHit.AddUnique(Cast<ACharacter>(actor));
-				}
-			}
-	}
-	else
-	{
-		AttackTwoCollision->GetOverlappingActors(Result);
-			for (AActor* actor : Result)
-			{
-				if (actor->ActorHasTag("Enemy"))
-				{
-					EnemiesHit.AddUnique(Cast<ACharacter>(actor));
-				}
-			}
+		if (actor->ActorHasTag("Enemy"))
+		{
+			EnemiesHit.AddUnique(Cast<ACharacter>(actor));
+		}
 	}
 
 	for (ACharacter* enemy : EnemiesHit)
 	{
-		IEnemyDamage::Execute_TakeHealthDamage(enemy, Damage);
-		if (AttackCombo < 3)
+		IDamageInterface::Execute_TakeHealthDamage(enemy, Damage);
+		if (!hasBigKnockback)
 		{
 			LaunchVelocity = PlayerCharacter->GetActorForwardVector() * KnockbackPower;
 		}
 		else
 		{
 			LaunchVelocity = PlayerCharacter->GetActorForwardVector() * KnockbackPower * 5;
+			usedBigKnockback = true;
 		}
 		enemy->LaunchCharacter(LaunchVelocity, false, false);
 	}
-	UE_LOG(LogTemp, Warning, TEXT("DEBUG1"));
-	if (EnemiesHit.IsEmpty())
-	{
-		AttackFinished();
-		return;
-	}
-	AttackCombo++;
-	if (AttackCombo > 3)
-	{
-		GetWorldTimerManager().ClearTimer(CountdownTimer);
-		ResetCombo();
-	}
-	else
-	{
-		if(GetWorldTimerManager().IsTimerActive(CountdownTimer))
-		{
-			GetWorldTimerManager().ClearTimer(CountdownTimer);
-		}
-		GetWorldTimerManager().SetTimer(CountdownTimer, this, &ABaseWhip::ResetCombo, 2.0f, false);
-	}
-	AttackFinished();
 
-	//FTimerHandle TimerHandle;
-    //GetWorldTimerManager().SetTimer(TimerHandle, this, &ABaseWhip::AttackFinished, 2.0f, false);
-}
+	if (usedBigKnockback)
+	{
+		hasBigKnockback = false;
+		GetWorldTimerManager().SetTimer(CooldownTimer, this, &ABaseWhip::ResetCombo, 10.0f, false);
+		usedBigKnockback = false;
+	}
 
-void ABaseWhip::AttackFinished()
-{
 	isAttacking = false;
 	EnemiesHit = {};
 	//this->SetActorHiddenInGame(true);
@@ -137,5 +101,6 @@ void ABaseWhip::AttackFinished()
 
 void ABaseWhip::ResetCombo()
 {
-	AttackCombo = 1;
+	hasBigKnockback = true;
+	UE_LOG(LogTemp, Warning, TEXT("Attack Reset"));
 }

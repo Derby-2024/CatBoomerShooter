@@ -30,24 +30,24 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* AttackOneCollision;
-	UPROPERTY(EditAnywhere)
-	class UBoxComponent* AttackTwoCollision;
 
 	//Default Variables
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Defaults")
 	bool isAttacking = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	float Damage = 5.0f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Defaults")
 	TArray<ACharacter*> EnemiesHit = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	int KnockbackPower = 1000;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
-	int AttackCombo = 1;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Defaults")
+	bool hasBigKnockback = true;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Defaults")
+	bool usedBigKnockback = false;
 
 	ACharacter* PlayerCharacter;
 	FVector LaunchVelocity;
-	FTimerHandle CountdownTimer;
+	FTimerHandle CooldownTimer;
 
 
 
@@ -56,7 +56,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void Attack();
-	void AttackFinished();
 	void ResetCombo();
 
 };

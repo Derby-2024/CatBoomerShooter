@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "EnemyDamage.generated.h"
+#include "DamageInterface.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UEnemyDamage : public UInterface
+class UDamageInterface : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,7 +16,7 @@ class UEnemyDamage : public UInterface
 /**
  * 
  */
-class CATBOOMERSHOOTER_API IEnemyDamage
+class CATBOOMERSHOOTER_API IDamageInterface
 {
 	GENERATED_BODY()
 
