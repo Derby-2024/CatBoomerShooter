@@ -15,9 +15,18 @@ class CATBOOMERSHOOTER_API ABasePlayerCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+	UPROPERTY(EditAnywhere, BluePrintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UInventoryComponent* Inventory;
+
 public:
 	// Sets default values for this character's properties
 	ABasePlayerCharacter();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	float Health;
+
+	UFUNCTION(BlueprintCallable, Category = "Items")
+	void UseItem(class UItem* Item);
 
 protected:
 	// Called when the game starts or when spawned

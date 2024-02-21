@@ -6,6 +6,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "Components/InputComponent.h"
+#include "CatBoomerShooter/Item.h"
+#include "CatBoomerShooter/InventoryComponent.h"
 
 // Sets default values
 ABasePlayerCharacter::ABasePlayerCharacter()
@@ -17,6 +19,20 @@ ABasePlayerCharacter::ABasePlayerCharacter()
 	Camera->SetupAttachment(RootComponent);
 	Camera->bUsePawnControlRotation = true;
 
+	Inventory = CreateDefaultSubobject<UInventoryComponent>("Inventory");
+	Inventory->Capacity = 20;
+
+	Health = 100.f;
+
+}
+
+void ABasePlayerCharacter::UseItem(UItem* Item)
+{
+	if (Item)
+	{
+		Item->Use(this);
+		Item->OnUse(this);
+	}
 }
 
 // Called when the game starts or when spawned
