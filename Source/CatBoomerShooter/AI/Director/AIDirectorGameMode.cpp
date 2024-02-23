@@ -28,6 +28,9 @@ void AAIDirectorGameMode::RequestToken(AAIEnemyBaseController* EnemyController, 
 		return;
 	}
 
+	// Don't allow tokens to be taken out if locked
+	if (TargetTokens->Locked) return;
+
 	// Get storage of token type for target actor
 	FTokenCollection* TokenCollection = TargetTokens->GetCollectionOfType(TokenType);
 
@@ -252,10 +255,37 @@ void AAIDirectorGameMode::AddDefaultTokensToActor(AActor* TargetActor)
 	AddTokensToActor(TargetActor, ETokenType::Heavy, 1);
 }
 
+void AAIDirectorGameMode::SetTokensLocked(AActor* TargetActor, bool Locked)
+{
+	if (!IsValid(TargetActor))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AIDirectorGameMode::SetTokensLocked: Invalid target actor provided."));
+		return;
+	}
+
+	// Get storage for target actor
+	FActorTokensCollection* TargetTokens = ActorTokens.Find(TargetActor);
+
+	if (TargetTokens == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AIDirectorGameMode::SetTokensLocked: Target actor doesn't have any associated tokens."));
+		return;
+	}
+
+	UE_LOG(
+		LogTemp, Log, 
+		TEXT("AIDirectorGameMode::SetTokensLocked: Set tokens locked state for target %s to %s."),
+		*UKismetSystemLibrary::GetDisplayName(TargetActor),
+		Locked ? TEXT("true") : TEXT("false")
+	);
+
+	TargetTokens->Locked = Locked;
+}
+
 void AAIDirectorGameMode::StartPlay()
 {
-	FGenericTeamId::SetAttitudeSolver(&UTeamsProjectSettings::GetAttitude);
 	UE_LOG(LogTemp, Log, TEXT("AIDirectorGameMode::StartPlay: Start Play"));
+	FGenericTeamId::SetAttitudeSolver(&UTeamsProjectSettings::GetAttitude);
 
 	Super::StartPlay();
 }

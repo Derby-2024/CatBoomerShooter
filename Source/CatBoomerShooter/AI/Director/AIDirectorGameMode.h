@@ -42,6 +42,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Tokens")
 	void AddDefaultTokensToActor(AActor* TargetActor);
 
+	UFUNCTION(BlueprintCallable, Category = "Tokens")
+	void SetTokensLocked(AActor* TargetActor, bool Locked);
+
 private:
 	void TokenTimeout(UEnemyToken* Token);
 	void TokenCooldownEnd(UEnemyToken* Token);
