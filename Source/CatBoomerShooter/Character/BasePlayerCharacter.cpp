@@ -7,6 +7,7 @@
 #include "EnhancedInputComponent.h"
 #include "Components/InputComponent.h"
 #include "CatBoomerShooter/Whip/BaseWhip.h"
+#include "CatBoomerShooter/Weapons/BaseWeapon.h"
 
 // Sets default values
 ABasePlayerCharacter::ABasePlayerCharacter()
@@ -64,7 +65,26 @@ void ABasePlayerCharacter::InputCameraMove(const FInputActionValue& Value)
 
 void ABasePlayerCharacter::InputMelee(const FInputActionValue& Value)
 {
-	Whip->Attack();
+	if(Whip)
+	{
+		Whip->Attack();
+	}
+}
+
+void ABasePlayerCharacter::InputFire_Start(const FInputActionValue &Value)
+{
+	if(Weapon)
+	{
+		Weapon->StartShooting();
+	}
+}
+
+void ABasePlayerCharacter::InputFire_Stop(const FInputActionValue &Value)
+{
+	if(Weapon)
+	{
+		Weapon->StopShooting();
+	}
 }
 
 // Called every frame
@@ -86,6 +106,8 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputJump);
 		EnhancedInputComponent->BindAction(CameraMoveAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputCameraMove);
 		EnhancedInputComponent->BindAction(MeleeAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputMelee);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputFire_Start);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &ABasePlayerCharacter::InputFire_Stop);
 	}
 }
 
