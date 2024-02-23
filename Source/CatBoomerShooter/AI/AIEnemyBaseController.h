@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Director/AIDirectorResources.h"
+#include "GameTeams.h"
 #include "AIEnemyBaseController.generated.h"
 
 /**
@@ -19,8 +20,14 @@ class CATBOOMERSHOOTER_API AAIEnemyBaseController : public AAIController
 public:
 	AAIEnemyBaseController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
+protected:
+	virtual void BeginPlay() override;
+
 	UPROPERTY(EditDefaultsOnly, Category = "EnemyBase")
 	UBehaviorTree* DefaultBehaviorTree;
+
+	UPROPERTY(EditAnywhere, Category = "Teams")
+	EGameTeam GameTeam = EGameTeam::Aliens;
 
 private:
 	/** Requests an enemy token of a given type.
@@ -31,4 +38,8 @@ private:
 	/** Returns a token from being used by an enemy */
 	UFUNCTION(BlueprintCallable, Category = "Tokens")
 	void ReleaseToken(UEnemyToken* Token, const float CustomCooldown = -1.0f);
+
+public:
+	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
+	virtual FGenericTeamId GetGenericTeamId() const override;
 };

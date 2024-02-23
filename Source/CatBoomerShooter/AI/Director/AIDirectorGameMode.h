@@ -20,6 +20,10 @@ class CATBOOMERSHOOTER_API AAIDirectorGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
+public:
+	UPROPERTY(Category = "Teams", EditAnywhere, BlueprintReadOnly, Config)
+	TArray<FTeamAttitude> TeamAttitudes;
+
 private:
 	/** All current tokens and their assigned characters */
 	UPROPERTY(VisibleAnywhere, Category = "Tokens")
@@ -47,9 +51,6 @@ private:
 	void TokenTimeout(UEnemyToken* Token);
 	void TokenCooldownEnd(UEnemyToken* Token);
 
-public:
-	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
-
 protected:
-	virtual void BeginPlay() override;
+	virtual void StartPlay() override;
 };
