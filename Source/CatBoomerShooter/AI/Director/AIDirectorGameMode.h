@@ -7,6 +7,8 @@
 #include "AIDirectorResources.h"
 #include "AIDirectorGameMode.generated.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogTokenSystem, Log, All);
+
 const float TOKEN_TIMEOUT = 10.0f;
 // Change this to a difficulty option later
 const float TOKEN_COOLDOWN = 1.5f;

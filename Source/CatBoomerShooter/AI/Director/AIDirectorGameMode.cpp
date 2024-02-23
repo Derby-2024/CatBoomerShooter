@@ -5,17 +5,21 @@
 #include "../AIEnemyBaseController.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+DEFINE_LOG_CATEGORY(LogTokenSystem);
+
+#define DEFAULT_LOG_LEVEL Verbose
+
 //FEnemyToken AAIDirectorGameMode::RequestToken(ETokenType TokenType, AAIEnemyBaseController* EnemyController, AActor* TargetActor)
 void AAIDirectorGameMode::RequestToken(AAIEnemyBaseController* EnemyController, const AActor* TargetActor, const ETokenType TokenType, const ETokenPriority TokenPriority, UEnemyToken*& Token, bool& Success)
 {
 	if (!IsValid(EnemyController))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AIDirectorGameMode::RequestToken: Invalid Enemy controller provided."));
+		UE_LOG(LogTokenSystem, Warning, TEXT("AIDirectorGameMode::RequestToken: Invalid Enemy controller provided."));
 		return;
 	}
 	if (!IsValid(TargetActor))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AIDirectorGameMode::RequestToken: Invalid target actor provided."));
+		UE_LOG(LogTokenSystem, Warning, TEXT("AIDirectorGameMode::RequestToken: Invalid target actor provided."));
 		return;
 	}
 
@@ -24,7 +28,7 @@ void AAIDirectorGameMode::RequestToken(AAIEnemyBaseController* EnemyController, 
 
 	if (TargetTokens == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AIDirectorGameMode::RequestToken: Target actor doesn't have any associated tokens."));
+		UE_LOG(LogTokenSystem, Warning, TEXT("AIDirectorGameMode::RequestToken: Target actor doesn't have any associated tokens."));
 		return;
 	}
 
@@ -48,7 +52,7 @@ void AAIDirectorGameMode::RequestToken(AAIEnemyBaseController* EnemyController, 
 		GetWorldTimerManager().SetTimer(ClaimedToken->TimerHandle, TimerDelegate, TOKEN_TIMEOUT, false);
 
 		UE_LOG(
-			LogTemp, Log, 
+			LogTokenSystem, DEFAULT_LOG_LEVEL,
 			TEXT("AIDirectorGameMode::RequestToken: Enemy %s claimed token %s of type %s and priority %s against actor %s."),
 			*UKismetSystemLibrary::GetDisplayName(EnemyController), 
 			*UKismetSystemLibrary::GetDisplayName(ClaimedToken),
@@ -91,7 +95,7 @@ void AAIDirectorGameMode::RequestToken(AAIEnemyBaseController* EnemyController, 
 			GetWorldTimerManager().SetTimer(TokenToTake->TimerHandle, TimerDelegate, TOKEN_TIMEOUT, false);
 
 			UE_LOG(
-				LogTemp, Log,
+				LogTokenSystem, DEFAULT_LOG_LEVEL,
 				TEXT("AIDirectorGameMode::RequestToken: Enemy %s took token %s of type %s from %s."),
 				*UKismetSystemLibrary::GetDisplayName(EnemyController),
 				*UKismetSystemLibrary::GetDisplayName(TokenToTake),
@@ -109,7 +113,7 @@ void AAIDirectorGameMode::ReleaseToken(UEnemyToken* ReleasedToken, const float C
 {
 	if (ReleasedToken == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::ReleaseToken: nullptr provided for token."));
+		UE_LOG(LogTokenSystem, Warning, TEXT("AAIDirectorGameMode::ReleaseToken: nullptr provided for token."));
 		return;
 	}
 
@@ -118,7 +122,7 @@ void AAIDirectorGameMode::ReleaseToken(UEnemyToken* ReleasedToken, const float C
 
 	if (TargetTokens == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::ReleaseToken: Released token doesn't have a valid owner."));
+		UE_LOG(LogTokenSystem, Warning, TEXT("AAIDirectorGameMode::ReleaseToken: Released token doesn't have a valid owner."));
 		return;
 	}
 
@@ -127,12 +131,12 @@ void AAIDirectorGameMode::ReleaseToken(UEnemyToken* ReleasedToken, const float C
 
 	if (TokenCollection->ClaimedTokens.Remove(ReleasedToken) == 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::ReleaseToken: Could not find claimed token to release."));
+		UE_LOG(LogTokenSystem, Warning, TEXT("AAIDirectorGameMode::ReleaseToken: Could not find claimed token to release."));
 		return;
 	}
 
 	UE_LOG(
-		LogTemp, Log,
+		LogTokenSystem, DEFAULT_LOG_LEVEL,
 		TEXT("AIDirectorGameMode::ReleaseToken: Enemy %s released a token against actor %s."),
 		*UKismetSystemLibrary::GetDisplayName(ReleasedToken->ClaimedBy),
 		*UKismetSystemLibrary::GetDisplayName(ReleasedToken->Owner)
@@ -153,7 +157,7 @@ void AAIDirectorGameMode::ReleaseToken(UEnemyToken* ReleasedToken, const float C
 		return;
 	}
 
-	//UE_LOG(LogTemp, Log, TEXT("AIDirectorGameMode::ReleaseToken: Token on cooldown for %f seconds."), Cooldown);
+	//UE_LOG(LogTokenSystem, Verbose, TEXT("AIDirectorGameMode::ReleaseToken: Token on cooldown for %f seconds."), Cooldown);
 
 	// We want the token to be temporarily unavailable
 	FTimerDelegate TimerDelegate;
@@ -168,12 +172,12 @@ void AAIDirectorGameMode::TokenTimeout(UEnemyToken* Token)
 {
 	if (Token == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("AIDirectorGameMode::TokenTimeout: Token is invalid"));
+		UE_LOG(LogTokenSystem, Error, TEXT("AIDirectorGameMode::TokenTimeout: Token is invalid"));
 		return;
 	}
 
 	UE_LOG(
-		LogTemp, Warning,
+		LogTokenSystem, Warning,
 		TEXT("AIDirectorGameMode::TokenTimeout: Token %s (owned by %s) has timed out while being held by %s."),
 		*UKismetSystemLibrary::GetDisplayName(Token),
 		*UKismetSystemLibrary::GetDisplayName(Token->Owner),
@@ -188,7 +192,7 @@ void AAIDirectorGameMode::TokenCooldownEnd(UEnemyToken* Token)
 {
 	if (Token == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("AIDirectorGameMode::TokenCooldownEnd: Token is invalid"));
+		UE_LOG(LogTokenSystem, Error, TEXT("AIDirectorGameMode::TokenCooldownEnd: Token is invalid"));
 		return;
 	}
 
@@ -197,7 +201,7 @@ void AAIDirectorGameMode::TokenCooldownEnd(UEnemyToken* Token)
 
 	if (TargetTokens == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::TokenCooldownEnd: Released token doesn't have a valid owner."));
+		UE_LOG(LogTokenSystem, Warning, TEXT("AAIDirectorGameMode::TokenCooldownEnd: Released token doesn't have a valid owner."));
 		return;
 	}
 
@@ -206,12 +210,12 @@ void AAIDirectorGameMode::TokenCooldownEnd(UEnemyToken* Token)
 
 	if (TokenCollection->CooldownTokens.Remove(Token) == 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::TokenCooldownEnd: Token was not marked as on cooldown."));
+		UE_LOG(LogTokenSystem, Warning, TEXT("AAIDirectorGameMode::TokenCooldownEnd: Token was not marked as on cooldown."));
 		return;
 	}
 
 	UE_LOG(
-		LogTemp, Log,
+		LogTokenSystem, DEFAULT_LOG_LEVEL,
 		TEXT("AIDirectorGameMode::TokenCooldownEnd: Token %s (owned by %s) has finished cooldown after being held by %s."),
 		*UKismetSystemLibrary::GetDisplayName(Token),
 		*UKismetSystemLibrary::GetDisplayName(Token->Owner),
@@ -229,7 +233,7 @@ void AAIDirectorGameMode::AddTokensToActor(AActor* TargetActor, ETokenType Token
 	if (Amount <= 0)
 	{
 		UE_LOG(
-			LogTemp, Warning, 
+			LogTokenSystem, Warning, 
 			TEXT("AIDirectorGameMode::AddTokensToActor: Invalid number of tokens (%d) requested to add to actor %s."),
 			Amount, *UKismetSystemLibrary::GetDisplayName(TargetActor)
 		);
@@ -239,7 +243,7 @@ void AAIDirectorGameMode::AddTokensToActor(AActor* TargetActor, ETokenType Token
 	// Check if actor is pending destroy or pointer invalid
 	if (!IsValid(TargetActor))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AIDirectorGameMode::AddTokensToActor: Invalid target actor provided."));
+		UE_LOG(LogTokenSystem, Warning, TEXT("AIDirectorGameMode::AddTokensToActor: Invalid target actor provided."));
 		return;
 	}
 
@@ -254,7 +258,7 @@ void AAIDirectorGameMode::AddTokensToActor(AActor* TargetActor, ETokenType Token
 		TargetTokens = ActorTokens.Find(TargetActor);
 
 		UE_LOG(
-			LogTemp, Log,
+			LogTokenSystem, Log,
 			TEXT("AIDirectorGameMode::AddTokensToActor: Added new actor (%s) to ActorTokens."),
 			*UKismetSystemLibrary::GetDisplayName(TargetActor)
 		);
@@ -275,8 +279,7 @@ void AAIDirectorGameMode::AddTokensToActor(AActor* TargetActor, ETokenType Token
 	}
 
 	UE_LOG(
-		LogTemp,
-		Log,
+		LogTokenSystem, DEFAULT_LOG_LEVEL,
 		TEXT("AIDirectorGameMode::AddTokensToActor: Added %d tokens of type %s to actor %s"),
 		Amount, *UEnum::GetValueAsString(TokenType), *UKismetSystemLibrary::GetDisplayName(TargetActor)
 	);
@@ -287,13 +290,12 @@ void AAIDirectorGameMode::AddDefaultTokensToActor(AActor* TargetActor)
 	// Check if actor is pending destroy or pointer invalid
 	if (!IsValid(TargetActor))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AIDirectorGameMode::AddDefaultTokensToActor: Invalid target actor provided."));
+		UE_LOG(LogTokenSystem, Warning, TEXT("AIDirectorGameMode::AddDefaultTokensToActor: Invalid target actor provided."));
 		return;
 	}
 
 	UE_LOG(
-		LogTemp,
-		Log,
+		LogTokenSystem, Log,
 		TEXT("AIDirectorGameMode::AddDefaultTokensToActor: Adding default tokens to actor %s"),
 		*UKismetSystemLibrary::GetDisplayName(TargetActor)
 	);
@@ -306,7 +308,7 @@ void AAIDirectorGameMode::SetTokensLocked(AActor* TargetActor, bool Locked)
 {
 	if (!IsValid(TargetActor))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AIDirectorGameMode::SetTokensLocked: Invalid target actor provided."));
+		UE_LOG(LogTokenSystem, Warning, TEXT("AIDirectorGameMode::SetTokensLocked: Invalid target actor provided."));
 		return;
 	}
 
@@ -315,12 +317,12 @@ void AAIDirectorGameMode::SetTokensLocked(AActor* TargetActor, bool Locked)
 
 	if (TargetTokens == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AIDirectorGameMode::SetTokensLocked: Target actor doesn't have any associated tokens."));
+		UE_LOG(LogTokenSystem, Warning, TEXT("AIDirectorGameMode::SetTokensLocked: Target actor doesn't have any associated tokens."));
 		return;
 	}
 
 	UE_LOG(
-		LogTemp, Log, 
+		LogTokenSystem, Log, 
 		TEXT("AIDirectorGameMode::SetTokensLocked: Set tokens locked state for target %s to %s."),
 		*UKismetSystemLibrary::GetDisplayName(TargetActor),
 		Locked ? TEXT("true") : TEXT("false")
