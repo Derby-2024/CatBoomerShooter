@@ -38,6 +38,10 @@ private:
 	void ReleaseToken(UEnemyToken* Token, const float CustomCooldown = -1.0f);
 
 public:
+	UFUNCTION(BlueprintNativeEvent, Category = "Tokens")
+	void TokenRetracted(UEnemyToken* Token);
+
+	// AIController Team functions
 	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 };

@@ -60,6 +60,49 @@ void AAIDirectorGameMode::RequestToken(AAIEnemyBaseController* EnemyController, 
 		Success = true;
 		Token = ClaimedToken;
 	}
+
+	if (TokenPriority == ETokenPriority::High)
+	{
+		UEnemyToken* TokenToTake = nullptr;
+		bool Found = false;
+
+		for (UEnemyToken*& ClaimedToken : TokenCollection->ClaimedTokens)
+		{
+			if (ClaimedToken->ClaimPriority == ETokenPriority::Low)
+			{
+				TokenToTake = ClaimedToken;
+				Found = true;
+				break;
+			}
+		}
+
+		if (Found)
+		{
+			AAIEnemyBaseController* PreviousOwner = TokenToTake->ClaimedBy;
+
+			PreviousOwner->TokenRetracted(TokenToTake);
+
+			TokenToTake->ClaimedBy = EnemyController;
+			TokenToTake->ClaimPriority = ETokenPriority::High;
+
+			FTimerDelegate TimerDelegate;
+			TimerDelegate.BindUObject(this, &AAIDirectorGameMode::TokenTimeout, TokenToTake);
+			// Do we really need to check if timer manager is valid???
+			GetWorldTimerManager().SetTimer(TokenToTake->TimerHandle, TimerDelegate, TOKEN_TIMEOUT, false);
+
+			UE_LOG(
+				LogTemp, Log,
+				TEXT("AIDirectorGameMode::RequestToken: Enemy %s took token %s of type %s from %s."),
+				*UKismetSystemLibrary::GetDisplayName(EnemyController),
+				*UKismetSystemLibrary::GetDisplayName(TokenToTake),
+				*UEnum::GetValueAsString(TokenType),
+				*UKismetSystemLibrary::GetDisplayName(PreviousOwner)
+			);
+
+			Success = true;
+			Token = TokenToTake;
+		}
+	}
 }
 
 void AAIDirectorGameMode::ReleaseToken(UEnemyToken* ReleasedToken, const float CustomCooldown)
@@ -101,9 +144,11 @@ void AAIDirectorGameMode::ReleaseToken(UEnemyToken* ReleasedToken, const float C
 	float Cooldown = CustomCooldown < 0.0f ? TOKEN_COOLDOWN : CustomCooldown;
 
 	// We want the token to go straight back to the pool
+	// Reset it's values to default then return it to free tokens
 	if (Cooldown == 0)
 	{
 		ReleasedToken->ClaimedBy = nullptr;
+		ReleasedToken->ClaimPriority = ETokenPriority::Low;
 		TokenCollection->FreeTokens.Add(ReleasedToken);
 		return;
 	}
@@ -135,6 +180,7 @@ void AAIDirectorGameMode::TokenTimeout(UEnemyToken* Token)
 		*UKismetSystemLibrary::GetDisplayName(Token->ClaimedBy)
 	);
 
+	//Token->ClaimedBy->TokenRetracted(Token);
 	ReleaseToken(Token);
 }
 
@@ -173,6 +219,7 @@ void AAIDirectorGameMode::TokenCooldownEnd(UEnemyToken* Token)
 	);
 
 	Token->ClaimedBy = nullptr;
+	Token->ClaimPriority = ETokenPriority::Low;
 	TokenCollection->FreeTokens.Add(Token);
 }
 
