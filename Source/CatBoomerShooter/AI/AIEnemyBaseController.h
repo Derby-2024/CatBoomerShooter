@@ -4,8 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
-#include "BehaviorTree/BlackboardComponent.h"
-#include "Director/AIDirectorResources.h"
 #include "GameTeams.h"
 #include "AIEnemyBaseController.generated.h"
 
@@ -24,7 +22,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, Category = "EnemyBase")
-	UBehaviorTree* DefaultBehaviorTree;
+	class UBehaviorTree* DefaultBehaviorTree;
 
 	UPROPERTY(EditAnywhere, Category = "Teams")
 	EGameTeam GameTeam = EGameTeam::Aliens;

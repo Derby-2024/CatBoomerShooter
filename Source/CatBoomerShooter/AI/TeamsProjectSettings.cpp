@@ -2,6 +2,7 @@
 
 
 #include "TeamsProjectSettings.h"
+#include "GameTeams.h"
 
 UTeamsProjectSettings::UTeamsProjectSettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

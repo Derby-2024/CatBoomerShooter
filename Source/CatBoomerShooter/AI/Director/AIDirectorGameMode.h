@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "../AIEnemyBaseController.h"
 #include "AIDirectorResources.h"
 #include "AIDirectorGameMode.generated.h"
 
@@ -20,10 +19,6 @@ class CATBOOMERSHOOTER_API AAIDirectorGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
-public:
-	UPROPERTY(Category = "Teams", EditAnywhere, BlueprintReadOnly, Config)
-	TArray<FTeamAttitude> TeamAttitudes;
-
 private:
 	/** All current tokens and their assigned characters */
 	UPROPERTY(VisibleAnywhere, Category = "Tokens")
@@ -33,7 +28,7 @@ public:
 	/** Requests an enemy token of a given type. 
 	*	Token Priority is currently unimplemented. */
 	UFUNCTION(BlueprintCallable, Category = "Tokens")
-	void RequestToken(AAIEnemyBaseController* EnemyController, const AActor* TargetActor, const ETokenType TokenType, const ETokenPriority TokenPriority, UEnemyToken*& Token, bool& Success);
+	void RequestToken(class AAIEnemyBaseController* EnemyController, const AActor* TargetActor, const ETokenType TokenType, const ETokenPriority TokenPriority, UEnemyToken*& Token, bool& Success);
 
 	/** Returns a token from being used by an enemy */
 	UFUNCTION(BlueprintCallable, Category = "Tokens")

@@ -2,6 +2,7 @@
 
 #include "AIDirectorGameMode.h"
 #include "../TeamsProjectSettings.h"
+#include "../AIEnemyBaseController.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 //FEnemyToken AAIDirectorGameMode::RequestToken(ETokenType TokenType, AAIEnemyBaseController* EnemyController, AActor* TargetActor)
