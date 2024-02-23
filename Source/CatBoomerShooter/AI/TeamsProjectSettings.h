@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DeveloperSettings.h"
-#include "AI/GameTeams.h"
+#include "GameTeams.h"
 #include "GenericTeamAgentInterface.h"
-#include "CustomProjectSettings.generated.h"
+#include "TeamsProjectSettings.generated.h"
 
 /**
  * 
  */
 UCLASS(Config = Game, DefaultConfig)
-class CATBOOMERSHOOTER_API UCustomProjectSettings : public UDeveloperSettings
+class CATBOOMERSHOOTER_API UTeamsProjectSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
 
@@ -21,9 +21,9 @@ public:
 	TArray<FTeamAttitude> TeamAttitudes;
 
 public:
-	UCustomProjectSettings(const FObjectInitializer& ObjectInitializer);
+	UTeamsProjectSettings(const FObjectInitializer& ObjectInitializer);
 
-	static const UCustomProjectSettings* Get();
+	static const UTeamsProjectSettings* Get();
 
 	UFUNCTION(BlueprintPure, Category = "Teams")
 	static ETeamAttitude::Type GetAttitude(FGenericTeamId Of, FGenericTeamId Towards);
