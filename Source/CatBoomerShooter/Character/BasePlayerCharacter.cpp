@@ -22,7 +22,6 @@ ABasePlayerCharacter::ABasePlayerCharacter(const FObjectInitializer& ObjectIniti
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("PlayerCamera"));
 	Camera->SetupAttachment(RootComponent);
 	Camera->bUsePawnControlRotation = true;
@@ -53,6 +52,7 @@ void ABasePlayerCharacter::InputJump(const FInputActionValue& Value)
 
 void ABasePlayerCharacter::InputJumpEnd(const FInputActionValue& Value)
 {
+
 }
 
 void ABasePlayerCharacter::InputCameraMove(const FInputActionValue& Value)
@@ -68,8 +68,6 @@ void ABasePlayerCharacter::InputCameraMove(const FInputActionValue& Value)
 void ABasePlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-
 }
 
 // Called to bind functionality to input
