@@ -7,7 +7,12 @@
 		{
 			"Name": "CatBoomerShooter",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"AIModule",
+				"Engine",
+				"DeveloperSettings"
+			]
 		}
 	],
 	"Plugins": [

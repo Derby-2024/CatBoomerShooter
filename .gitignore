@@ -322,3 +322,5 @@ RELEASE_MSG
 # Linux project files
 /Makefile
 /.ignore
+.editorconfig
+shadertoolsconfig.json
