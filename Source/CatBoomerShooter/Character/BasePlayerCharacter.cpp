@@ -33,12 +33,6 @@ ABasePlayerCharacter::ABasePlayerCharacter()
 void ABasePlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	if (APlayerController* PlayerController = Cast<APlayerController>(GetController())) {
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer())) {
-			Subsystem->AddMappingContext(InputMappingContext, 0);
-		}
-	}
 }
 
 void ABasePlayerCharacter::InputMove(const FInputActionValue& Value)
