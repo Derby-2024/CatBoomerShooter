@@ -8,25 +8,24 @@
 #include "EnhancedPlayerInput.h"
 #include "Components/InputComponent.h"
 #include "Components/ArrowComponent.h"
+#include "BaseCharacterMovementComponent.h"
 #include <GameFramework/MovementComponent.h>
 #include <Kismet/KismetMathLibrary.h>
 
+
 // Sets default values
-ABasePlayerCharacter::ABasePlayerCharacter()
+
+
+ABasePlayerCharacter::ABasePlayerCharacter(const FObjectInitializer& ObjectInitializer):
+	Super(ObjectInitializer.SetDefaultSubobjectClass<UBaseCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("PlayerCamera"));
 	Camera->SetupAttachment(RootComponent);
 	Camera->bUsePawnControlRotation = true;
-
-	WishDirArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("WishDirArrow"));
-	WishDirArrow->SetupAttachment(RootComponent);
-
-	AccelDirArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("AccelDirArrow"));
-	AccelDirArrow->SetupAttachment(RootComponent);
-
 }
 
 // Called when the game starts or when spawned
@@ -42,24 +41,6 @@ void ABasePlayerCharacter::InputMove(const FInputActionValue& Value)
 	AddMovementInput(GetActorForwardVector(), MoveInputValue.X);
 	AddMovementInput(GetActorRightVector(), MoveInputValue.Y);
 
-	FVector2D moveInput = InputMoveVal->GetValue().Get<FVector2D>();
-	FVector2D mouseInput = InputCameraMoveVal->GetValue().Get<FVector2D>();
-
-	FVector MoveDir = GetActorForwardVector() * moveInput.X + GetActorRightVector() * moveInput.Y;
-	FVector MouseDir = GetActorRightVector() * mouseInput.X;
-	MouseDir.Z = 0;
-
-	//MoveDir += MouseDir;
-	MoveDir.Normalize();
-
-	if (!IsOnGround) {
-		UMovementComponent* MovementComponent = Cast<UMovementComponent>(this->GetComponentByClass(UMovementComponent::StaticClass()));
-	
-		MovementComponent->Velocity = Accelerate(MoveDir, GetVelocity());
-	}
-	
-	WishDirArrow->SetWorldRotation(UKismetMathLibrary::MakeRotFromX(MoveDir));
-
 }
 
 void ABasePlayerCharacter::InputJump(const FInputActionValue& Value)
@@ -67,7 +48,6 @@ void ABasePlayerCharacter::InputJump(const FInputActionValue& Value)
 	const bool ShouldJump = Value.Get<bool>();
 	if (ShouldJump) {
 		Jump();
-		IsOnGround = false;
 	}
 }
 
@@ -111,30 +91,5 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		InputMoveVal = &EnhancedInputComponent->BindActionValue(MoveAction);
 		InputCameraMoveVal = &EnhancedInputComponent->BindActionValue(CameraMoveAction);
 	}
-}
-
-void ABasePlayerCharacter::Landed(const FHitResult& Hit)
-{
-	//Super::Landed(Hit);
-
-	IsOnGround = true;
-}
-
-// Strafe project acceleration velocity
-FVector ABasePlayerCharacter::Accelerate(FVector WishedDirection, FVector PrevVelocity) const
-{
-	float projVelocity = PrevVelocity.Dot(WishedDirection);
-	float AccelVel = MaxAcceleration * GetWorld()->GetDeltaSeconds();
-
-	if (projVelocity + AccelVel > MaxVel) {
-		AccelVel = MaxVel - projVelocity;
-	}
-
-	FVector prevDir = PrevVelocity;
-	prevDir.Normalize();
-
-	AccelDirArrow->SetWorldRotation(UKismetMathLibrary::MakeRotFromX(PrevVelocity + WishedDirection * AccelVel));
-
-	return PrevVelocity + WishedDirection * AccelVel;
 }
 

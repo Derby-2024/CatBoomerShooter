@@ -17,7 +17,8 @@ class CATBOOMERSHOOTER_API ABasePlayerCharacter : public ACharacter
 
 public:
 	// Sets default values for this character's properties
-	ABasePlayerCharacter();
+	// ABasePlayerCharacter();
+	ABasePlayerCharacter(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	// Called when the game starts or when spawned
@@ -61,15 +62,4 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	void Landed(const FHitResult& Hit) override;
-
-private:
-	UPROPERTY(EditAnywhere, Category = Input)
-	float MaxVel = 600;
-	UPROPERTY(EditAnywhere, Category = Input)
-	float MaxAcceleration = 6000;
-
-	bool IsOnGround = true;
-
-	FVector Accelerate(FVector WishedDirection, FVector PrevVelocity) const;
 };
