@@ -22,6 +22,8 @@ void AAIEnemyBaseController::BeginPlay()
 		}
 	}
 
+	SetGenericTeamId(uint8(EGameTeam::Aliens));
+
 	Super::BeginPlay();
 }
 
@@ -49,12 +51,15 @@ void AAIEnemyBaseController::ReleaseToken(UEnemyToken* Token, const float Custom
 	UE_LOG(LogTemp, Warning, TEXT("AAIEnemyBaseController::ReleaseToken: Could not get AIDirector Gamemode from current Gamemode."));
 }
 
-void AAIEnemyBaseController::SetGenericTeamId(const FGenericTeamId& InTeamID)
+ETeamAttitude::Type AAIEnemyBaseController::GetTeamAttitudeTowards(const AActor& Other) const
 {
-	GameTeam = (EGameTeam)InTeamID.GetId();
-}
+	if (const APawn* OtherPawn = Cast<APawn>(&Other)) {
 
-FGenericTeamId AAIEnemyBaseController::GetGenericTeamId() const
-{
-	return uint8(GameTeam);
+		if (const IGenericTeamAgentInterface* TeamAgent = Cast<IGenericTeamAgentInterface>(OtherPawn->GetController()))
+		{
+			return Super::GetTeamAttitudeTowards(*OtherPawn->GetController());
+		}
+	}
+
+	return ETeamAttitude::Neutral;
 }

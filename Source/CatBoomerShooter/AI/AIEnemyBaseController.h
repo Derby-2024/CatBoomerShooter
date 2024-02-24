@@ -26,9 +26,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "EnemyBase")
 	UBehaviorTree* DefaultBehaviorTree;
 
-	UPROPERTY(EditAnywhere, Category = "Teams")
-	EGameTeam GameTeam = EGameTeam::Aliens;
-
 private:
 	/** Requests an enemy token of a given type.
 	*	Token Priority is currently unimplemented. */
@@ -39,7 +36,5 @@ private:
 	UFUNCTION(BlueprintCallable, Category = "Tokens")
 	void ReleaseToken(UEnemyToken* Token, const float CustomCooldown = -1.0f);
 
-public:
-	virtual void SetGenericTeamId(const FGenericTeamId& InTeamID) override;
-	virtual FGenericTeamId GetGenericTeamId() const override;
+	ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 };
