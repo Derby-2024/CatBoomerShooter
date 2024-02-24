@@ -23,6 +23,7 @@ ABasePlayerCharacter::ABasePlayerCharacter()
 	Inventory->Capacity = 20;
 
 	Health = 100.f;
+	playerHealth = 1.00f;
 
 }
 
@@ -73,6 +74,38 @@ void ABasePlayerCharacter::InputCameraMove(const FInputActionValue& Value)
 	}
 }
 
+void ABasePlayerCharacter::StartDamage()
+{
+	TakeDamage(0.02f);
+}
+
+void ABasePlayerCharacter::TakeDamage(float _damageAmount)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Taking %f damage"), _damageAmount);
+	playerHealth -= _damageAmount;
+
+	if (playerHealth < 0.00f)
+	{
+		playerHealth = 0.00f;
+	}
+}
+
+void ABasePlayerCharacter::Heal(float _healAmount)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Adding %f health"), _healAmount);
+	playerHealth += _healAmount;
+
+	if (playerHealth > 1.00f)
+	{
+		playerHealth = 1.00f;
+	}
+}
+
+void ABasePlayerCharacter::StartHealing()
+{
+	Heal(0.2f);
+}
+
 // Called every frame
 void ABasePlayerCharacter::Tick(float DeltaTime)
 {
@@ -92,5 +125,8 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputJump);
 		EnhancedInputComponent->BindAction(CameraMoveAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputCameraMove);
 	}
+
+	PlayerInputComponent->BindAction("Heal", IE_Pressed, this, &ABasePlayerCharacter::StartHealing);
+	PlayerInputComponent->BindAction("Damage", IE_Pressed, this, &ABasePlayerCharacter::StartDamage);
 }
 

@@ -25,6 +25,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
 	float Health;
 
+
 	UFUNCTION(BlueprintCallable, Category = "Items")
 	void UseItem(class UItem* Item);
 
@@ -53,12 +54,23 @@ protected:
 	void InputJump(const FInputActionValue& Value);
 	void InputCameraMove(const FInputActionValue& Value);
 
+	void StartDamage();
+
+	UFUNCTION(BlueprintCallable, Category = "Health")
+	void TakeDamage(float _damageAmount);
+
+	UFUNCTION(BlueprintCallable, Category = "Health")
+	void Heal(float _healAmount);
+
+	void StartHealing();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float playerHealth;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-
 };
