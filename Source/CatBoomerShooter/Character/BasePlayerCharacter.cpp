@@ -124,7 +124,6 @@ void ABasePlayerCharacter::Landed(const FHitResult& Hit)
 	//Super::Landed(Hit);
 
 	IsOnGround = true;
-	LandVelocity = GetVelocity();
 }
 
 // Strafe project acceleration velocity
