@@ -4,9 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "../AIEnemyBaseController.h"
 #include "AIDirectorResources.h"
 #include "AIDirectorGameMode.generated.h"
+
+DECLARE_LOG_CATEGORY_EXTERN(LogTokenSystem, Log, All);
 
 const float TOKEN_TIMEOUT = 10.0f;
 // Change this to a difficulty option later
@@ -20,10 +21,6 @@ class CATBOOMERSHOOTER_API AAIDirectorGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
-public:
-	UPROPERTY(Category = "Teams", EditAnywhere, BlueprintReadOnly, Config)
-	TArray<FTeamAttitude> TeamAttitudes;
-
 private:
 	/** All current tokens and their assigned characters */
 	UPROPERTY(VisibleAnywhere, Category = "Tokens")
@@ -33,7 +30,7 @@ public:
 	/** Requests an enemy token of a given type. 
 	*	Token Priority is currently unimplemented. */
 	UFUNCTION(BlueprintCallable, Category = "Tokens")
-	void RequestToken(AAIEnemyBaseController* EnemyController, const AActor* TargetActor, const ETokenType TokenType, const ETokenPriority TokenPriority, UEnemyToken*& Token, bool& Success);
+	void RequestToken(class AAIEnemyBaseController* EnemyController, const AActor* TargetActor, const ETokenType TokenType, const ETokenPriority TokenPriority, UEnemyToken*& Token, bool& Success);
 
 	/** Returns a token from being used by an enemy */
 	UFUNCTION(BlueprintCallable, Category = "Tokens")
@@ -46,6 +43,9 @@ public:
 	/** Adds the default amount of tokens to an actor based on current difficulty */
 	UFUNCTION(BlueprintCallable, Category = "Tokens")
 	void AddDefaultTokensToActor(AActor* TargetActor);
+
+	UFUNCTION(BlueprintCallable, Category = "Tokens")
+	void SetTokensLocked(AActor* TargetActor, bool Locked);
 
 private:
 	void TokenTimeout(UEnemyToken* Token);
