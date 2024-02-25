@@ -39,6 +39,5 @@ public:
 	void TokenRetracted(UEnemyToken* Token);
 
 	// AIController Team functions
-	virtual FGenericTeamId GetGenericTeamId() const override;
 	ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 };
