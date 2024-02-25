@@ -55,13 +55,6 @@ void UBaseCharacterMovementComponent::InitializeComponent()
 	// Use a flat base for floor checks so that the character cannot "hang" off ledges because of the
 	// roundish base that the capsule uses.
 	bUseFlatBaseForFloorChecks = true;
-
-	// Ground accel.
-	MaxAcceleration = 6.0f;
-
-	MaxWalkSpeed = 700.0f;
-	GroundFriction = 5.0f;
-	JumpZVelocity = 380.0f;
 }
 
 void UBaseCharacterMovementComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
