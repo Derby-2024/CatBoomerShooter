@@ -94,4 +94,7 @@ struct CATBOOMERSHOOTER_API FActorTokensCollection
 
 	/** Get the correct FTokenCollection based on the enum value */
 	FTokenCollection* GetCollectionOfType(ETokenType TokenType);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool Locked = false;
 };
