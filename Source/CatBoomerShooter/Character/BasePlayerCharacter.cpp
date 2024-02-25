@@ -12,6 +12,7 @@
 #include <GameFramework/MovementComponent.h>
 #include <Kismet/KismetMathLibrary.h>
 
+#include "CatBoomerShooter/Whip/BaseWhip.h"
 
 // Sets default values
 
@@ -25,12 +26,23 @@ ABasePlayerCharacter::ABasePlayerCharacter(const FObjectInitializer& ObjectIniti
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("PlayerCamera"));
 	Camera->SetupAttachment(RootComponent);
 	Camera->bUsePawnControlRotation = true;
+
+	WhipLocation = CreateDefaultSubobject<USceneComponent>(TEXT("WhipLocation"));
+	WhipLocation->SetupAttachment(Camera);
 }
 
 // Called when the game starts or when spawned
 void ABasePlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetController())) {
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer())) {
+			Subsystem->AddMappingContext(InputMappingContext, 0);
+		}
+	}
+
+	
 }
 
 void ABasePlayerCharacter::InputMove(const FInputActionValue& Value)
@@ -64,6 +76,11 @@ void ABasePlayerCharacter::InputCameraMove(const FInputActionValue& Value)
 	}
 }
 
+void ABasePlayerCharacter::InputMelee(const FInputActionValue& Value)
+{
+	Whip->Attack();
+}
+
 // Called every frame
 void ABasePlayerCharacter::Tick(float DeltaTime)
 {
@@ -88,6 +105,16 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 		InputMoveVal = &EnhancedInputComponent->BindActionValue(MoveAction);
 		InputCameraMoveVal = &EnhancedInputComponent->BindActionValue(CameraMoveAction);
+		EnhancedInputComponent->BindAction(MeleeAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputMelee);
 	}
 }
 
+USceneComponent *ABasePlayerCharacter::GetPlayerWhipLocation_Implementation()
+{
+    return WhipLocation;
+}
+
+ABaseWhip *ABasePlayerCharacter::GetPlayerWhip_Implementation()
+{
+    return Whip;
+}
