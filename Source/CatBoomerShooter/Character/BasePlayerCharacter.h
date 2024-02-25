@@ -31,6 +31,8 @@ protected:
 	class UCameraComponent* Camera;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class USceneComponent* WhipLocation;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class USceneComponent* WeaponLocation;
 
 	// Inputs
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -39,6 +41,12 @@ protected:
 	UInputAction* JumpAction;	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* CameraMoveAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* MeleeAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* DashAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* FireAction;
 
 	// Input Variables
 	UPROPERTY(EditAnywhere, Category = Input)
@@ -49,13 +57,6 @@ protected:
 
 	struct FEnhancedInputActionValueBinding* InputMoveVal;
 	struct FEnhancedInputActionValueBinding* InputCameraMoveVal;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* MeleeAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* DashAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* FireAction;
 	
 	// Input Functions
 	void InputMove(const FInputActionValue& Value);
@@ -81,10 +82,13 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
-	USceneComponent* GetPlayerWhipLocation(); virtual USceneComponent* GetPlayerWhipLocation_Implementation() override;
+	USceneComponent* GetPlayerWhipLocation();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
-	ABaseWhip* GetPlayerWhip(); virtual ABaseWhip* GetPlayerWhip_Implementation() override;
+	USceneComponent* GetPlayerWeaponLocation();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
+	ABaseWhip* GetPlayerWhip();
 
 
 };

@@ -25,5 +25,8 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
 	USceneComponent* GetPlayerWhipLocation();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
+	USceneComponent* GetPlayerWeaponLocation();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
 	ABaseWhip* GetPlayerWhip();
 };

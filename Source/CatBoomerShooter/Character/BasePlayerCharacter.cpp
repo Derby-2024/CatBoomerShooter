@@ -30,6 +30,8 @@ ABasePlayerCharacter::ABasePlayerCharacter(const FObjectInitializer& ObjectIniti
 
 	WhipLocation = CreateDefaultSubobject<USceneComponent>(TEXT("WhipLocation"));
 	WhipLocation->SetupAttachment(Camera);
+	WeaponLocation = CreateDefaultSubobject<USceneComponent>(TEXT("WeaponLocation"));
+	WeaponLocation->SetupAttachment(Camera);
 }
 
 // Called when the game starts or when spawned
@@ -122,19 +124,24 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputJump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ABasePlayerCharacter::InputJumpEnd);
 		EnhancedInputComponent->BindAction(CameraMoveAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputCameraMove);
-
-		InputMoveVal = &EnhancedInputComponent->BindActionValue(MoveAction);
-		InputCameraMoveVal = &EnhancedInputComponent->BindActionValue(CameraMoveAction);
 		EnhancedInputComponent->BindAction(MeleeAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputMelee);
 		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::Dash);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputFire_Start);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &ABasePlayerCharacter::InputFire_Stop);
+
+		InputMoveVal = &EnhancedInputComponent->BindActionValue(MoveAction);
+		InputCameraMoveVal = &EnhancedInputComponent->BindActionValue(CameraMoveAction);
 	}
 }
 
 USceneComponent *ABasePlayerCharacter::GetPlayerWhipLocation_Implementation()
 {
     return WhipLocation;
+}
+
+USceneComponent* ABasePlayerCharacter::GetPlayerWeaponLocation_Implementation()
+{
+	return WeaponLocation;
 }
 
 ABaseWhip *ABasePlayerCharacter::GetPlayerWhip_Implementation()

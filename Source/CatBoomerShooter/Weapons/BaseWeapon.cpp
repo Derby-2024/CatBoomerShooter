@@ -29,11 +29,11 @@ void ABaseWeapon::BeginPlay()
 	Super::BeginPlay();
 	
 	PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(),0);
-	USceneComponent* WhipLocation = IBasePlayerInterface::Execute_GetPlayerWhipLocation(PlayerCharacter);
+	USceneComponent* WeaponLocation = IBasePlayerInterface::Execute_GetPlayerWeaponLocation(PlayerCharacter);
 	
-	if(IsValid(WhipLocation))
+	if(IsValid(WeaponLocation))
 	{
-		this->AttachToComponent(WhipLocation, FAttachmentTransformRules::SnapToTargetIncludingScale, "GripPoint");
+		this->AttachToComponent(WeaponLocation, FAttachmentTransformRules::SnapToTargetIncludingScale, "GripPoint");
 		//this->SetActorHiddenInGame(true);
 	}
 }
