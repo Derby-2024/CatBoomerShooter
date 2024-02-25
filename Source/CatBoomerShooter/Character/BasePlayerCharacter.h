@@ -17,7 +17,8 @@ class CATBOOMERSHOOTER_API ABasePlayerCharacter : public ACharacter
 
 public:
 	// Sets default values for this character's properties
-	ABasePlayerCharacter();
+	// ABasePlayerCharacter();
+	ABasePlayerCharacter(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	// Called when the game starts or when spawned
@@ -26,6 +27,10 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere)
 	class UCameraComponent* Camera;
+	UPROPERTY(EditAnywhere)
+	class UArrowComponent* WishDirArrow;
+	UPROPERTY(EditAnywhere)
+	class UArrowComponent* AccelDirArrow;
 
 	// Inputs
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -34,10 +39,21 @@ protected:
 	UInputAction* JumpAction;	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* CameraMoveAction;
+
+	// Input Variables
+	UPROPERTY(EditAnywhere, Category = Input)
+	bool EnableAutoJump = true;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	float MouseSensitivity = 1.0f;
+
+	struct FEnhancedInputActionValueBinding* InputMoveVal;
+	struct FEnhancedInputActionValueBinding* InputCameraMoveVal;
 	
 	// Input Functions
 	void InputMove(const FInputActionValue& Value);
 	void InputJump(const FInputActionValue& Value);
+	void InputJumpEnd(const FInputActionValue& Value);
 	void InputCameraMove(const FInputActionValue& Value);
 
 public:	
@@ -46,6 +62,4 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-
 };
