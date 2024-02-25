@@ -60,6 +60,13 @@ void ABasePlayerCharacter::InputJumpEnd(const FInputActionValue& Value)
 
 }
 
+void ABasePlayerCharacter::Dash(const FInputActionValue& Value)
+{
+	const bool ShouldJump = Value.Get<bool>();
+	if (ShouldJump) {
+		Jump();
+	}
+}
 void ABasePlayerCharacter::InputCameraMove(const FInputActionValue& Value)
 {
 	const FVector2D CameraMoveInputValue = Value.Get<FVector2D>();
@@ -99,6 +106,7 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		InputMoveVal = &EnhancedInputComponent->BindActionValue(MoveAction);
 		InputCameraMoveVal = &EnhancedInputComponent->BindActionValue(CameraMoveAction);
 		EnhancedInputComponent->BindAction(MeleeAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputMelee);
+		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::Dash);
 	}
 }
 

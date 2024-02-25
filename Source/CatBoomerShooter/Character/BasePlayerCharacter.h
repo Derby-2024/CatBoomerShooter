@@ -52,6 +52,8 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* MeleeAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* DashAction;
 	
 	// Input Functions
 	void InputMove(const FInputActionValue& Value);
@@ -63,6 +65,7 @@ protected:
 	//Whip
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Whip")
  	class ABaseWhip* Whip;
+	void Dash(const FInputActionValue& Value);
 
 public:	
 	// Called every frame
