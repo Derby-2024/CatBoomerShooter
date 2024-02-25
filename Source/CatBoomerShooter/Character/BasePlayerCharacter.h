@@ -34,9 +34,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class USceneComponent* WeaponLocation;
 
-	UPROPERTY(EditAnywhere)
-	class UStaticMeshComponent* PickupMesh;
-
 	// Inputs
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* MoveAction;
