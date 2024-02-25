@@ -22,6 +22,7 @@ ABaseWeaponProjectile::ABaseWeaponProjectile()
     ProjectileMovement->bRotationFollowsVelocity = true;
     ProjectileMovement->bShouldBounce = true;
     ProjectileMovement->Bounciness = 0.3f;
+	ProjectileMovement->ProjectileGravityScale = 0.0f;
 
 	InitialLifeSpan = 2.0f;
 }
