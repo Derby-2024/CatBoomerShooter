@@ -50,10 +50,22 @@ void ABasePlayerCharacter::InputJump(const FInputActionValue& Value)
 
 void ABasePlayerCharacter::Dash(const FInputActionValue& Value)
 {
-	const bool ShouldJump = Value.Get<bool>();
-	if (ShouldJump) {
-		Jump();
+	if(DashCount>0)
+	{
+		
+		FVector DashVel = GetVelocity();
+		DashVel.Normalize();
+		DashVel.Z = 0;
+		DashVel = DashVel * DashSpeed;
+		this -> LaunchCharacter(DashVel,false,false);
+		DashCount=DashCount-1;
+
 	}
+}
+
+void ABasePlayerCharacter::ResetDashCounter()
+{
+
 }
 void ABasePlayerCharacter::InputCameraMove(const FInputActionValue& Value)
 {

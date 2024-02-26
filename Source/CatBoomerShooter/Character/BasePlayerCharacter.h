@@ -40,7 +40,11 @@ protected:
 	UInputAction* CameraMoveAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* DashAction;
-	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	int DashCount=3;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	int DashSpeed=100000;
+
 	// Input Functions
 	void InputMove(const FInputActionValue& Value);
 	void InputJump(const FInputActionValue& Value);
@@ -55,4 +59,5 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 
+	void ResetDashCounter();
 };
