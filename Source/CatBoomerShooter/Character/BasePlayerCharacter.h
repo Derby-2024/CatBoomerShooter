@@ -43,7 +43,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	int DashCount=3;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	int DashSpeed=100000;
+	int DashSpeed=750;
+
+	FTimerHandle DashTimerHandle;
 
 	// Input Functions
 	void InputMove(const FInputActionValue& Value);

@@ -54,19 +54,31 @@ void ABasePlayerCharacter::Dash(const FInputActionValue& Value)
 	{
 		
 		FVector DashVel = GetVelocity();
+		if(DashVel == FVector(0.0f, 0.0f, 0.0f))
+		{
+			return;
+		}
 		DashVel.Normalize();
 		DashVel.Z = 0;
 		DashVel = DashVel * DashSpeed;
 		this -> LaunchCharacter(DashVel,false,false);
 		DashCount=DashCount-1;
+		//after 1 second calls the reset dash
+		if(GetWorldTimerManager().IsTimerActive(DashTimerHandle))
+		{
+			GetWorldTimerManager().ClearTimer(DashTimerHandle);
+		}
+		GetWorldTimerManager().SetTimer(DashTimerHandle,this,&ABasePlayerCharacter::ResetDashCounter, 5.0f, false);
 
 	}
+
 }
 
 void ABasePlayerCharacter::ResetDashCounter()
 {
-
+	DashCount = 3;
 }
+
 void ABasePlayerCharacter::InputCameraMove(const FInputActionValue& Value)
 {
 	const FVector2D CameraMoveInputValue = Value.Get<FVector2D>();
