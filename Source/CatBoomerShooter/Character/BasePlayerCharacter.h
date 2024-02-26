@@ -62,4 +62,19 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	bool getAlive() { return alive; }
+	void setAlive(bool isAlive) { alive = isAlive; }
+	
+	float getHealth() const { return currentHealth; }
+	void takeDamage( float damage );
+
+	
+private:
+
+	float currentHealth{ 100.f };
+	float maxHealth{ 100.f };
+	bool alive;
+	
+	
 };
