@@ -5,29 +5,21 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "BasePlayerInterface.h"
+
 #include "BasePlayerCharacter.generated.h"
 
 class UInputMappingContext;
 class UInputAction;
 
 UCLASS()
-class CATBOOMERSHOOTER_API ABasePlayerCharacter : public ACharacter
+class CATBOOMERSHOOTER_API ABasePlayerCharacter : public ACharacter, public IBasePlayerInterface
 {
 	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, BluePrintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UInventoryComponent* Inventory;
 
 public:
 	// Sets default values for this character's properties
 	ABasePlayerCharacter();
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
-	float Health;
-
-
-	UFUNCTION(BlueprintCallable, Category = "Items")
-	void UseItem(class UItem* Item);
 
 protected:
 	// Called when the game starts or when spawned
@@ -36,6 +28,8 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere)
 	class UCameraComponent* Camera;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class USceneComponent* WhipLocation;
 
 	// Inputs
 	// Move to player controller later
@@ -48,24 +42,24 @@ protected:
 	UInputAction* JumpAction;	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* CameraMoveAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* MeleeAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* FireAction;
 	
 	// Input Functions
 	void InputMove(const FInputActionValue& Value);
 	void InputJump(const FInputActionValue& Value);
 	void InputCameraMove(const FInputActionValue& Value);
+	void InputMelee(const FInputActionValue& Value);
+	void InputFire_Start(const FInputActionValue& Value);
+	void InputFire_Stop(const FInputActionValue& Value);
 
-	void StartDamage();
-
-	UFUNCTION(BlueprintCallable, Category = "Health")
-	void TakeDamage(float _damageAmount);
-
-	UFUNCTION(BlueprintCallable, Category = "Health")
-	void Heal(float _healAmount);
-
-	void StartHealing();
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
-	float playerHealth;
+	//Whip
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Whip")
+ 	class ABaseWhip* Whip;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+ 	class ABaseWeapon* Weapon;
 
 public:	
 	// Called every frame
@@ -73,4 +67,12 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
+	USceneComponent* GetPlayerWhipLocation(); virtual USceneComponent* GetPlayerWhipLocation_Implementation() override;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
+	ABaseWhip* GetPlayerWhip(); virtual ABaseWhip* GetPlayerWhip_Implementation() override;
+
+
 };

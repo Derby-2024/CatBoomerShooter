@@ -6,8 +6,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "Components/InputComponent.h"
-#include "CatBoomerShooter/Item.h"
-#include "CatBoomerShooter/InventoryComponent.h"
+#include "CatBoomerShooter/Whip/BaseWhip.h"
+#include "CatBoomerShooter/Weapons/BaseWeapon.h"
 
 // Sets default values
 ABasePlayerCharacter::ABasePlayerCharacter()
@@ -19,21 +19,8 @@ ABasePlayerCharacter::ABasePlayerCharacter()
 	Camera->SetupAttachment(RootComponent);
 	Camera->bUsePawnControlRotation = true;
 
-	Inventory = CreateDefaultSubobject<UInventoryComponent>("Inventory");
-	Inventory->Capacity = 20;
-
-	Health = 100.f;
-	playerHealth = 1.00f;
-
-}
-
-void ABasePlayerCharacter::UseItem(UItem* Item)
-{
-	if (Item)
-	{
-		Item->Use(this);
-		Item->OnUse(this);
-	}
+	WhipLocation = CreateDefaultSubobject<USceneComponent>(TEXT("WhipLocation"));
+	WhipLocation->SetupAttachment(Camera);
 }
 
 // Called when the game starts or when spawned
@@ -46,6 +33,8 @@ void ABasePlayerCharacter::BeginPlay()
 			Subsystem->AddMappingContext(InputMappingContext, 0);
 		}
 	}
+
+	
 }
 
 void ABasePlayerCharacter::InputMove(const FInputActionValue& Value)
@@ -74,36 +63,28 @@ void ABasePlayerCharacter::InputCameraMove(const FInputActionValue& Value)
 	}
 }
 
-void ABasePlayerCharacter::StartDamage()
+void ABasePlayerCharacter::InputMelee(const FInputActionValue& Value)
 {
-	TakeDamage(0.02f);
-}
-
-void ABasePlayerCharacter::TakeDamage(float _damageAmount)
-{
-	UE_LOG(LogTemp, Warning, TEXT("Taking %f damage"), _damageAmount);
-	playerHealth -= _damageAmount;
-
-	if (playerHealth < 0.00f)
+	if(Whip)
 	{
-		playerHealth = 0.00f;
+		Whip->Attack();
 	}
 }
 
-void ABasePlayerCharacter::Heal(float _healAmount)
+void ABasePlayerCharacter::InputFire_Start(const FInputActionValue &Value)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Adding %f health"), _healAmount);
-	playerHealth += _healAmount;
-
-	if (playerHealth > 1.00f)
+	if(Weapon)
 	{
-		playerHealth = 1.00f;
+		Weapon->StartShooting();
 	}
 }
 
-void ABasePlayerCharacter::StartHealing()
+void ABasePlayerCharacter::InputFire_Stop(const FInputActionValue &Value)
 {
-	Heal(0.2f);
+	if(Weapon)
+	{
+		Weapon->StopShooting();
+	}
 }
 
 // Called every frame
@@ -124,9 +105,18 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputMove);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputJump);
 		EnhancedInputComponent->BindAction(CameraMoveAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputCameraMove);
+		EnhancedInputComponent->BindAction(MeleeAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputMelee);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputFire_Start);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &ABasePlayerCharacter::InputFire_Stop);
 	}
-
-	PlayerInputComponent->BindAction("Heal", IE_Pressed, this, &ABasePlayerCharacter::StartHealing);
-	PlayerInputComponent->BindAction("Damage", IE_Pressed, this, &ABasePlayerCharacter::StartDamage);
 }
 
+USceneComponent *ABasePlayerCharacter::GetPlayerWhipLocation_Implementation()
+{
+    return WhipLocation;
+}
+
+ABaseWhip *ABasePlayerCharacter::GetPlayerWhip_Implementation()
+{
+    return Whip;
+}
