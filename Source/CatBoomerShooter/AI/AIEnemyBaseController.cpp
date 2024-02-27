@@ -3,8 +3,9 @@
 
 #include "AIEnemyBaseController.h"
 #include "Navigation/CrowdFollowingComponent.h"
-#include "Director/AIDirectorGameMode.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Director/AIDirectorGameMode.h"
 
 AAIEnemyBaseController::AAIEnemyBaseController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent")))

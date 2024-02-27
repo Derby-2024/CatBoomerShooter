@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "AIDirectorGameMode.h"
-#include "../../CustomProjectSettings.h"
+#include "../TeamsProjectSettings.h"
+#include "../AIEnemyBaseController.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 //FEnemyToken AAIDirectorGameMode::RequestToken(ETokenType TokenType, AAIEnemyBaseController* EnemyController, AActor* TargetActor)
@@ -253,7 +254,7 @@ void AAIDirectorGameMode::AddDefaultTokensToActor(AActor* TargetActor)
 
 void AAIDirectorGameMode::StartPlay()
 {
-	FGenericTeamId::SetAttitudeSolver(&UCustomProjectSettings::GetAttitude);
+	FGenericTeamId::SetAttitudeSolver(&UTeamsProjectSettings::GetAttitude);
 	UE_LOG(LogTemp, Log, TEXT("AIDirectorGameMode::StartPlay: Start Play"));
 
 	Super::StartPlay();
