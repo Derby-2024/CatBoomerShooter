@@ -7,6 +7,8 @@
 #include "AIDirectorResources.h"
 #include "AIDirectorGameMode.generated.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogTokenSystem, Log, All);
+
 const float TOKEN_TIMEOUT = 10.0f;
 // Change this to a difficulty option later
 const float TOKEN_COOLDOWN = 1.5f;
@@ -41,6 +43,9 @@ public:
 	/** Adds the default amount of tokens to an actor based on current difficulty */
 	UFUNCTION(BlueprintCallable, Category = "Tokens")
 	void AddDefaultTokensToActor(AActor* TargetActor);
+
+	UFUNCTION(BlueprintCallable, Category = "Tokens")
+	void SetTokensLocked(AActor* TargetActor, bool Locked);
 
 private:
 	void TokenTimeout(UEnemyToken* Token);

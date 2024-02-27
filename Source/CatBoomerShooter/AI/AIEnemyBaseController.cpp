@@ -52,6 +52,11 @@ void AAIEnemyBaseController::ReleaseToken(UEnemyToken* Token, const float Custom
 	UE_LOG(LogTemp, Warning, TEXT("AAIEnemyBaseController::ReleaseToken: Could not get AIDirector Gamemode from current Gamemode."));
 }
 
+void AAIEnemyBaseController::TokenRetracted_Implementation(UEnemyToken* Token)
+{
+
+}
+
 ETeamAttitude::Type AAIEnemyBaseController::GetTeamAttitudeTowards(const AActor& Other) const
 {
 	if (const APawn* OtherPawn = Cast<APawn>(&Other)) {

@@ -34,5 +34,9 @@ private:
 	UFUNCTION(BlueprintCallable, Category = "Tokens")
 	void ReleaseToken(UEnemyToken* Token, const float CustomCooldown = -1.0f);
 
+public:
+	UFUNCTION(BlueprintNativeEvent, Category = "Tokens")
+	void TokenRetracted(UEnemyToken* Token);
+
 	ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 };
