@@ -31,20 +31,17 @@ void AEnemyBaseCharacter::BeginPlay()
 	
 }
 
-void AEnemyBaseCharacter::Destroyed()
+void AEnemyBaseCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	Super::Destroyed();
-
-	AAIDirectorGameMode* AIDirector =
-		Cast<AAIDirectorGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-
-	if (!AIDirector)
+	if (EndPlayReason == EEndPlayReason::Destroyed || EndPlayReason == EEndPlayReason::RemovedFromWorld)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AEnemyBaseCharacter::Destroyed: Could not get AIDirector Game mode."));
-		return;
+		AAIDirectorGameMode* AIDirector =
+			Cast<AAIDirectorGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+
+		if (AIDirector) AIDirector->RemoveEnemy(this);
 	}
 
-	AIDirector->RemoveEnemy(this);
+	Super::EndPlay(EndPlayReason);
 }
 
 // Called every frame
