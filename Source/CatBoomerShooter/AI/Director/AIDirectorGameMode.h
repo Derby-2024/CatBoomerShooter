@@ -35,6 +35,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "EnemyTracking")
 	void GetEnemyActors(TArray<AActor*>& EnemyActors);
 
+	/** Get all enemies in range of origin.
+	*	If setting origin to GetActorLocation, increase min radius to exclude that actor. */
+	UFUNCTION(BlueprintCallable, Category = "EnemyTracking")
+	void GetEnemyActorsInRange(const FVector Origin, const float MinRadius, const float MaxRadius, TArray<AActor*>& EnemyActors);
+
 // Token Stuff
 private:
 	/** All current tokens and their assigned characters */

@@ -58,6 +58,18 @@ void AAIDirectorGameMode::GetEnemyActors(TArray<AActor*>& EnemyActors)
 	EnemyActors = Enemies;
 }
 
+void AAIDirectorGameMode::GetEnemyActorsInRange(const FVector Origin, const float MinRadius, const float MaxRadius, TArray<AActor*>& EnemyActors)
+{
+	for (AActor*& Enemy : Enemies)
+	{
+		float Distance = FVector::Distance(Origin, Enemy->GetActorLocation());
+
+		if (MinRadius <= Distance && Distance < MaxRadius)
+		{
+			EnemyActors.Add(Enemy);
+		}
+	}
+}
 
 
 //FEnemyToken AAIDirectorGameMode::RequestToken(ETokenType TokenType, AAIEnemyBaseController* EnemyController, AActor* TargetActor)
