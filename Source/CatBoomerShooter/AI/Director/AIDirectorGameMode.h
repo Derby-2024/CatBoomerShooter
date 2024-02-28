@@ -21,6 +21,21 @@ class CATBOOMERSHOOTER_API AAIDirectorGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
+// Enemy Tracking stuff
+private:
+	TArray<AActor*> Enemies;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "EnemyTracking")
+	void RegisterEnemy(AActor* EnemyActor);
+
+	UFUNCTION(BlueprintCallable, Category = "EnemyTracking")
+	void RemoveEnemy(AActor* EnemyActor);
+
+	UFUNCTION(BlueprintCallable, Category = "EnemyTracking")
+	void GetEnemyActors(TArray<AActor*>& EnemyActors);
+
+// Token Stuff
 private:
 	/** All current tokens and their assigned characters */
 	UPROPERTY(VisibleAnywhere, Category = "Tokens")

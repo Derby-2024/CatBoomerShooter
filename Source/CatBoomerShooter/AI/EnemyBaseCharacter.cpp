@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "EnemyBaseCharacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "Director/AIDirectorGameMode.h"
 
 // Sets default values
 AEnemyBaseCharacter::AEnemyBaseCharacter()
@@ -15,7 +17,34 @@ AEnemyBaseCharacter::AEnemyBaseCharacter()
 void AEnemyBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	AAIDirectorGameMode* AIDirector = 
+		Cast<AAIDirectorGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	if (!AIDirector)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AEnemyBaseCharacter::BeginPlay: Could not get AIDirector Game mode."));
+		return;
+	}
+
+	AIDirector->RegisterEnemy(this);
 	
+}
+
+void AEnemyBaseCharacter::Destroyed()
+{
+	Super::Destroyed();
+
+	AAIDirectorGameMode* AIDirector =
+		Cast<AAIDirectorGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+
+	if (!AIDirector)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AEnemyBaseCharacter::Destroyed: Could not get AIDirector Game mode."));
+		return;
+	}
+
+	AIDirector->RemoveEnemy(this);
 }
 
 // Called every frame

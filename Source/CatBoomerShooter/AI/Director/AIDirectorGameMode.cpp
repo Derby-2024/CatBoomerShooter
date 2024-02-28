@@ -3,11 +3,62 @@
 #include "AIDirectorGameMode.h"
 #include "../TeamsProjectSettings.h"
 #include "../AIEnemyBaseController.h"
+#include "../EnemyBase.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 DEFINE_LOG_CATEGORY(LogTokenSystem);
-
 #define DEFAULT_LOG_LEVEL Verbose
+
+void AAIDirectorGameMode::RegisterEnemy(AActor* EnemyActor)
+{
+	if (!IsValid(EnemyActor))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::RegisterEnemy: Invalid enemy actor provided."));
+		return;
+	}
+
+	IEnemyBase* Enemy = Cast<IEnemyBase>(EnemyActor);
+
+	if (Enemy == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::RegisterEnemy:: Provided actor doesn't implement enemy interface."));
+		return;
+	}
+
+	UE_LOG(
+		LogTemp, Log, 
+		TEXT("Registering new enemy: %d %s"),
+		EnemyActor->GetUniqueID(),
+		*UKismetSystemLibrary::GetDisplayName(EnemyActor)
+	);
+
+	Enemies.Add(EnemyActor);
+}
+
+void AAIDirectorGameMode::RemoveEnemy(AActor* EnemyActor)
+{
+	if (EnemyActor == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::RemoveEnemy: Invalid enemy actor provided."));
+		return;
+	}
+
+	UE_LOG(
+		LogTemp, Log,
+		TEXT("Removing enemy: %d %s"),
+		EnemyActor->GetUniqueID(),
+		*UKismetSystemLibrary::GetDisplayName(EnemyActor)
+	);
+
+	Enemies.Remove(EnemyActor);
+}
+
+void AAIDirectorGameMode::GetEnemyActors(TArray<AActor*>& EnemyActors)
+{
+	EnemyActors = Enemies;
+}
+
+
 
 //FEnemyToken AAIDirectorGameMode::RequestToken(ETokenType TokenType, AAIEnemyBaseController* EnemyController, AActor* TargetActor)
 void AAIDirectorGameMode::RequestToken(AAIEnemyBaseController* EnemyController, const AActor* TargetActor, const ETokenType TokenType, const ETokenPriority TokenPriority, UEnemyToken*& Token, bool& Success)
