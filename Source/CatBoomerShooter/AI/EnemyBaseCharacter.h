@@ -28,9 +28,13 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(EditAnywhere, Category = "EnemyBase")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EnemyBase")
 	EEnemySize EnemySize = EEnemySize::Medium;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnemyBase")
+	EEnemyType EnemyType = EEnemyType::Ranged;
 
 	// Implement Interface Functions
 	EEnemySize GetEnemySize_Implementation() override;
+	EEnemyType GetEnemyType_Implementation() override;
 };

@@ -62,3 +62,8 @@ EEnemySize AEnemyBaseCharacter::GetEnemySize_Implementation()
 {
 	return EnemySize;
 }
+
+EEnemyType AEnemyBaseCharacter::GetEnemyType_Implementation()
+{
+	return EnemyType;
+}

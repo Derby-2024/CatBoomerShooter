@@ -32,7 +32,8 @@ void AAIDirectorGameMode::RegisterEnemy(AActor* EnemyActor)
 		*UKismetSystemLibrary::GetDisplayName(EnemyActor)
 	);
 
-	Enemies.Add(EnemyActor);
+	Enemies.Enemies.Add(EnemyActor);
+	Enemies.GetCollectionOfType(IEnemyBase::Execute_GetEnemyType(EnemyActor))->Add(EnemyActor);
 }
 
 void AAIDirectorGameMode::RemoveEnemy(AActor* EnemyActor)
@@ -50,17 +51,48 @@ void AAIDirectorGameMode::RemoveEnemy(AActor* EnemyActor)
 		*UKismetSystemLibrary::GetDisplayName(EnemyActor)
 	);
 
-	Enemies.Remove(EnemyActor);
+	Enemies.Enemies.Remove(EnemyActor);
+
+	IEnemyBase* Enemy = Cast<IEnemyBase>(EnemyActor);
+	if (Enemy == nullptr)
+	{
+		UE_LOG(
+			LogTemp, Warning, 
+			TEXT("AAIDirectorGameMode::RemoveEnemy:: Provided actor %s doesn't implement enemy interface."), 
+			*UKismetSystemLibrary::GetDisplayName(EnemyActor)
+		);
+		return;
+	}
+
+	Enemies.GetCollectionOfType(IEnemyBase::Execute_GetEnemyType(EnemyActor))->Remove(EnemyActor);
 }
 
 void AAIDirectorGameMode::GetEnemyActors(TArray<AActor*>& EnemyActors)
 {
-	EnemyActors = Enemies;
+	EnemyActors = Enemies.Enemies;
+}
+
+void AAIDirectorGameMode::GetEnemyActorsTyped(const EEnemyType EnemyType, TArray<AActor*>& EnemyActors)
+{
+	EnemyActors = *Enemies.GetCollectionOfType(EnemyType);
 }
 
 void AAIDirectorGameMode::GetEnemyActorsInRange(const FVector Origin, const float MinRadius, const float MaxRadius, TArray<AActor*>& EnemyActors)
 {
-	for (AActor*& Enemy : Enemies)
+	for (AActor*& Enemy : Enemies.Enemies)
+	{
+		float Distance = FVector::Distance(Origin, Enemy->GetActorLocation());
+
+		if (MinRadius <= Distance && Distance < MaxRadius)
+		{
+			EnemyActors.Add(Enemy);
+		}
+	}
+}
+
+void AAIDirectorGameMode::GetEnemyActorsInRangeTyped(const FVector Origin, const float MinRadius, const float MaxRadius, const EEnemyType EnemyType, TArray<AActor*>& EnemyActors)
+{
+	for (AActor*& Enemy : *Enemies.GetCollectionOfType(EnemyType))
 	{
 		float Distance = FVector::Distance(Origin, Enemy->GetActorLocation());
 

@@ -6,18 +6,31 @@
 #include "EnemyBase.generated.h"
 
 /**
- *
- */
+*
+*/
 UENUM(BlueprintType)
-enum class EEnemySize : uint8 {
+enum class EEnemySize : uint8
+{
 	Small,
 	Medium,
 	Large
 };
 
 /**
- * 
- */
+*
+*/
+UENUM(BlueprintType)
+enum class EEnemyType : uint8 
+{
+	Swarm,
+	Ranged,
+	Tank,
+	Boss
+};
+
+/**
+* 
+*/
  UINTERFACE(Blueprintable)
 class UEnemyBase : public UInterface
 {
@@ -35,4 +48,7 @@ class IEnemyBase
 public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "EnemyData")
 	EEnemySize GetEnemySize();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "EnemyData")
+	EEnemyType GetEnemyType();
 };
