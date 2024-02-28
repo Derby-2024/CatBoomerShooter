@@ -18,27 +18,32 @@ void AEnemyBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AAIDirectorGameMode* AIDirector = 
-		Cast<AAIDirectorGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-
-	if (!AIDirector)
+	if (HasAuthority())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AEnemyBaseCharacter::BeginPlay: Could not get AIDirector Game mode."));
-		return;
-	}
+		AAIDirectorGameMode* AIDirector = 
+			Cast<AAIDirectorGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 
-	AIDirector->RegisterEnemy(this);
-	
+		if (!AIDirector)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("AEnemyBaseCharacter::BeginPlay: Could not get AIDirector Game mode."));
+			return;
+		}
+
+		AIDirector->RegisterEnemy(this);
+	}
 }
 
 void AEnemyBaseCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	if (EndPlayReason == EEndPlayReason::Destroyed || EndPlayReason == EEndPlayReason::RemovedFromWorld)
+	if (HasAuthority())
 	{
-		AAIDirectorGameMode* AIDirector =
-			Cast<AAIDirectorGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+		if (EndPlayReason == EEndPlayReason::Destroyed || EndPlayReason == EEndPlayReason::RemovedFromWorld)
+		{
+			AAIDirectorGameMode* AIDirector =
+				Cast<AAIDirectorGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 
-		if (AIDirector) AIDirector->RemoveEnemy(this);
+			if (AIDirector) AIDirector->RemoveEnemy(this);
+		}
 	}
 
 	Super::EndPlay(EndPlayReason);
