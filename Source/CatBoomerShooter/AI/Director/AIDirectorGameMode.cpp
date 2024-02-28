@@ -11,14 +11,15 @@ DEFINE_LOG_CATEGORY(LogTokenSystem);
 
 void AAIDirectorGameMode::RegisterEnemy(AActor* EnemyActor)
 {
+	// Check that Enemy Actor isn't null or pending removal
 	if (!IsValid(EnemyActor))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::RegisterEnemy: Invalid enemy actor provided."));
 		return;
 	}
 
+	// Check that Enemy Actor implements enemy interface
 	IEnemyBase* Enemy = Cast<IEnemyBase>(EnemyActor);
-
 	if (Enemy == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::RegisterEnemy:: Provided actor doesn't implement enemy interface."));
@@ -26,12 +27,13 @@ void AAIDirectorGameMode::RegisterEnemy(AActor* EnemyActor)
 	}
 
 	UE_LOG(
-		LogTemp, Log, 
+		LogTemp, Verbose, 
 		TEXT("Registering new enemy: %d %s"),
 		EnemyActor->GetUniqueID(),
 		*UKismetSystemLibrary::GetDisplayName(EnemyActor)
 	);
 
+	// Add enemy to general array and enum type specific array
 	Enemies.Enemies.Add(EnemyActor);
 	Enemies.GetCollectionOfType(IEnemyBase::Execute_GetEnemyType(EnemyActor))->Add(EnemyActor);
 }
@@ -40,19 +42,21 @@ void AAIDirectorGameMode::RemoveEnemy(AActor* EnemyActor)
 {
 	if (EnemyActor == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::RemoveEnemy: Invalid enemy actor provided."));
+		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::RemoveEnemy: nullptr provided."));
 		return;
 	}
 
 	UE_LOG(
-		LogTemp, Log,
+		LogTemp, Verbose,
 		TEXT("Removing enemy: %d %s"),
 		EnemyActor->GetUniqueID(),
 		*UKismetSystemLibrary::GetDisplayName(EnemyActor)
 	);
 
+	// Remove enemy from general storage
 	Enemies.Enemies.Remove(EnemyActor);
 
+	// Confirm enemy implements enemy interface
 	IEnemyBase* Enemy = Cast<IEnemyBase>(EnemyActor);
 	if (Enemy == nullptr)
 	{
@@ -64,6 +68,7 @@ void AAIDirectorGameMode::RemoveEnemy(AActor* EnemyActor)
 		return;
 	}
 
+	// Remove enemy from type specific storage
 	Enemies.GetCollectionOfType(IEnemyBase::Execute_GetEnemyType(EnemyActor))->Remove(EnemyActor);
 }
 
