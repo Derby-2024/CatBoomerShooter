@@ -15,9 +15,10 @@ void AAIDirectorGameMode::CheckPlayers()
 	{
 		Data.UpdatePositionData();
 
-		FVector Pos = Data.TotalMovement + Data.PlayerPawn->GetActorLocation();
+		FVector Pos = Data.PlayerPawn->GetActorLocation() + (Data.TotalMovement / 3.f);
+		//FVector Pos = Data.TotalMovement;
 
-		DrawDebugBox(GetWorld(), Data.TotalMovement, FVector(10., 10., 10.), FColor::Red, false, 5.0f);
+		DrawDebugBox(GetWorld(), Pos, FVector(10., 10., 10.), FColor::Red, false, 5.0f);
 	}
 }
 

@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "AIDirectorResources.generated.h"
 
-const int PLAYER_MOVEMENT_RECORD_SIZE = 6;
+const int PLAYER_MOVEMENT_RECORD_SIZE = 3;
 const float PLAYER_CAMPING_DISTANCE = 100.0f;
 const int PLAYER_CAMPING_COOLDOWN = 10;
 

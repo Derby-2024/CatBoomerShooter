@@ -10,6 +10,7 @@ FPlayerData::FPlayerData()
 	PlayerMovementIndex = 0;
 	PlayerCampingIndex = 0;
 }
+
 TArray<AActor*>* FEnemyCollection::GetCollectionOfType(EEnemyType EnemyType)
 {
 	switch (EnemyType)
