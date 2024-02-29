@@ -50,23 +50,42 @@ void ABasePlayerCharacter::InputJump(const FInputActionValue& Value)
 
 void ABasePlayerCharacter::Dash(const FInputActionValue& Value)
 {
+	//this happens if dash is pressed and the player has a dash available
 	if(DashCount>0)
 	{
-		
 		FVector DashVel = GetVelocity();
 		DashVel.Normalize();
 		DashVel.Z = 0;
 		DashVel = DashVel * DashSpeed;
-		this -> LaunchCharacter(DashVel,false,false);
-		DashCount=DashCount-1;
-
+		if((DashVel.X!=0) ||(DashVel.Y !=0)){
+			//sets the player invincible
+			IsInvincible = true;
+			this -> LaunchCharacter(DashVel,false,false);
+			//resets the players invincibility
+			GetWorldTimerManager().SetTimer(InvTimerHandle, this, &ABasePlayerCharacter::ResetInvincibility, 1.0f,true, InvincibleDuration);
+			DashCount=DashCount-1;
+			//ResetDashCounter();
+			//this uses a timer to call the restdashcounter, the first DashCooldown is the time betwwen the first loop and the second loop the second dashCooldwon is time for the first loop to occur.
+			GetWorldTimerManager().SetTimer(DashTimerHandle, this, &ABasePlayerCharacter::ResetDashCounter,DashCooldown, true,DashCooldown);
+		}
 	}
+}
+void ABasePlayerCharacter::ResetInvincibility()
+{
+	if(IsInvincible != false){
+		IsInvincible = false;
+	}
+	
 }
 
 void ABasePlayerCharacter::ResetDashCounter()
 {
-
+	if (DashCount < 3){
+		DashCount=DashCount+1;
+	}
+	
 }
+
 void ABasePlayerCharacter::InputCameraMove(const FInputActionValue& Value)
 {
 	const FVector2D CameraMoveInputValue = Value.Get<FVector2D>();

@@ -40,10 +40,22 @@ protected:
 	UInputAction* CameraMoveAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* DashAction;
+
+	//variables for dashing
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	int DashCount=3;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	int DashSpeed=100000;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	float DashCooldown = 2.0;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	bool IsInvincible = false;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	float InvincibleDuration = 0.15;
+	
+
+	FTimerHandle DashTimerHandle;
+	FTimerHandle InvTimerHandle;
 
 	// Input Functions
 	void InputMove(const FInputActionValue& Value);
@@ -60,4 +72,6 @@ public:
 
 
 	void ResetDashCounter();
+
+	void ResetInvincibility();
 };
