@@ -21,6 +21,40 @@ class CATBOOMERSHOOTER_API AAIDirectorGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
+// Enemy Tracking stuff
+private:
+	// We may need to disable VisibleAnywhere at a later date if it starts lagging the editor
+	UPROPERTY(VisibleAnywhere, Category = "EnemyTracking")
+	FEnemyCollection Enemies;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "EnemyTracking")
+	void RegisterEnemy(AActor* EnemyActor);
+
+	UFUNCTION(BlueprintCallable, Category = "EnemyTracking")
+	void RemoveEnemy(AActor* EnemyActor);
+
+	/** Get all enemies. */
+	UFUNCTION(BlueprintCallable, Category = "EnemyTracking")
+	void GetEnemyActors(TArray<AActor*>& EnemyActors);
+
+	/** Get all enemies of a given type. */
+	UFUNCTION(BlueprintCallable, Category = "EnemyTracking")
+	void GetEnemyActorsTyped(const EEnemyType EnemyType, TArray<AActor*>& EnemyActors);
+
+	/** Get all enemies in range of origin.
+	*	If setting origin to GetActorLocation, increase min radius to exclude that actor. */
+	UFUNCTION(BlueprintCallable, Category = "EnemyTracking")
+	void GetEnemyActorsInRange(const FVector Origin, const float MinRadius, const float MaxRadius, TArray<AActor*>& EnemyActors);
+
+	/** Get all enemies of a given type in range of origin.
+	*	If setting origin to GetActorLocation, increase min radius to exclude that actor. */
+	UFUNCTION(BlueprintCallable, Category = "EnemyTracking")
+	void GetEnemyActorsInRangeTyped(const FVector Origin, const float MinRadius, const float MaxRadius, const EEnemyType EnemyType, TArray<AActor*>& EnemyActors);
+
+
+
+// Token Stuff
 private:
 	/** All current tokens and their assigned characters */
 	UPROPERTY(VisibleAnywhere, Category = "Tokens")

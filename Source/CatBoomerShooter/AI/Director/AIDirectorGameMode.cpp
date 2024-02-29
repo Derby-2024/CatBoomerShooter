@@ -3,11 +3,111 @@
 #include "AIDirectorGameMode.h"
 #include "../TeamsProjectSettings.h"
 #include "../AIEnemyBaseController.h"
+#include "../EnemyBase.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 DEFINE_LOG_CATEGORY(LogTokenSystem);
-
 #define DEFAULT_LOG_LEVEL Verbose
+
+void AAIDirectorGameMode::RegisterEnemy(AActor* EnemyActor)
+{
+	// Check that Enemy Actor isn't null or pending removal
+	if (!IsValid(EnemyActor))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::RegisterEnemy: Invalid enemy actor provided."));
+		return;
+	}
+
+	// Check that Enemy Actor implements enemy interface
+	IEnemyBase* Enemy = Cast<IEnemyBase>(EnemyActor);
+	if (Enemy == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::RegisterEnemy:: Provided actor doesn't implement enemy interface."));
+		return;
+	}
+
+	UE_LOG(
+		LogTemp, Verbose, 
+		TEXT("Registering new enemy: %d %s"),
+		EnemyActor->GetUniqueID(),
+		*UKismetSystemLibrary::GetDisplayName(EnemyActor)
+	);
+
+	// Add enemy to general array and enum type specific array
+	Enemies.Enemies.Add(EnemyActor);
+	Enemies.GetCollectionOfType(IEnemyBase::Execute_GetEnemyType(EnemyActor))->Add(EnemyActor);
+}
+
+void AAIDirectorGameMode::RemoveEnemy(AActor* EnemyActor)
+{
+	if (EnemyActor == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::RemoveEnemy: nullptr provided."));
+		return;
+	}
+
+	UE_LOG(
+		LogTemp, Verbose,
+		TEXT("Removing enemy: %d %s"),
+		EnemyActor->GetUniqueID(),
+		*UKismetSystemLibrary::GetDisplayName(EnemyActor)
+	);
+
+	// Remove enemy from general storage
+	Enemies.Enemies.Remove(EnemyActor);
+
+	// Confirm enemy implements enemy interface
+	IEnemyBase* Enemy = Cast<IEnemyBase>(EnemyActor);
+	if (Enemy == nullptr)
+	{
+		UE_LOG(
+			LogTemp, Warning, 
+			TEXT("AAIDirectorGameMode::RemoveEnemy:: Provided actor %s doesn't implement enemy interface."), 
+			*UKismetSystemLibrary::GetDisplayName(EnemyActor)
+		);
+		return;
+	}
+
+	// Remove enemy from type specific storage
+	Enemies.GetCollectionOfType(IEnemyBase::Execute_GetEnemyType(EnemyActor))->Remove(EnemyActor);
+}
+
+void AAIDirectorGameMode::GetEnemyActors(TArray<AActor*>& EnemyActors)
+{
+	EnemyActors = Enemies.Enemies;
+}
+
+void AAIDirectorGameMode::GetEnemyActorsTyped(const EEnemyType EnemyType, TArray<AActor*>& EnemyActors)
+{
+	EnemyActors = *Enemies.GetCollectionOfType(EnemyType);
+}
+
+void AAIDirectorGameMode::GetEnemyActorsInRange(const FVector Origin, const float MinRadius, const float MaxRadius, TArray<AActor*>& EnemyActors)
+{
+	for (AActor*& Enemy : Enemies.Enemies)
+	{
+		float Distance = FVector::Distance(Origin, Enemy->GetActorLocation());
+
+		if (MinRadius <= Distance && Distance < MaxRadius)
+		{
+			EnemyActors.Add(Enemy);
+		}
+	}
+}
+
+void AAIDirectorGameMode::GetEnemyActorsInRangeTyped(const FVector Origin, const float MinRadius, const float MaxRadius, const EEnemyType EnemyType, TArray<AActor*>& EnemyActors)
+{
+	for (AActor*& Enemy : *Enemies.GetCollectionOfType(EnemyType))
+	{
+		float Distance = FVector::Distance(Origin, Enemy->GetActorLocation());
+
+		if (MinRadius <= Distance && Distance < MaxRadius)
+		{
+			EnemyActors.Add(Enemy);
+		}
+	}
+}
+
 
 //FEnemyToken AAIDirectorGameMode::RequestToken(ETokenType TokenType, AAIEnemyBaseController* EnemyController, AActor* TargetActor)
 void AAIDirectorGameMode::RequestToken(AAIEnemyBaseController* EnemyController, const AActor* TargetActor, const ETokenType TokenType, const ETokenPriority TokenPriority, UEnemyToken*& Token, bool& Success)

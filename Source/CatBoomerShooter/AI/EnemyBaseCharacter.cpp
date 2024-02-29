@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "EnemyBaseCharacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "Director/AIDirectorGameMode.h"
 
 // Sets default values
 AEnemyBaseCharacter::AEnemyBaseCharacter()
@@ -15,7 +17,36 @@ AEnemyBaseCharacter::AEnemyBaseCharacter()
 void AEnemyBaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (HasAuthority())
+	{
+		AAIDirectorGameMode* AIDirector = 
+			Cast<AAIDirectorGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+
+		if (!AIDirector)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("AEnemyBaseCharacter::BeginPlay: Could not get AIDirector Game mode."));
+			return;
+		}
+
+		AIDirector->RegisterEnemy(this);
+	}
+}
+
+void AEnemyBaseCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (HasAuthority())
+	{
+		if (EndPlayReason == EEndPlayReason::Destroyed || EndPlayReason == EEndPlayReason::RemovedFromWorld)
+		{
+			AAIDirectorGameMode* AIDirector =
+				Cast<AAIDirectorGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+
+			if (AIDirector) AIDirector->RemoveEnemy(this);
+		}
+	}
+
+	Super::EndPlay(EndPlayReason);
 }
 
 // Called every frame
@@ -35,4 +66,9 @@ void AEnemyBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 EEnemySize AEnemyBaseCharacter::GetEnemySize_Implementation()
 {
 	return EnemySize;
+}
+
+EEnemyType AEnemyBaseCharacter::GetEnemyType_Implementation()
+{
+	return EnemyType;
 }
