@@ -9,6 +9,63 @@
 DEFINE_LOG_CATEGORY(LogTokenSystem);
 #define DEFAULT_LOG_LEVEL Verbose
 
+void AAIDirectorGameMode::CheckPlayers()
+{
+	for (FPlayerData& Data : PlayerData)
+	{
+		Data.UpdatePositionData();
+
+		FVector Pos = Data.TotalMovement + Data.PlayerPawn->GetActorLocation();
+
+		DrawDebugBox(GetWorld(), Data.TotalMovement, FVector(10., 10., 10.), FColor::Red, false, 5.0f);
+	}
+}
+
+void AAIDirectorGameMode::RegisterPlayer(APawn* PlayerPawn)
+{
+	if (!IsValid(PlayerPawn))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::RegisterPlayer: Invalid player pawn provided."));
+		return;
+	}
+
+	UE_LOG(
+		LogTemp, Verbose,
+		TEXT("Registering new Player: %s"),
+		*UKismetSystemLibrary::GetDisplayName(PlayerPawn)
+	);
+
+	FPlayerData NewPlayerData = FPlayerData(PlayerPawn);
+	PlayerData.Add(NewPlayerData);
+}
+
+void AAIDirectorGameMode::RemovePlayer(APawn* PlayerPawn)
+{
+	if (PlayerPawn == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("AAIDirectorGameMode::RemovePlayer: nullptr provided."));
+		return;
+	}
+
+	// Iterates through player data until finds the correct one for the player.
+	// Not sure that I like this. Might change to something simpler at a later date.
+	for (int n = 0; n < PlayerData.Num(); n++)
+	{
+		if (PlayerData[n].PlayerPawn == PlayerPawn)
+		{
+			PlayerData.RemoveAt(n);
+
+			UE_LOG(
+				LogTemp, Verbose,
+				TEXT("Removing Player: %s"),
+				*UKismetSystemLibrary::GetDisplayName(PlayerPawn)
+			);
+
+			break;
+		}
+	}
+}
+
 void AAIDirectorGameMode::RegisterEnemy(AActor* EnemyActor)
 {
 	// Check that Enemy Actor isn't null or pending removal
@@ -435,6 +492,9 @@ void AAIDirectorGameMode::StartPlay()
 {
 	UE_LOG(LogTemp, Log, TEXT("AIDirectorGameMode::StartPlay: Start Play"));
 	FGenericTeamId::SetAttitudeSolver(&UTeamsProjectSettings::GetAttitude);
+
+	// Start timer to check players 
+	GetWorldTimerManager().SetTimer(PlayerCheckTimerHandle, this, &AAIDirectorGameMode::CheckPlayers, PLAYER_CHECK_INTERVAL, true);
 
 	Super::StartPlay();
 }

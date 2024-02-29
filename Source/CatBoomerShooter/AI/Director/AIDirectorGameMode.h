@@ -9,6 +9,8 @@
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTokenSystem, Log, All);
 
+const float PLAYER_CHECK_INTERVAL = 3.0f;
+
 const float TOKEN_TIMEOUT = 10.0f;
 // Change this to a difficulty option later
 const float TOKEN_COOLDOWN = 1.5f;
@@ -55,6 +57,21 @@ public:
 
 
 // Token Stuff
+private:
+	UPROPERTY(VisibleAnywhere, Category = "PlayerTracking")
+	TArray<FPlayerData> PlayerData;
+
+	FTimerHandle PlayerCheckTimerHandle;
+
+	void CheckPlayers();
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "PlayerTracking")
+	void RegisterPlayer(APawn* PlayerPawn);
+
+	UFUNCTION(BlueprintCallable, Category = "PlayerTracking")
+	void RemovePlayer(APawn* PlayerPawn);
+
 private:
 	/** All current tokens and their assigned characters */
 	UPROPERTY(VisibleAnywhere, Category = "Tokens")

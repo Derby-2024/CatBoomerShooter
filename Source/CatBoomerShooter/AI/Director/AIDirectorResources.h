@@ -5,6 +5,43 @@
 #include "CoreMinimal.h"
 #include "AIDirectorResources.generated.h"
 
+const int PLAYER_MOVEMENT_RECORD_SIZE = 6;
+const float PLAYER_CAMPING_DISTANCE = 100.0f;
+const int PLAYER_CAMPING_COOLDOWN = 10;
+
+/**
+*
+*/
+USTRUCT(BlueprintType)
+struct CATBOOMERSHOOTER_API FPlayerData
+{
+	GENERATED_BODY()
+	
+	// The player in question
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	APawn* PlayerPawn;
+
+	// An array of player's previous movement
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<FVector> PlayerDistances;
+
+	FVector LastPosition;
+	int PlayerMovementIndex;
+	int PlayerCampingIndex;
+
+	// The sum of player movement
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FVector TotalMovement;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	float Distance;
+
+	FPlayerData();
+	FPlayerData(APawn* NewPlayerPawn);
+
+	bool UpdatePositionData();
+};
+
 // Forward declare EnemyBase.h enum
 enum class EEnemyType : uint8;
 
