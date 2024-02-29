@@ -5,6 +5,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "CatBoomerShooter/Character/BasePlayerCharacter.h"
 #include "CatBoomerShooter/Character/BasePlayerInterface.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "GameFramework/Pawn.h"
 
 // Sets default values
 ABaseWeapon::ABaseWeapon()
@@ -27,14 +29,39 @@ ABaseWeapon::ABaseWeapon()
 void ABaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(),0);
-	USceneComponent* WhipLocation = IBasePlayerInterface::Execute_GetPlayerWhipLocation(PlayerCharacter);
-	
-	if(IsValid(WhipLocation))
+
+	if (!GetOwner())
 	{
-		this->AttachToComponent(WhipLocation, FAttachmentTransformRules::SnapToTargetIncludingScale, "GripPoint");
+		UE_LOG(LogTemp, Warning, TEXT("Cannot get owner!"));
+		return;
+	}
+
+	OwningCharacter = Cast<APawn>(GetOwner());
+	if (!OwningCharacter)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Cannot cast to pawn"));
+		return;
+	}
+
+	if (OwningCharacter->Implements<UBasePlayerInterface>() == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Owner Doesn't Implement Interface!"));
+		return;
+	}
+	USkeletalMeshComponent* Arms = IBasePlayerInterface::Execute_GetPlayerArms(OwningCharacter);
+	
+	if(IsValid(Arms))
+	{
+		this->AttachToComponent(Arms, FAttachmentTransformRules::SnapToTargetIncludingScale, HandSocketName);
 		//this->SetActorHiddenInGame(true);
+	}
+
+	for (FName SocketName : WeaponMesh->GetAllSocketNames())
+	{
+		if (SocketName.ToString().StartsWith("Muzzle"))
+		{
+			MuzzleSockets.AddUnique(SocketName);
+		}
 	}
 }
 
@@ -78,12 +105,55 @@ void ABaseWeapon::StopShooting()
 
 void ABaseWeapon::Fire()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Shooting"));
 	UWorld* World = GetWorld();
 	FActorSpawnParameters SpawnParams;
     SpawnParams.Owner = this;
     SpawnParams.Instigator = GetInstigator();
-	FTransform SpawnTransform = WeaponMesh->GetSocketTransform("Muzzle", RTS_World);
-	ABaseWeaponProjectile* Projectile = World->SpawnActor<ABaseWeaponProjectile>(ProjectileClass, SpawnTransform, SpawnParams);
+
+	FHitResult Hit;
+
+	if (OwningCharacter->IsPlayerControlled())
+	{
+		TraceStart = UGameplayStatics::GetPlayerCameraManager(World, 0)->GetCameraLocation();
+		TraceEnd = TraceStart + UGameplayStatics::GetPlayerCameraManager(World, 0)->GetActorForwardVector() * 5000;
+	}
+	else
+	{
+		TraceStart = OwningCharacter->GetActorLocation();
+		TraceEnd = TraceStart + OwningCharacter->GetActorForwardVector() * 5000;
+	}
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+	QueryParams.AddIgnoredActor(OwningCharacter);
+
+	GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, TraceChannelProperty, QueryParams);
+	//DrawDebugLine(GetWorld(), TraceStart, TraceEnd, Hit.bBlockingHit ? FColor::Blue : FColor::Red, false, 5.0f, 0, 10.0f);
+
+	for (FName Muzzle : MuzzleSockets)
+	{
+		for (int i = 1; i <= NumberOfPellets; i++)
+		{
+			FRotator SpawnRotation;
+			FVector SpawnLocation;
+			WeaponMesh->GetSocketWorldLocationAndRotation(Muzzle, SpawnLocation, SpawnRotation);
+
+			if (Hit.bBlockingHit)
+			{
+				SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, Hit.ImpactPoint);
+			}
+			else
+			{
+				SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, Hit.TraceEnd);
+			}
+
+			FTransform SpawnTransform = FTransform(RandomSpread(SpawnRotation, MaxVerticalSpread, MaxHorizontalSpread), SpawnLocation);
+
+			ABaseWeaponProjectile* Projectile = World->SpawnActor<ABaseWeaponProjectile>(ProjectileClass, SpawnTransform, SpawnParams);
+
+		}
+	}
 	if (FiringMode == EFiringMode::Burst)
 	{
 		ShotsFired++;
@@ -92,5 +162,23 @@ void ABaseWeapon::Fire()
 			GetWorldTimerManager().ClearTimer(Handle_ReFire);
 		}
 	}
+
+	if (needsReload)
+	{
+		Reload();
+	}
 }
 
+void ABaseWeapon::Reload()
+{
+	//Play Reload Animation
+	UE_LOG(LogTemp, Warning, TEXT("Reload Animation Placeholder!"));
+}
+
+FRotator ABaseWeapon::RandomSpread(FRotator spawnRotation, float maxVertical, float maxHorizontal)
+{
+	float h_Spread = UKismetMathLibrary::RandomFloatInRange(-maxHorizontal, maxHorizontal);
+	float v_Spread = UKismetMathLibrary::RandomFloatInRange(-maxVertical, maxVertical);
+
+	return UKismetMathLibrary::ComposeRotators(FRotator(h_Spread, v_Spread, 0.0f), spawnRotation);
+}

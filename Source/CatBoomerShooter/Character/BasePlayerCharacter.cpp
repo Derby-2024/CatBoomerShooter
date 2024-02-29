@@ -19,8 +19,8 @@ ABasePlayerCharacter::ABasePlayerCharacter()
 	Camera->SetupAttachment(RootComponent);
 	Camera->bUsePawnControlRotation = true;
 
-	WhipLocation = CreateDefaultSubobject<USceneComponent>(TEXT("WhipLocation"));
-	WhipLocation->SetupAttachment(Camera);
+	SK_Arms = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Arms"));
+	SK_Arms->SetupAttachment(Camera);
 }
 
 // Called when the game starts or when spawned
@@ -111,12 +111,17 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	}
 }
 
-USceneComponent *ABasePlayerCharacter::GetPlayerWhipLocation_Implementation()
+USkeletalMeshComponent *ABasePlayerCharacter::GetPlayerArms_Implementation()
 {
-    return WhipLocation;
+    return SK_Arms;
 }
 
 ABaseWhip *ABasePlayerCharacter::GetPlayerWhip_Implementation()
 {
     return Whip;
+}
+
+UCameraComponent *ABasePlayerCharacter::GetPlayerCamera_Implementation()
+{
+	return Camera;
 }
