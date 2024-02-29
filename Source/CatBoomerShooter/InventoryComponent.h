@@ -4,10 +4,36 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "BaseAmmo.h"
 #include "InventoryComponent.generated.h"
 
-//Blueprints will bind to this to update the UI
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryUpdated);
+UENUM(BlueprintType)
+enum class EItemType : uint8
+{
+	Ammo,
+	Weapon,
+	Health,
+	Collectible
+};
+
+USTRUCT(BlueprintType)
+struct FItem
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+	EItemType ItemType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+	int AmmoAmount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+	int TotalAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+	EAmmoType AmmoType;
+};
 
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -19,20 +45,17 @@ public:
 	// Sets default values for this component's properties
 	UInventoryComponent();
 
+protected:
+	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	bool AddItem(class UItem* Item);
-	bool RemoveItem(class UItem* Item);
+public:	
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UPROPERTY(EditDefaultsOnly, Instanced)
-	TArray<class UItem*> DefaultItems;
+	bool AddItem(const FItem& Item);
+	bool RemoveItem(const FItem& Item);
 
-	UPROPERTY(EditDefaultsOnly, Category = "Inventory")
-	int32 Capacity;
-
-	UPROPERTY(BlueprintAssignable, Category = "Inventory")
-	FOnInventoryUpdated OnInventoryUpdated;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Items")
-	TArray<class UItem*> Items;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item")
+	TArray<FAmmoStruct> Ammo;
 };

@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "BasePlayerInterface.h"
-
+#include "CatboomerShooter/InventoryComponent.h"
 #include "BasePlayerCharacter.generated.h"
 
 class UInputMappingContext;
@@ -61,6 +61,17 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
  	class ABaseWeapon* Weapon;
 
+	//Reload Weapon
+	void ReloadWeapon();
+
+	//Triggers out of ammo notification that they are out of ammo
+	UFUNCTION(BlueprintImplementableEvent, Category = "HUD")
+	void TriggerOutOfAmmo();
+
+	// Reference to the InventoryComponent
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
+	UInventoryComponent* InventoryComponent;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -74,5 +85,6 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
 	ABaseWhip* GetPlayerWhip(); virtual ABaseWhip* GetPlayerWhip_Implementation() override;
 
-
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	UInventoryComponent* GetInventoryComponent() const { return InventoryComponent; }
 };

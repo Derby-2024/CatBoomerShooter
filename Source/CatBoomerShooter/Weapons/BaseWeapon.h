@@ -25,6 +25,21 @@ public:
 	// Sets default values for this actor's properties
 	ABaseWeapon();
 
+	//Total Amount of ammo being carried for the weapon
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	int TotalAmmo;
+
+	//The amount of ammo in the weapon
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	int AmmoAmount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	int CurrentAmmo;
+
+	//The time it takes to reload weapon
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
+	float ReloadTime;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

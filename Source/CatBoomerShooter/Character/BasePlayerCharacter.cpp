@@ -21,6 +21,11 @@ ABasePlayerCharacter::ABasePlayerCharacter()
 
 	WhipLocation = CreateDefaultSubobject<USceneComponent>(TEXT("WhipLocation"));
 	WhipLocation->SetupAttachment(Camera);
+
+	//Set default value for variable
+	Weapon = nullptr;
+
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -75,7 +80,21 @@ void ABasePlayerCharacter::InputFire_Start(const FInputActionValue &Value)
 {
 	if(Weapon)
 	{
-		Weapon->StartShooting();
+		if (Weapon->CurrentAmmo > 0)
+		{
+			Weapon->StartShooting();
+
+			//Decrease Clip Ammo by 1
+			Weapon->CurrentAmmo -= 1;
+		}
+		else if (Weapon->CurrentAmmo < 0)
+		{
+			ReloadWeapon();
+		}
+		else
+		{
+			TriggerOutOfAmmo();
+		}
 	}
 }
 
@@ -109,6 +128,9 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputFire_Start);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &ABasePlayerCharacter::InputFire_Stop);
 	}
+	
+	//Bind Reload Event
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ABasePlayerCharacter::ReloadWeapon);
 }
 
 USceneComponent *ABasePlayerCharacter::GetPlayerWhipLocation_Implementation()
@@ -120,3 +142,35 @@ ABaseWhip *ABasePlayerCharacter::GetPlayerWhip_Implementation()
 {
     return Whip;
 }
+
+
+void ABasePlayerCharacter::ReloadWeapon()
+{
+	if (Weapon)
+	{
+		if (Weapon->CurrentAmmo < Weapon->TotalAmmo && Weapon->AmmoAmount > 0)
+		{
+			Weapon->CurrentAmmo += Weapon->AmmoAmount;
+			Weapon->AmmoAmount -= Weapon->AmmoAmount;
+		}
+		else
+		{
+			Weapon->StopShooting();
+		}
+	}
+}
+
+//if (Weapon->ClipAmmo != Weapon->MaxClipAmmo) //Checking if we have room to reload 
+//{
+//	if (Weapon->TotalAmmo - (Weapon->MaxClipAmmo - Weapon->ClipAmmo) >= 0)
+//	{
+//		Weapon->TotalAmmo -= (Weapon->MaxClipAmmo - Weapon->ClipAmmo); //Check how much to reload
+//		Weapon->ClipAmmo = Weapon->MaxClipAmmo; 
+//	}
+//	else
+//	{
+//		//Use the remaining ammo 
+//		Weapon->ClipAmmo += Weapon->TotalAmmo;			
+//		Weapon->TotalAmmo = 0;
+//	}
+//}

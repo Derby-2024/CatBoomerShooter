@@ -21,6 +21,10 @@ ABaseWeapon::ABaseWeapon()
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon Mesh");
 	WeaponMesh->SetupAttachment(RootComponent);
 
+	TotalAmmo = 45;
+	AmmoAmount = 5;
+	CurrentAmmo = 45;
+	ReloadTime = 1.0f;
 }
 
 // Called when the game starts or when spawned
