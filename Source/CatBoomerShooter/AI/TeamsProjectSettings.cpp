@@ -1,9 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "CustomProjectSettings.h"
+#include "TeamsProjectSettings.h"
+#include "GameTeams.h"
 
-UCustomProjectSettings::UCustomProjectSettings(const FObjectInitializer& ObjectInitializer)
+UTeamsProjectSettings::UTeamsProjectSettings(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
 	typedef ETeamAttitude::Type EA;
@@ -15,14 +16,14 @@ UCustomProjectSettings::UCustomProjectSettings(const FObjectInitializer& ObjectI
 	};
 }
 
-const UCustomProjectSettings* UCustomProjectSettings::Get()
+const UTeamsProjectSettings* UTeamsProjectSettings::Get()
 {
-	return GetDefault<UCustomProjectSettings>();
+	return GetDefault<UTeamsProjectSettings>();
 }
 
-ETeamAttitude::Type UCustomProjectSettings::GetAttitude(FGenericTeamId Of, FGenericTeamId Towards)
+ETeamAttitude::Type UTeamsProjectSettings::GetAttitude(FGenericTeamId Of, FGenericTeamId Towards)
 {
-	TArray<FTeamAttitude> TeamAttitudes = UCustomProjectSettings::Get()->TeamAttitudes;
+	TArray<FTeamAttitude> TeamAttitudes = UTeamsProjectSettings::Get()->TeamAttitudes;
 
 	bool OfValid = TeamAttitudes.IsValidIndex(Of.GetId());
 	bool TowardsValid = TeamAttitudes.IsValidIndex(Towards.GetId());

@@ -3,8 +3,9 @@
 
 #include "AIEnemyBaseController.h"
 #include "Navigation/CrowdFollowingComponent.h"
-#include "Director/AIDirectorGameMode.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Director/AIDirectorGameMode.h"
 
 AAIEnemyBaseController::AAIEnemyBaseController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent")))
@@ -21,6 +22,8 @@ void AAIEnemyBaseController::BeginPlay()
 			UE_LOG(LogTemp, Warning, TEXT("AIEnemyBaseController Constructor: Failed to run provided default behavior tree."));
 		}
 	}
+
+	SetGenericTeamId(uint8(EGameTeam::Aliens));
 
 	Super::BeginPlay();
 }
@@ -49,12 +52,20 @@ void AAIEnemyBaseController::ReleaseToken(UEnemyToken* Token, const float Custom
 	UE_LOG(LogTemp, Warning, TEXT("AAIEnemyBaseController::ReleaseToken: Could not get AIDirector Gamemode from current Gamemode."));
 }
 
-void AAIEnemyBaseController::SetGenericTeamId(const FGenericTeamId& InTeamID)
+void AAIEnemyBaseController::TokenRetracted_Implementation(UEnemyToken* Token)
 {
-	GameTeam = (EGameTeam)InTeamID.GetId();
+
 }
 
-FGenericTeamId AAIEnemyBaseController::GetGenericTeamId() const
+ETeamAttitude::Type AAIEnemyBaseController::GetTeamAttitudeTowards(const AActor& Other) const
 {
-	return uint8(GameTeam);
+	if (const APawn* OtherPawn = Cast<APawn>(&Other)) {
+
+		if (const IGenericTeamAgentInterface* TeamAgent = Cast<IGenericTeamAgentInterface>(OtherPawn->GetController()))
+		{
+			return Super::GetTeamAttitudeTowards(*OtherPawn->GetController());
+		}
+	}
+
+	return ETeamAttitude::Neutral;
 }
