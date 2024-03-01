@@ -9,6 +9,9 @@ AAmmoPickup::AAmmoPickup()
     Quantity = 10;
     AmmoType = EAmmoType::E_AssaultRifle;
 
+    Quantity = 4;
+    AmmoType = EAmmoType::E_Shotgun;
+
     // Create the collision component
     CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
     CollisionComponent->InitSphereRadius(50.0f); 
