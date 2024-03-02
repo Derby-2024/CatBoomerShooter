@@ -3,20 +3,15 @@
 
 #include "BasePlayerCharacter.h"
 #include "Camera/CameraComponent.h"
-#include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedPlayerInput.h"
-#include "../Character/InteractInterface.h"
+#include "../Environment/InteractInterface.h"
 #include "Components/InputComponent.h"
-#include "Components/ArrowComponent.h"
 #include "BaseCharacterMovementComponent.h"
 #include <GameFramework/MovementComponent.h>
 #include <Kismet/KismetMathLibrary.h>
 
-
 // Sets default values
-
-
 ABasePlayerCharacter::ABasePlayerCharacter(const FObjectInitializer& ObjectInitializer):
 	Super(ObjectInitializer.SetDefaultSubobjectClass<UBaseCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
@@ -82,7 +77,7 @@ void ABasePlayerCharacter::InputInteract(const FInputActionValue& Value)
 	GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, TraceChannelProperty, QueryParams);
 
 	if (Hit.bBlockingHit && IsValid(Hit.GetActor())) {
-		if (IInteractInterface* HitInteract = Cast<IInteractInterface>(Hit.GetActor())) {
+		if (IInteract* HitInteract = Cast<IInteract>(Hit.GetActor())) {
 			HitInteract->Execute_OnInteract(Hit.GetActor(), this);
 		}
 	}

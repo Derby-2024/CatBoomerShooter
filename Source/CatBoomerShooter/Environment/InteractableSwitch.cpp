@@ -17,7 +17,7 @@ bool AInteractableSwitch::OnInteract_Implementation(AActor* OwningActor)
 		for (AActor* LinkedActor : LinkedActors)
 		{
 			if (LinkedActor) {
-				IInteractInterface* Interface = Cast<IInteractInterface>(LinkedActor);
+				IInteract* Interface = Cast<IInteract>(LinkedActor);
 				Interface->Execute_OnInteract(LinkedActor, this);
 			}
 		}

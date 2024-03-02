@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "../Character/InteractInterface.h"
+#include "InteractInterface.h"
 #include "InteractableActor.generated.h"
 
 UCLASS()
-class CATBOOMERSHOOTER_API AInteractableActor : public AActor, public IInteractInterface
+class CATBOOMERSHOOTER_API AInteractableActor : public AActor, public IInteract
 {
 	GENERATED_BODY()
 	
