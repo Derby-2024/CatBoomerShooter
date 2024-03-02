@@ -12,23 +12,3 @@ AInteractableActor::AInteractableActor()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("StaticMesh");
 	Mesh->SetupAttachment(RootComponent);
 }
-
-// Called when the game starts or when spawned
-void AInteractableActor::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void AInteractableActor::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-bool AInteractableActor::OnInteract_Implementation(AActor* OwningActor)
-{
-	return false;
-}
-

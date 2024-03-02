@@ -44,6 +44,8 @@ void AInteractableDoor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Smooth interpolate transform
+	// TODO if needed: Convert logic to utlize a transform rather than splitting into 2 seperate logic
 	switch (OpenMethod) {
 	case EDoorOpenMethod::Rotate: {
 		const FQuat CurrentRotation = GetActorQuat();
@@ -81,16 +83,19 @@ void AInteractableDoor::Tick(float DeltaTime)
 
 bool AInteractableDoor::OnInteract_Implementation(AActor* OwningActor)
 {
+	// Return false if not interactable by player
 	if (!bPlayerInteractable && Cast<ABasePlayerCharacter>(OwningActor)) {
 		return false;
 	}
 
+	// Check for key
 	ABasePlayerCharacter* OwningPlayer = Cast<ABasePlayerCharacter>(OwningActor);
 	if (bRequireKey && OwningPlayer) {
 		if (!OwningPlayer->Keys.Contains(RequiredKey))
 			return false;
 	}
 
+	// toggle state
 	switch(TargetState) {
 		case EDoorState::Closed:
 			TargetState = EDoorState::Opened;

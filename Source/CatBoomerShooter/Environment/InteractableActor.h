@@ -13,23 +13,12 @@ class CATBOOMERSHOOTER_API AInteractableActor : public AActor, public IInteractI
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	AInteractableActor();
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+public:
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* Mesh;
 
 	UPROPERTY(EditAnywhere)
 	bool bPlayerInteractable = true;
-
-	// Interface functions
-	bool OnInteract(AActor* OwningActor); virtual bool OnInteract_Implementation(AActor* OwningActor) override;
 };
