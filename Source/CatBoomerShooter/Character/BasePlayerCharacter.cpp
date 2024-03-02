@@ -83,7 +83,7 @@ void ABasePlayerCharacter::InputInteract(const FInputActionValue& Value)
 
 	if (Hit.bBlockingHit && IsValid(Hit.GetActor())) {
 		if (IInteractInterface* HitInteract = Cast<IInteractInterface>(Hit.GetActor())) {
-			HitInteract->Execute_OnInteract(Hit.GetActor());
+			HitInteract->Execute_OnInteract(Hit.GetActor(), this);
 		}
 	}
 }

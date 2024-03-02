@@ -2,6 +2,7 @@
 
 
 #include "InteractableDoor.h"
+#include "../Character/BasePlayerCharacter.h"
 
 void AInteractableDoor::BeginPlay()
 {
@@ -78,21 +79,31 @@ void AInteractableDoor::Tick(float DeltaTime)
 	}
 }
 
-bool AInteractableDoor::OnInteract_Implementation()
+bool AInteractableDoor::OnInteract_Implementation(AActor* OwningActor)
 {
+	if (!bPlayerInteractable && Cast<ABasePlayerCharacter>(OwningActor)) {
+		return false;
+	}
+
+	ABasePlayerCharacter* OwningPlayer = Cast<ABasePlayerCharacter>(OwningActor);
+	if (bRequireKey && OwningPlayer) {
+		if (!OwningPlayer->Keys.Contains(RequiredKey))
+			return false;
+	}
+
 	switch(TargetState) {
 		case EDoorState::Closed:
 			TargetState = EDoorState::Opened;
-			break;
+			return true;
 		case EDoorState::Opened:
-			TargetState = EDoorState::Closed;
-			break;
+			if (bCanBeClosed) {
+				TargetState = EDoorState::Closed;
+				return true;
+			}
+			return false;
 
 		default:
 			checkNoEntry();
+			return false;
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Interactable Door: OnInteract"));
-
-	return false;
 }

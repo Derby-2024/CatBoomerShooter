@@ -27,7 +27,7 @@ void AInteractableActor::Tick(float DeltaTime)
 
 }
 
-bool AInteractableActor::OnInteract_Implementation()
+bool AInteractableActor::OnInteract_Implementation(AActor* OwningActor)
 {
 	return false;
 }

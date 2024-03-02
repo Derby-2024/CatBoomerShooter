@@ -3,6 +3,7 @@
 
 #include "MeshVisualizer.h"
 #include "CatBoomerShooter/Environment/InteractableDoor.h"
+#include "CatBoomerShooter/Environment/InteractableSwitch.h"
 
 void FMeshVisualizer::DrawVisualization(const UActorComponent* Component, const FSceneView* View, FPrimitiveDrawInterface* PDI)
 {
@@ -11,7 +12,7 @@ void FMeshVisualizer::DrawVisualization(const UActorComponent* Component, const 
 		return;
 	}
 
-	// If Door, draw custom preview wirebox
+	// Interactable Door Mesh Visualizer
 	if (const AInteractableDoor* DoorActor = Cast<AInteractableDoor>(Mesh->GetOwner())) {
 		const FBox MeshBounds = DoorActor->CalculateComponentsBoundingBoxInLocalSpace();
 
@@ -28,10 +29,19 @@ void FMeshVisualizer::DrawVisualization(const UActorComponent* Component, const 
 		default:
 			checkNoEntry();
 		}
-		
 
 		const FMatrix BoxToWorldMatrix = ActorToWorld.ToMatrixNoScale();
 
 		DrawWireBox(PDI, BoxToWorldMatrix, MeshBounds, FColorList::Red, 100);
+	}
+
+	// Interactable Switch linked visualizer
+	else if (const AInteractableSwitch* SwitchActor = Cast<AInteractableSwitch>(Mesh->GetOwner())) {
+		const FVector StartLocation = SwitchActor->GetActorLocation();
+
+		for (AActor* LinkedActor : SwitchActor->LinkedActors) {
+			if(LinkedActor)
+				DrawDashedLine(PDI, StartLocation, LinkedActor->GetActorLocation(), FColorList::Red, 1, 100);
+		}
 	}
 }

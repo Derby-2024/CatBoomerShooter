@@ -63,6 +63,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	float InteractRange = 500.0f;
 
+	//Temporary variable until inventory system is finished
+	UPROPERTY(EditAnywhere)
+	TArray<FString> Keys;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

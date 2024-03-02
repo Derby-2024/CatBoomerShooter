@@ -27,6 +27,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* Mesh;
 
+	UPROPERTY(EditAnywhere)
+	bool bPlayerInteractable = true;
+
 	// Interface functions
-	bool OnInteract(); virtual bool OnInteract_Implementation() override;
+	bool OnInteract(AActor* OwningActor); virtual bool OnInteract_Implementation(AActor* OwningActor) override;
 };

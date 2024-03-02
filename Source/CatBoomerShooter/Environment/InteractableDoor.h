@@ -37,7 +37,7 @@ private:
 
 public:
 	void Tick(float DeltaTime) override;
-	bool OnInteract_Implementation() override;
+	bool OnInteract_Implementation(AActor* OwningActor) override;
 
 public:
 	UPROPERTY(EditAnywhere)
@@ -47,4 +47,13 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float OpenSpeed = 3.0f;
+
+	UPROPERTY(EditAnywhere)
+	bool bCanBeClosed = true;
+
+	UPROPERTY(EditAnywhere)
+	bool bRequireKey = false;
+
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "bRequireKey"))
+	FString RequiredKey = "KeyID";
 };
