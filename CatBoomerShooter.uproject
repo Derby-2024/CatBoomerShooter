@@ -13,6 +13,14 @@
 				"Engine",
 				"DeveloperSettings"
 			]
+		},
+		{
+			"Name": "CatBoomerEditor",
+			"Type": "Editor",
+			"LoadingPhase": "PostEngineInit",
+			"AdditionalDependencies": [
+				"Engine"
+			]
 		}
 	],
 	"Plugins": [

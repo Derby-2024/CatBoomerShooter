@@ -19,6 +19,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:	
 	// Called every frame
@@ -27,13 +28,13 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(EditAnywhere, Category = "EnemyBase")
-	int EnemyHealth = 100;
-
-	UPROPERTY(EditAnywhere, Category = "EnemyBase")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EnemyBase")
 	EEnemySize EnemySize = EEnemySize::Medium;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnemyBase")
+	EEnemyType EnemyType = EEnemyType::Ranged;
+
 	// Implement Interface Functions
-	int GetEnemyHealth_Implementation() override;
 	EEnemySize GetEnemySize_Implementation() override;
+	EEnemyType GetEnemyType_Implementation() override;
 };
