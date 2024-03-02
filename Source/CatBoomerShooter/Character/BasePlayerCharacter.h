@@ -39,6 +39,8 @@ protected:
 	UInputAction* JumpAction;	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* CameraMoveAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* InteractAction;
 
 	// Input Variables
 	UPROPERTY(EditAnywhere, Category = Input)
@@ -55,6 +57,11 @@ protected:
 	void InputJump(const FInputActionValue& Value);
 	void InputJumpEnd(const FInputActionValue& Value);
 	void InputCameraMove(const FInputActionValue& Value);
+	void InputInteract(const FInputActionValue& Value);
+
+public:
+	UPROPERTY(EditAnywhere)
+	float InteractRange = 500.0f;
 
 public:	
 	// Called every frame

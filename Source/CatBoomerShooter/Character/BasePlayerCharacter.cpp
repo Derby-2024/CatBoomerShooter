@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedPlayerInput.h"
+#include "../Character/InteractInterface.h"
 #include "Components/InputComponent.h"
 #include "Components/ArrowComponent.h"
 #include "BaseCharacterMovementComponent.h"
@@ -64,6 +65,29 @@ void ABasePlayerCharacter::InputCameraMove(const FInputActionValue& Value)
 	}
 }
 
+/*
+	On Interact, check if hit actor implements the Interface and run function
+*/
+void ABasePlayerCharacter::InputInteract(const FInputActionValue& Value)
+{
+	FVector TraceStart = Camera->GetComponentLocation();
+	FVector TraceEnd = TraceStart + Camera->GetForwardVector() * InteractRange;
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+
+	TEnumAsByte<ECollisionChannel> TraceChannelProperty = ECC_Pawn;
+
+	FHitResult Hit;
+	GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, TraceChannelProperty, QueryParams);
+
+	if (Hit.bBlockingHit && IsValid(Hit.GetActor())) {
+		if (IInteractInterface* HitInteract = Cast<IInteractInterface>(Hit.GetActor())) {
+			HitInteract->Execute_OnInteract(Hit.GetActor());
+		}
+	}
+}
+
 // Called every frame
 void ABasePlayerCharacter::Tick(float DeltaTime)
 {
@@ -85,6 +109,7 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputJump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ABasePlayerCharacter::InputJumpEnd);
 		EnhancedInputComponent->BindAction(CameraMoveAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputCameraMove);
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputInteract);
 
 		InputMoveVal = &EnhancedInputComponent->BindActionValue(MoveAction);
 		InputCameraMoveVal = &EnhancedInputComponent->BindActionValue(CameraMoveAction);
