@@ -5,6 +5,7 @@
 
 void AInteractableSwitch::BeginPlay()
 {
+	// Disable player interaction for any linked actors
 	for (AActor* LinkedActor : LinkedActors) {
 		Cast<AInteractableActor>(LinkedActor)->bPlayerInteractable = false;
 	}
@@ -16,12 +17,14 @@ bool AInteractableSwitch::OnInteract_Implementation(AActor* OwningActor)
 		for (AActor* LinkedActor : LinkedActors)
 		{
 			if (LinkedActor) {
-				IInteractInterface* Interface = Cast<IInteractInterface>(LinkedActor);
+				IInteract* Interface = Cast<IInteract>(LinkedActor);
 				Interface->Execute_OnInteract(LinkedActor, this);
 			}
 		}
 		return true;
 	}
-
-	return false;
+	else {
+		UE_LOG(LogTemp, Warning, TEXT("InteractableSwitch OnInteract: Linked Actors Array is empty"));
+		return false;
+	}
 }

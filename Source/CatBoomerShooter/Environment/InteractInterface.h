@@ -8,7 +8,7 @@
 
 // This class does not need to be modified.
 UINTERFACE(Blueprintable)
-class UInteractInterface : public UInterface
+class UInteract : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,7 +16,7 @@ class UInteractInterface : public UInterface
 /**
  * 
  */
-class CATBOOMERSHOOTER_API IInteractInterface
+class CATBOOMERSHOOTER_API IInteract
 {
 	GENERATED_BODY()
 
