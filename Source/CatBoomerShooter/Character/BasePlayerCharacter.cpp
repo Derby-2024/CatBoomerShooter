@@ -67,6 +67,8 @@ void ABasePlayerCharacter::Dash(const FInputActionValue& Value)
 			//ResetDashCounter();
 			//this uses a timer to call the restdashcounter, the first DashCooldown is the time betwwen the first loop and the second loop the second dashCooldwon is time for the first loop to occur.
 			GetWorldTimerManager().SetTimer(DashTimerHandle, this, &ABasePlayerCharacter::ResetDashCounter,DashCooldown, true,DashCooldown);
+			
+			
 		}
 	}
 }
@@ -85,6 +87,41 @@ void ABasePlayerCharacter::ResetDashCounter()
 	}
 	
 }
+
+void ABasePlayerCharacter::TapDash(const FInputActionValue& Value)
+{
+	NumOfTaps = NumOfTaps + 1 ;
+	if(NumOfTaps>=2){
+		if(DashCount>0)
+		{
+			// this is from the dash function, we could just call the dash function
+			FVector DashVel = GetVelocity();
+			DashVel.Normalize();
+			DashVel.Z = 0;
+			DashVel = DashVel * DashSpeed;
+			if((DashVel.X!=0) ||(DashVel.Y !=0)){
+				//sets the player invincible
+				IsInvincible = true;
+				this -> LaunchCharacter(DashVel,false,false);
+				//resets the players invincibility
+				GetWorldTimerManager().SetTimer(InvTimerHandle, this, &ABasePlayerCharacter::ResetInvincibility, 1.0f,true, InvincibleDuration);
+				DashCount=DashCount-1;
+				//ResetDashCounter();
+				//this uses a timer to call the restdashcounter, the first DashCooldown is the time betwwen the first loop and the second loop the second dashCooldwon is time for the first loop to occur.
+				GetWorldTimerManager().SetTimer(DashTimerHandle, this, &ABasePlayerCharacter::ResetDashCounter,DashCooldown, true,DashCooldown);
+			}
+		}
+	}
+	GetWorldTimerManager().SetTimer(TapTimerHandle, this, &ABasePlayerCharacter::ResetNumOfTaps, 1.0f,true, 1.0f);
+}
+
+void ABasePlayerCharacter::ResetNumOfTaps()
+{
+	NumOfTaps = 0 ;
+	
+}
+
+
 
 void ABasePlayerCharacter::InputCameraMove(const FInputActionValue& Value)
 {
@@ -114,6 +151,7 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputJump);
 		EnhancedInputComponent->BindAction(CameraMoveAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputCameraMove);
 		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::Dash);
+		EnhancedInputComponent->BindAction(TapDashAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::TapDash);
 	}
 }
 
