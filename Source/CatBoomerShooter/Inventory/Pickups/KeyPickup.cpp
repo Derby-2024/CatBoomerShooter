@@ -3,7 +3,7 @@
 
 #include "KeyPickup.h"
 #include "Components/SphereComponent.h"
-#include "Character/BasePlayerCharacter.h"
+#include "../../Character/BasePlayerCharacter.h"
 
 
 AKeyPickup::AKeyPickup()

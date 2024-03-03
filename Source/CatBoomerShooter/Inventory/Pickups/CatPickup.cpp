@@ -2,8 +2,8 @@
 
 
 #include "CatPickup.h"
-#include "Character/BasePlayerCharacter.h"
-#include "BaseCollectible.h"
+#include "../../Character/BasePlayerCharacter.h"
+#include "../Items/BaseCollectible.h"
 
 ACatPickup::ACatPickup()
 {

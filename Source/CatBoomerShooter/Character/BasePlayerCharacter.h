@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "BasePlayerInterface.h"
-#include "CatboomerShooter/InventoryComponent.h"
+#include "../Inventory/InventoryComponent.h"
 #include "BasePlayerCharacter.generated.h"
 
 class UInputMappingContext;

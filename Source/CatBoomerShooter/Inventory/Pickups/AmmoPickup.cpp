@@ -1,6 +1,6 @@
 #include "AmmoPickup.h"
-#include "Character/BasePlayerCharacter.h"
-#include "InventoryComponent.h"
+#include "../../Character/BasePlayerCharacter.h"
+#include "../InventoryComponent.h"
 
 AAmmoPickup::AAmmoPickup()
 {

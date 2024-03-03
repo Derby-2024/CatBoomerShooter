@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "BasePickup.h"
-#include "Character/BasePlayerCharacter.h"
-#include "BaseAmmo.h"
+#include "../../Character/BasePlayerCharacter.h"
+#include "../Items/BaseAmmo.h"
 #include "AmmoPickup.generated.h"
 
 /**

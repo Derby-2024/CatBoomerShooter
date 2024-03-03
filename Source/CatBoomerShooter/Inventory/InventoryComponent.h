@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "BaseAmmo.h"
-#include "BaseCollectible.h"
+#include "Items/BaseAmmo.h"
+#include "Items/BaseCollectible.h"
 #include "InventoryComponent.generated.h"
 
 UENUM(BlueprintType)

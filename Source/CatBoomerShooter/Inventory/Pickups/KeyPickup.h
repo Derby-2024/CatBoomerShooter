@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BasePickup.h"
-#include "InventoryComponent.h"
+#include "../InventoryComponent.h"
 #include "KeyPickup.generated.h"
 
 /**
