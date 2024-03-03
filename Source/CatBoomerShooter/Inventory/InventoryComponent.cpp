@@ -41,10 +41,14 @@ bool UInventoryComponent::AddItem(const FItem& Item)
 
         UE_LOG(LogTemp, Log, TEXT("AddAmmo, %d, %d, %d"), Item.AmmoAmount, Collection->AmmoAmount, Collection->TotalAmmo);
 
+        if (Collection->AmmoAmount + Item.AmmoAmount > Collection->TotalAmmo)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Maximum ammo capacity reached, cannot pick up more ammo."));
+            return false;
+        }
+
         Collection->AmmoAmount += Item.AmmoAmount;
-
         UE_LOG(LogTemp, Log, TEXT("AddAmmo, %d, %d, %d"), Item.AmmoAmount, Collection->AmmoAmount, Collection->TotalAmmo);
-
         return true;
     }
     case EItemType::Weapon:
