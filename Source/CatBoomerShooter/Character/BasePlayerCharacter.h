@@ -5,13 +5,15 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "BasePlayerInterface.h"
+#include "../Inventory/InventoryComponent.h"
 #include "BasePlayerCharacter.generated.h"
 
 class UInputMappingContext;
 class UInputAction;
 
 UCLASS()
-class CATBOOMERSHOOTER_API ABasePlayerCharacter : public ACharacter
+class CATBOOMERSHOOTER_API ABasePlayerCharacter : public ACharacter, public IBasePlayerInterface
 {
 	GENERATED_BODY()
 
@@ -31,6 +33,8 @@ protected:
 	class UArrowComponent* WishDirArrow;
 	UPROPERTY(EditAnywhere)
 	class UArrowComponent* AccelDirArrow;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class USceneComponent* WhipLocation;
 
 	// Inputs
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -51,6 +55,9 @@ protected:
 
 	struct FEnhancedInputActionValueBinding* InputMoveVal;
 	struct FEnhancedInputActionValueBinding* InputCameraMoveVal;
+	UInputAction* MeleeAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* FireAction;
 	
 	// Input Functions
 	void InputMove(const FInputActionValue& Value);
@@ -66,6 +73,26 @@ public:
 	//Temporary variable until inventory system is finished
 	UPROPERTY(EditAnywhere)
 	TArray<FString> Keys;
+	void InputMelee(const FInputActionValue& Value);
+	void InputFire_Start(const FInputActionValue& Value);
+	void InputFire_Stop(const FInputActionValue& Value);
+
+	//Whip
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Whip")
+ 	class ABaseWhip* Whip;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+ 	class ABaseWeapon* Weapon;
+
+	//Reload Weapon
+	void ReloadWeapon();
+
+	//Triggers out of ammo notification that they are out of ammo
+	UFUNCTION(BlueprintImplementableEvent, Category = "HUD")
+	void TriggerOutOfAmmo();
+
+	// Reference to the InventoryComponent
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
+	UInventoryComponent* InventoryComponent;
 
 public:	
 	// Called every frame
@@ -73,4 +100,13 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
+	USceneComponent* GetPlayerWhipLocation(); virtual USceneComponent* GetPlayerWhipLocation_Implementation() override;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
+	ABaseWhip* GetPlayerWhip(); virtual ABaseWhip* GetPlayerWhip_Implementation() override;
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	UInventoryComponent* GetInventoryComponent() const { return InventoryComponent; }
 };
