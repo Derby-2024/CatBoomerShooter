@@ -62,7 +62,8 @@ void ABasePlayerCharacter::Dash(const FInputActionValue& Value)
 	//this happens if dash is pressed and the player has a dash available
 	if(DashCount>0)
 	{
-		FVector DashVel = GetVelocity();
+		FVector2D moveInput = InputMoveVal->GetValue().Get<FVector2D>();
+		FVector DashVel = GetActorForwardVector() * moveInput.X + GetActorRightVector() * moveInput.Y;
 		DashVel.Normalize();
 		DashVel.Z = 0;
 		DashVel = DashVel * DashSpeed;

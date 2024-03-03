@@ -59,6 +59,7 @@ protected:
 	UInputAction* MeleeAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* FireAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* DashAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* TapDashAction;
