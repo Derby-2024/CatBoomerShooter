@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "BaseAmmo.h"
+#include "BaseCollectible.h"
 #include "InventoryComponent.generated.h"
 
 UENUM(BlueprintType)
@@ -13,7 +14,8 @@ enum class EItemType : uint8
 	Ammo,
 	Weapon,
 	Health,
-	Collectible
+	Collectible,
+	Key
 };
 
 USTRUCT(BlueprintType)
@@ -33,6 +35,21 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	EAmmoType AmmoType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+	FString ItemInfo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+	int TotalCats;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+	int CatCount;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+	FString CollectibleInfo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+	ECollectibleType CollectibleType;
 };
 
 
@@ -58,4 +75,10 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Item")
 	FAmmoCollection Ammo;
+
+	UPROPERTY(EditAnywhere, Category = "Item")
+	TArray<FString> Keys;
+
+	UPROPERTY(EditAnywhere, Category = "Item")
+	FCollectibles Collectibles;
 };

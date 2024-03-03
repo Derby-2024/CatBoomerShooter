@@ -56,10 +56,25 @@ bool UInventoryComponent::AddItem(const FItem& Item)
         break;
 
     case EItemType::Collectible:
+    {
+        FCollectibleStructX* Collection = Collectibles.GetCollectionOfType(Item.CollectibleType);
 
-        break;
+        UE_LOG(LogTemp, Log, TEXT("Cats Collected, %d, %d, %d"), Item.CatCount, Collection->CatCount, Collection->TotalCats);
+
+        Collection->CatCount += Item.CatCount;
+
+        UE_LOG(LogTemp, Log, TEXT("Cats Collected, %d, %d, %d"), Item.CatCount, Collection->CatCount, Collection->TotalCats);
+
+        return true;
+    }
+
+    case EItemType::Key:
+    {
+        Keys.Add(Item.ItemInfo);
+        return true;
+    }
+
     default:
-        // Debug message indicating no logic for this specific item type
         UE_LOG(LogTemp, Warning, TEXT("No logic for adding item of type %s"), *UEnum::GetValueAsString(Item.ItemType));
         break;
     }
@@ -85,6 +100,10 @@ bool UInventoryComponent::RemoveItem(const FItem& Item)
         break;
 
     case EItemType::Collectible:
+
+        break;
+
+    case EItemType::Key:
 
         break;
 
