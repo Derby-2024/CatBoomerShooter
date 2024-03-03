@@ -57,15 +57,11 @@ bool UInventoryComponent::AddItem(const FItem& Item)
 
     case EItemType::Collectible:
     {
-        FCollectibleStructX* Collection = Collectibles.GetCollectionOfType(Item.CollectibleType);
+        if (FCollectibleStructX* Collection = Collectibles.GetCollectionOfType(Item.CollectibleType)) {
+            Collection->CatCount += Item.CatCount;
 
-        UE_LOG(LogTemp, Log, TEXT("Cats Collected, %d, %d, %d"), Item.CatCount, Collection->CatCount, Collection->TotalCats);
-
-        Collection->CatCount += Item.CatCount;
-
-        UE_LOG(LogTemp, Log, TEXT("Cats Collected, %d, %d, %d"), Item.CatCount, Collection->CatCount, Collection->TotalCats);
-
-        return true;
+            return true;
+        }
     }
 
     case EItemType::Key:

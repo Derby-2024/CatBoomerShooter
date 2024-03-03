@@ -9,22 +9,12 @@
 AKeyPickup::AKeyPickup()
 {
     // Set default value for ItemInfo
-    ItemInformation = "Key1";
+    ItemInformation = "KeyString";
 
-    // Create the collision component
-    CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
-    CollisionComponent->InitSphereRadius(50.0f);
-    RootComponent = CollisionComponent;
-
-    // Bind the overlap function
-    CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AKeyPickup::OnOverlap);
 }
 
 void AKeyPickup::OnPickup()
 {
-    // Call the parent OnPickup function for any additional pickup logic
-    Super::OnPickup();
-
     // Access the player character
     ABasePlayerCharacter* PlayerCharacter = Cast<ABasePlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 

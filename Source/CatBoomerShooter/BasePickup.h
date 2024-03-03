@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
 #include "BasePickup.generated.h"
 
@@ -20,9 +21,16 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup")
     FString ItemInfo;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
+    USphereComponent* CollisionComponent;
+
     // Static mesh component for the pickup
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pickup")
     class UStaticMeshComponent* PickupMesh;
+
+public:
+    UPROPERTY(EditAnywhere)
+    float PickupRange = 50.0f;
 
 public:
     // Called when the game starts or when spawned
@@ -31,4 +39,6 @@ public:
     // Called when this pickup is picked up
     virtual void OnPickup();
 
+    UFUNCTION()
+    virtual void OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

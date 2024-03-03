@@ -6,7 +6,6 @@
 #include "BasePickup.h"
 #include "Character/BasePlayerCharacter.h"
 #include "BaseAmmo.h"
-#include "Components/SphereComponent.h"
 #include "AmmoPickup.generated.h"
 
 /**
@@ -27,12 +26,8 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Ammo Pickup")
     EAmmoType AmmoType;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
-    USphereComponent* CollisionComponent;
-
 public:
     virtual void OnPickup() override;
 
-    UFUNCTION()
-    void OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+    void OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 };

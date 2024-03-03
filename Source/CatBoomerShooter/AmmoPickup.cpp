@@ -1,30 +1,16 @@
 #include "AmmoPickup.h"
 #include "Character/BasePlayerCharacter.h"
 #include "InventoryComponent.h"
-#include "Components/SphereComponent.h"
 
 AAmmoPickup::AAmmoPickup()
 {
     // Set default values
     Quantity = 10;
     AmmoType = EAmmoType::E_AssaultRifle;
-
-    Quantity = 4;
-    AmmoType = EAmmoType::E_Shotgun;
-
-    // Create the collision component
-    CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
-    CollisionComponent->InitSphereRadius(50.0f); 
-    RootComponent = CollisionComponent;
-
-    // Bind the overlap function
-    CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AAmmoPickup::OnOverlap);
 }
 
 void AAmmoPickup::OnPickup()
 {
-    Super::OnPickup();
-
     // Check if the actor that overlapped is the player character
     ABasePlayerCharacter* PlayerCharacter = Cast<ABasePlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
     if (PlayerCharacter)

@@ -9,19 +9,10 @@ ACatPickup::ACatPickup()
 {
     Quantity = 1;
     CollectibleType = ECollectibleType::E_Cat;
-
-    CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
-    CollisionComponent->InitSphereRadius(50.0f);
-    RootComponent = CollisionComponent;
-
-    // Bind the overlap function
-    CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ACatPickup::OnOverlap);
 }
 
 void ACatPickup::OnPickup()
 {
-        Super::OnPickup();
-
         // Check if the actor that overlapped is the player character
         ABasePlayerCharacter* PlayerCharacter = Cast<ABasePlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
         if (PlayerCharacter)
@@ -62,6 +53,7 @@ void ACatPickup::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
     }
 }
 
+// Part of collectibles system to be later implemented
 void ACatPickup::RunawaySequence(AActor* BasePlayerCharacter)
 {
 
