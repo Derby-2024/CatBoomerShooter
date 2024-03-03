@@ -25,6 +25,8 @@ ABasePlayerCharacter::ABasePlayerCharacter(const FObjectInitializer& ObjectIniti
 	Camera->bUsePawnControlRotation = true;
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
+	SK_Arms = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Arms"));
+	SK_Arms->SetupAttachment(Camera);
 }
 
 // Called when the game starts or when spawned
@@ -159,9 +161,9 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ABasePlayerCharacter::ReloadWeapon);
 }
 
-USceneComponent *ABasePlayerCharacter::GetPlayerWhipLocation_Implementation()
+USkeletalMeshComponent *ABasePlayerCharacter::GetPlayerArms_Implementation()
 {
-    return WhipLocation;
+    return SK_Arms;
 }
 
 ABaseWhip *ABasePlayerCharacter::GetPlayerWhip_Implementation()
@@ -169,19 +171,7 @@ ABaseWhip *ABasePlayerCharacter::GetPlayerWhip_Implementation()
     return Whip;
 }
 
-
-void ABasePlayerCharacter::ReloadWeapon()
+UCameraComponent *ABasePlayerCharacter::GetPlayerCamera_Implementation()
 {
-	if (Weapon)
-	{
-		if (Weapon->CurrentAmmo < Weapon->TotalAmmo && Weapon->AmmoAmount > 0)
-		{
-			Weapon->CurrentAmmo += Weapon->AmmoAmount;
-			Weapon->AmmoAmount -= Weapon->AmmoAmount;
-		}
-		else
-		{
-			Weapon->StopShooting();
-		}
-	}
+	return Camera;
 }

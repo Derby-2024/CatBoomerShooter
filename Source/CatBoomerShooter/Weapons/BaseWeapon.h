@@ -51,6 +51,8 @@ protected:
 	UPROPERTY(EditAnywhere)
 	class USkeletalMeshComponent* WeaponMesh;
 
+	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	TSubclassOf<class ABaseWeaponProjectile> ProjectileClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
@@ -59,11 +61,33 @@ protected:
 	EFiringMode FiringMode;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	int BurstAmount = 0;
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	TArray<FName> MuzzleSockets = {};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	float MaxVerticalSpread = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	float MaxHorizontalSpread = 0.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	int NumberOfPellets = 1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	bool needsReload = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	FName HandSocketName = "R_HandSocket";
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	APawn* OwningCharacter;
+
 	int ShotsFired = 0;
 
+	UPROPERTY(EditAnywhere, Category="Collision")
+	TEnumAsByte<ECollisionChannel> TraceChannelProperty = ECC_Pawn;
+
 	FTimerHandle Handle_ReFire;
-	ACharacter* PlayerCharacter;
+
+	FVector TraceStart;
+	FVector TraceEnd;
+	
 
 
 public:	
@@ -74,5 +98,8 @@ public:
 	void BurstFire();
 	void StartShooting();
 	void StopShooting();
+	void Reload();
+
+	FRotator RandomSpread(FRotator spawnRotation, float maxVertical, float maxHorizontal);
 
 };

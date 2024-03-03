@@ -16,6 +16,9 @@ public:
 	// Sets default values for this actor's properties
 	ABaseWeaponProjectile();
 
+	UPROPERTY(EditAnywhere)
+	UProjectileMovementComponent* ProjectileMovement;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -23,8 +26,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* BulletMesh;
 
-	UPROPERTY(EditAnywhere)
-	UProjectileMovementComponent* ProjectileMovement;
+	
 
 
 	//Default Values

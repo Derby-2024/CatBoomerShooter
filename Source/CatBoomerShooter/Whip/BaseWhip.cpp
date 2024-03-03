@@ -34,11 +34,11 @@ void ABaseWhip::BeginPlay()
 	Super::BeginPlay();
 
 	PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(),0);
-	USceneComponent* WhipLocation = IBasePlayerInterface::Execute_GetPlayerWhipLocation(PlayerCharacter);
+	USkeletalMeshComponent* Arms = IBasePlayerInterface::Execute_GetPlayerArms(PlayerCharacter);
 	
-	if(IsValid(WhipLocation))
+	if(IsValid(Arms))
 	{
-		this->AttachToComponent(WhipLocation, FAttachmentTransformRules::SnapToTargetIncludingScale, "GripPoint");
+		this->AttachToComponent(Arms, FAttachmentTransformRules::SnapToTargetIncludingScale, "R_HandSocket");
 		//this->SetActorHiddenInGame(true);
 	}
 	

@@ -34,7 +34,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	class UArrowComponent* AccelDirArrow;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	class USceneComponent* WhipLocation;
+	class USkeletalMeshComponent* SK_Arms;
 
 	// Inputs
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -102,11 +102,14 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
-	USceneComponent* GetPlayerWhipLocation(); virtual USceneComponent* GetPlayerWhipLocation_Implementation() override;
+	USkeletalMeshComponent* GetPlayerArms(); virtual USkeletalMeshComponent* GetPlayerArms_Implementation() override;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
 	ABaseWhip* GetPlayerWhip(); virtual ABaseWhip* GetPlayerWhip_Implementation() override;
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UInventoryComponent* GetInventoryComponent() const { return InventoryComponent; }
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Camera")
+	UCameraComponent* GetPlayerCamera(); virtual UCameraComponent* GetPlayerCamera_Implementation() override;
 };
