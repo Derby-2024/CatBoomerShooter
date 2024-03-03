@@ -110,7 +110,7 @@ void ABasePlayerCharacter::InputFire_Start(const FInputActionValue &Value)
 		}
 		else if (Weapon->CurrentAmmo < 0)
 		{
-			ReloadWeapon();
+			// ReloadWeapon();
 		}
 		else
 		{
@@ -156,9 +156,6 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputFire_Start);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &ABasePlayerCharacter::InputFire_Stop);
 	}
-	
-	//Bind Reload Event
-	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ABasePlayerCharacter::ReloadWeapon);
 }
 
 USkeletalMeshComponent *ABasePlayerCharacter::GetPlayerArms_Implementation()
