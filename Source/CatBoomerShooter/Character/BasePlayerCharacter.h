@@ -9,6 +9,7 @@
 #include "../Inventory/InventoryComponent.h"
 #include "BasePlayerCharacter.generated.h"
 
+
 class UInputMappingContext;
 class UInputAction;
 
@@ -58,7 +59,31 @@ protected:
 	UInputAction* MeleeAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* FireAction;
+	UInputAction* DashAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* TapDashAction;
+
+	//variables for dashingS
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	int DashCount=3;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	int DashSpeed=100000;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	float DashCooldown = 2.0;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	bool IsInvincible = false;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	float InvincibleDuration = 0.15;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	int NumOfTaps = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	FVector OldVel;
 	
+
+	FTimerHandle DashTimerHandle;
+	FTimerHandle InvTimerHandle;
+	FTimerHandle TapTimerHandle;
+
 	// Input Functions
 	void InputMove(const FInputActionValue& Value);
 	void InputJump(const FInputActionValue& Value);
@@ -93,6 +118,8 @@ public:
 	// Reference to the InventoryComponent
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
 	UInventoryComponent* InventoryComponent;
+	void Dash(const FInputActionValue& Value);
+	void TapDash(const FInputActionValue& Value);
 
 public:	
 	// Called every frame
@@ -112,4 +139,10 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Camera")
 	UCameraComponent* GetPlayerCamera(); virtual UCameraComponent* GetPlayerCamera_Implementation() override;
+	
+	void ResetDashCounter();
+
+	void ResetInvincibility();
+
+	void ResetNumOfTaps();
 };

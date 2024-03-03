@@ -57,6 +57,81 @@ void ABasePlayerCharacter::InputJumpEnd(const FInputActionValue& Value)
 
 }
 
+void ABasePlayerCharacter::Dash(const FInputActionValue& Value)
+{
+	//this happens if dash is pressed and the player has a dash available
+	if(DashCount>0)
+	{
+		FVector DashVel = GetVelocity();
+		DashVel.Normalize();
+		DashVel.Z = 0;
+		DashVel = DashVel * DashSpeed;
+		if((DashVel.X!=0) ||(DashVel.Y !=0)){
+			//sets the player invincible
+			IsInvincible = true;
+			this -> LaunchCharacter(DashVel,false,false);
+			//resets the players invincibility
+			GetWorldTimerManager().SetTimer(InvTimerHandle, this, &ABasePlayerCharacter::ResetInvincibility, 1.0f,true, InvincibleDuration);
+			DashCount=DashCount-1;
+			//ResetDashCounter();
+			//this uses a timer to call the restdashcounter, the first DashCooldown is the time betwwen the first loop and the second loop the second dashCooldwon is time for the first loop to occur.
+			GetWorldTimerManager().SetTimer(DashTimerHandle, this, &ABasePlayerCharacter::ResetDashCounter,DashCooldown, true,DashCooldown);
+			
+			
+		}
+	}
+}
+void ABasePlayerCharacter::ResetInvincibility()
+{
+	if(IsInvincible != false){
+		IsInvincible = false;
+	}
+	
+}
+
+void ABasePlayerCharacter::ResetDashCounter()
+{
+	if (DashCount < 3){
+		DashCount=DashCount+1;
+	}
+	
+}
+
+void ABasePlayerCharacter::TapDash(const FInputActionValue& Value)
+{
+	NumOfTaps = NumOfTaps + 1 ;
+	if(NumOfTaps>=2){
+		if(DashCount>0)
+		{
+			// this is from the dash function, we could just call the dash function
+			FVector DashVel = GetVelocity();
+			DashVel.Normalize();
+			DashVel.Z = 0;
+			DashVel = DashVel * DashSpeed;
+			if((DashVel.X!=0) ||(DashVel.Y !=0)){
+				//sets the player invincible
+				IsInvincible = true;
+				this -> LaunchCharacter(DashVel,false,false);
+				//resets the players invincibility
+				GetWorldTimerManager().SetTimer(InvTimerHandle, this, &ABasePlayerCharacter::ResetInvincibility, 1.0f,true, InvincibleDuration);
+				DashCount=DashCount-1;
+				//ResetDashCounter();
+				//this uses a timer to call the restdashcounter, the first DashCooldown is the time betwwen the first loop and the second loop the second dashCooldwon is time for the first loop to occur.
+				GetWorldTimerManager().SetTimer(DashTimerHandle, this, &ABasePlayerCharacter::ResetDashCounter,DashCooldown, true,DashCooldown);
+			}
+		}
+	}
+	GetWorldTimerManager().SetTimer(TapTimerHandle, this, &ABasePlayerCharacter::ResetNumOfTaps, 1.0f,true, 1.0f);
+}
+
+void ABasePlayerCharacter::ResetNumOfTaps()
+{
+	NumOfTaps = 0 ;
+	
+}
+
+
+
 void ABasePlayerCharacter::InputCameraMove(const FInputActionValue& Value)
 {
 	const FVector2D CameraMoveInputValue = Value.Get<FVector2D>();
@@ -155,6 +230,8 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EnhancedInputComponent->BindAction(MeleeAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputMelee);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputFire_Start);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &ABasePlayerCharacter::InputFire_Stop);
+		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::Dash);
+		EnhancedInputComponent->BindAction(TapDashAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::TapDash);
 	}
 }
 
