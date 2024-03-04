@@ -43,6 +43,8 @@ void ABaseWeaponProjectile::Tick(float DeltaTime)
 
 void ABaseWeaponProjectile::OnHit(UPrimitiveComponent *HitComponent, AActor *OtherActor, UPrimitiveComponent *OtherComponent, FVector NormalImpulse, const FHitResult &Hit)
 {
+	if (!OtherActor) return;
+
 	if(OtherActor->GetClass()->ImplementsInterface(UDamageInterface::StaticClass()))
 	{
 		IDamageInterface::Execute_TakeHealthDamage(OtherActor, Damage);
