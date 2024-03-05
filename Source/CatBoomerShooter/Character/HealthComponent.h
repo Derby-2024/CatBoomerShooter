@@ -32,7 +32,7 @@ private:
 
 	UFUNCTION()
 	void DamageApplication(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* Instigator, AActor* DamageCauser);
-	uint8 bCanEverTick : 1;
+	
 
 public:	
 	// Called every frame
