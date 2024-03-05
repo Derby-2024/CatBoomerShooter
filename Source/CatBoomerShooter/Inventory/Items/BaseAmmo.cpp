@@ -38,7 +38,6 @@ FAmmoStructX* FAmmoCollection::GetCollectionOfType(EAmmoType AmmoType)
 	case EAmmoType::E_Pistol:
 		return &PistolAmmo;
 
-
 	default:
 		return nullptr;
 	}

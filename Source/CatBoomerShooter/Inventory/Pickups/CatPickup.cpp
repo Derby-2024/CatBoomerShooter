@@ -13,22 +13,7 @@ ACatPickup::ACatPickup()
 
 void ACatPickup::OnPickup()
 {
-        // Check if the actor that overlapped is the player character
-        ABasePlayerCharacter* PlayerCharacter = Cast<ABasePlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
-        if (PlayerCharacter)
-        {
-            // Get the inventory component from the player character
-            UInventoryComponent* InventoryComponent = PlayerCharacter->GetInventoryComponent();
-            if (InventoryComponent)
-            {
-                FItem CatItem;
-                CatItem.ItemType = EItemType::Collectible;
-                CatItem.CatCount = Quantity;
-                CatItem.CollectibleInfo = ItemInformation;
-                InventoryComponent->AddItem(CatItem);
-                Destroy();
-            }
-        }
+
 }
 
 void ACatPickup::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

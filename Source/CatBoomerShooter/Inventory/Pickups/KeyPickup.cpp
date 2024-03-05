@@ -15,26 +15,7 @@ AKeyPickup::AKeyPickup()
 
 void AKeyPickup::OnPickup()
 {
-    // Access the player character
-    ABasePlayerCharacter* PlayerCharacter = Cast<ABasePlayerCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 
-    // Check if the player character is valid
-    if (PlayerCharacter)
-    {
-        // Access the player character's inventory component
-        UInventoryComponent* InventoryComponent = PlayerCharacter->FindComponentByClass<UInventoryComponent>();
-        if (InventoryComponent)
-        {
-            // Create a new item with the key type and item info
-            FItem KeyItem;
-            KeyItem.ItemType = EItemType::Key;
-            KeyItem.ItemInfo = ItemInformation;
-
-            // Add the key to the inventory
-            InventoryComponent->AddItem(KeyItem);
-            Destroy();
-        }
-    }
 }
 
 void AKeyPickup::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
