@@ -2,6 +2,9 @@
 
 
 #include "HealthComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "GameFramework/DamageType.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
@@ -36,6 +39,19 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 void UHealthComponent::DamageApplication(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* Instigator, AActor* DamageCauser)
 {
 
+	if (Damage <= 0.f) return;
+
+	Health -= Damage;
+	UE_LOG(LogTemp, Warning, TEXT("Health: %f"), Health)
+
+	if (Health <= 0.f)
+	{
+		SetAlive(false);
+		GetOwner()-> Destroy();
+	}
+	if (Health > MaxHealth) Health = MaxHealth;
+	
+	
 
 
 }

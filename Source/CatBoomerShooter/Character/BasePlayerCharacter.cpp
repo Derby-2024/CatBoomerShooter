@@ -69,7 +69,7 @@ void ABasePlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!getAlive()) return;
+	
 }
 
 // Called to bind functionality to input
@@ -93,16 +93,5 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	}
 }
 
-void ABasePlayerCharacter::takeDamage(float damage)
-{
-	currentHealth -= damage;
-	if (currentHealth <= 0.f)
-	{
-		setAlive(false);
-	}
-	if (currentHealth > maxHealth)
-	{
-		currentHealth = maxHealth;
-	}
-}
+
 
