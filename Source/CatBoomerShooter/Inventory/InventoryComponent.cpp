@@ -31,26 +31,33 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 bool UInventoryComponent::AddItem(const FItem& Item)
 {
-    UE_LOG(LogTemp, Log, TEXT("AddItem"));
-
     switch (Item.ItemType)
     {
-    case EItemType::Ammo: {
-
+    case EItemType::Ammo:
+    {
         FAmmoStructX* Collection = Ammo.GetCollectionOfType(Item.AmmoType);
-
         UE_LOG(LogTemp, Log, TEXT("AddAmmo, %d, %d, %d"), Item.AmmoAmount, Collection->AmmoAmount, Collection->TotalAmmo);
+        
+        // Calculate the remaining ammo needed to reach the totalammo
+        int RemainingAmmo = Collection->TotalAmmo - Collection->AmmoAmount;
 
-        if (Collection->AmmoAmount + Item.AmmoAmount > Collection->TotalAmmo)
+        // Add the minimum between remaining ammo
+        int AddedAmmo = FMath::Min(Item.AmmoAmount, RemainingAmmo);
+
+        // Update the collection's ammo amount
+        Collection->AmmoAmount += AddedAmmo;
+
+        UE_LOG(LogTemp, Log, TEXT("Added %d ammo. New ammo amount: %d"), AddedAmmo, Collection->AmmoAmount);
+
+        if (AddedAmmo < Item.AmmoAmount)
         {
-            UE_LOG(LogTemp, Warning, TEXT("Maximum ammo capacity reached, cannot pick up more ammo."));
-            return false;
+        UE_LOG(LogTemp, Warning, TEXT("Maximum ammo capacity reached, could only pick up %d of %d ammo."), AddedAmmo, Item.AmmoAmount);
+        return false;
         }
 
-        Collection->AmmoAmount += Item.AmmoAmount;
-        UE_LOG(LogTemp, Log, TEXT("AddAmmo, %d, %d, %d"), Item.AmmoAmount, Collection->AmmoAmount, Collection->TotalAmmo);
         return true;
     }
+    
     case EItemType::Weapon:
 
         break;
@@ -88,8 +95,21 @@ bool UInventoryComponent::RemoveItem(const FItem& Item)
     switch (Item.ItemType)
     {
     case EItemType::Ammo:
+    {
+        FAmmoStructX* Collection = Ammo.GetCollectionOfType(Item.AmmoType);
 
+        // Check if the amount to remove is valid (not negative)
+        if (Item.AmmoAmount >= 0)
+        {
+            // Subtract ammo
+            Collection->AmmoAmount = FMath::Max(Collection->AmmoAmount - Item.AmmoAmount, 0);
+
+            UE_LOG(LogTemp, Log, TEXT("Removed %d ammo. New ammo amount: %d"), Item.AmmoAmount, Collection->AmmoAmount);
+
+            return true;
+        }
         break;
+    }
 
     case EItemType::Weapon:
 
@@ -113,6 +133,6 @@ bool UInventoryComponent::RemoveItem(const FItem& Item)
         break;
     }
 
-    // Return false if the removal failed
-    return false;
+        // Return false if the removal failed
+        return false;
 }

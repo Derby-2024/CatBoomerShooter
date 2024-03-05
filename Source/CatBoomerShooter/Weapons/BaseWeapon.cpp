@@ -3,6 +3,9 @@
 
 #include "BaseWeapon.h"
 #include "Kismet/GameplayStatics.h"
+#include "../Inventory/Items/BaseAmmo.h"
+#include "../Character/BasePlayerCharacter.h"
+#include "../Inventory/InventoryComponent.h"
 #include "CatBoomerShooter/Character/BasePlayerCharacter.h"
 #include "CatBoomerShooter/Character/BasePlayerInterface.h"
 
@@ -21,10 +24,7 @@ ABaseWeapon::ABaseWeapon()
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon Mesh");
 	WeaponMesh->SetupAttachment(RootComponent);
 
-	TotalAmmo = 45;
-	AmmoAmount = 5;
-	CurrentAmmo = 45;
-	ReloadTime = 1.0f;
+	AmmoType = EAmmoType::E_AssaultRifle;
 }
 
 // Called when the game starts or when spawned
@@ -83,6 +83,38 @@ void ABaseWeapon::StopShooting()
 void ABaseWeapon::Fire()
 {
 	UWorld* World = GetWorld();
+
+	ABasePlayerCharacter* Player = Cast<ABasePlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+
+	// Check if PlayerCharacter is valid
+	if (Player)
+	{
+		UInventoryComponent* InventoryComponent = Player->GetInventoryComponent();
+		if (InventoryComponent)
+		{
+			// Check if there is enough ammo
+			FItem CurrentAmmo;
+			CurrentAmmo.ItemType = EItemType::Ammo;
+			CurrentAmmo.AmmoAmount = 1;
+			CurrentAmmo.AmmoType = AmmoType;
+
+			if (!InventoryComponent->RemoveItem(CurrentAmmo))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Not enough ammo to fire!"));
+				StopShooting();
+				return;
+			}
+
+			FAmmoStructX* Collection = InventoryComponent->Ammo.GetCollectionOfType(AmmoType);
+			if (Collection && Collection->AmmoAmount <= 0)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Not enough ammo to fire!"));
+				StopShooting();
+				return;
+			}
+		}
+	}
+
 	FActorSpawnParameters SpawnParams;
     SpawnParams.Owner = this;
     SpawnParams.Instigator = GetInstigator();

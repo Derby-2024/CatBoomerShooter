@@ -80,21 +80,7 @@ void ABasePlayerCharacter::InputFire_Start(const FInputActionValue &Value)
 {
 	if(Weapon)
 	{
-		if (Weapon->CurrentAmmo > 0)
-		{
-			Weapon->StartShooting();
-
-			//Decrease Clip Ammo by 1
-			Weapon->CurrentAmmo -= 1;
-		}
-		else if (Weapon->CurrentAmmo < 0)
-		{
-			ReloadWeapon();
-		}
-		else
-		{
-			TriggerOutOfAmmo();
-		}
+		Weapon->StartShooting();
 	}
 }
 
@@ -146,31 +132,5 @@ ABaseWhip *ABasePlayerCharacter::GetPlayerWhip_Implementation()
 
 void ABasePlayerCharacter::ReloadWeapon()
 {
-	if (Weapon)
-	{
-		if (Weapon->CurrentAmmo < Weapon->TotalAmmo && Weapon->AmmoAmount > 0)
-		{
-			Weapon->CurrentAmmo += Weapon->AmmoAmount;
-			Weapon->AmmoAmount -= Weapon->AmmoAmount;
-		}
-		else
-		{
-			Weapon->StopShooting();
-		}
-	}
-}
 
-//if (Weapon->ClipAmmo != Weapon->MaxClipAmmo) //Checking if we have room to reload 
-//{
-//	if (Weapon->TotalAmmo - (Weapon->MaxClipAmmo - Weapon->ClipAmmo) >= 0)
-//	{
-//		Weapon->TotalAmmo -= (Weapon->MaxClipAmmo - Weapon->ClipAmmo); //Check how much to reload
-//		Weapon->ClipAmmo = Weapon->MaxClipAmmo; 
-//	}
-//	else
-//	{
-//		//Use the remaining ammo 
-//		Weapon->ClipAmmo += Weapon->TotalAmmo;			
-//		Weapon->TotalAmmo = 0;
-//	}
-//}
+}

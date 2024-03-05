@@ -51,10 +51,8 @@ void AAmmoPickup::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherAc
             AmmoItem.AmmoType = AmmoType;
 
             // Add the ammo item to the inventory
-            if (InventoryComponent->AddItem(AmmoItem))
-            {
-                Destroy();
-            }
+            InventoryComponent->AddItem(AmmoItem);
+            Destroy();
         }
     }
 }

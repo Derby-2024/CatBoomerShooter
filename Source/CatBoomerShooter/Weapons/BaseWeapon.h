@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/ArrowComponent.h"
+#include "../Inventory/InventoryComponent.h"
+#include "../Inventory/Items/BaseAmmo.h"
 #include "Projectiles/BaseWeaponProjectile.h"
 #include "BaseWeapon.generated.h"
 
@@ -25,21 +27,6 @@ public:
 	// Sets default values for this actor's properties
 	ABaseWeapon();
 
-	//Total Amount of ammo being carried for the weapon
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-	int TotalAmmo;
-
-	//The amount of ammo in the weapon
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-	int AmmoAmount;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-	int CurrentAmmo;
-
-	//The time it takes to reload weapon
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-	float ReloadTime;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -50,6 +37,9 @@ protected:
 	class UArrowComponent* Arrow;
 	UPROPERTY(EditAnywhere)
 	class USkeletalMeshComponent* WeaponMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Defaults")
+	EAmmoType AmmoType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	TSubclassOf<class ABaseWeaponProjectile> ProjectileClass;
@@ -64,7 +54,6 @@ protected:
 
 	FTimerHandle Handle_ReFire;
 	ACharacter* PlayerCharacter;
-
 
 public:	
 	// Called every frame
