@@ -30,6 +30,15 @@
 			"TargetAllowList": [
 				"Editor"
 			]
+		},
+		{
+			"Name": "GPULightmass",
+			"Enabled": true
 		}
-	]
+	],
+    "TargetPlatforms": [
+        "LinuxArm64",
+        "Windows",
+        "Linux"
+    ]
 }
