@@ -34,6 +34,9 @@ PBGet/*-*
 # Debugging
 *.pdb
 
+# Built data for maps
+*_BuiltData.uasset
+
 # Executables
 *.out
 *.app
