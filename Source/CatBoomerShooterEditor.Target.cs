@@ -11,5 +11,6 @@ public class CatBoomerShooterEditorTarget : TargetRules
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_1;
 		ExtraModuleNames.Add("CatBoomerShooter");
-	}
+        ExtraModuleNames.Add("CatBoomerEditor");
+    }
 }
