@@ -19,7 +19,8 @@ class CATBOOMERSHOOTER_API ABasePlayerCharacter : public ACharacter, public IBas
 
 public:
 	// Sets default values for this character's properties
-	ABasePlayerCharacter();
+	// ABasePlayerCharacter();
+	ABasePlayerCharacter(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	// Called when the game starts or when spawned
@@ -32,10 +33,6 @@ protected:
 	class USkeletalMeshComponent* SK_Arms;
 
 	// Inputs
-	// Move to player controller later
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputMappingContext* InputMappingContext;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* MoveAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -46,10 +43,21 @@ protected:
 	UInputAction* MeleeAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* FireAction;
+
+	// Input Variables
+	UPROPERTY(EditAnywhere, Category = Input)
+	bool EnableAutoJump = true;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	float MouseSensitivity = 1.0f;
+
+	struct FEnhancedInputActionValueBinding* InputMoveVal;
+	struct FEnhancedInputActionValueBinding* InputCameraMoveVal;
 	
 	// Input Functions
 	void InputMove(const FInputActionValue& Value);
 	void InputJump(const FInputActionValue& Value);
+	void InputJumpEnd(const FInputActionValue& Value);
 	void InputCameraMove(const FInputActionValue& Value);
 	void InputMelee(const FInputActionValue& Value);
 	void InputFire_Start(const FInputActionValue& Value);
