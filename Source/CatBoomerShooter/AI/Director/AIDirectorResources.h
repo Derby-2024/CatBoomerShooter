@@ -5,12 +5,37 @@
 #include "CoreMinimal.h"
 #include "AIDirectorResources.generated.h"
 
+// Forward declare EnemyBase.h enum
+enum class EEnemyType : uint8;
+
+USTRUCT(BlueprintType)
+struct CATBOOMERSHOOTER_API FEnemyCollection
+{
+	GENERATED_BODY()
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<AActor*> Enemies;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<AActor*> SwarmEnemies;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<AActor*> RangedEnemies;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<AActor*> TankEnemies;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	TArray<AActor*> BossEnemies;
+
+	/** Get the correct array based on the enum value */
+	TArray<AActor*>* GetCollectionOfType(EEnemyType EnemyType);
+};
+
+
 // Token system references
 // https://www.gamedeveloper.com/design/cyber-demons-the-ai-of-doom-2016-
 // https://youtu.be/2KQNpQD8Ayo?si=zc6b-AJQagwvrBvr&t=2503
-
-// Forward declaration of Enemy base AIController
-class AAIEnemyBaseController;
 
 /** Type of attack a token is used for.
 *	Currently just a concept.
@@ -52,7 +77,7 @@ public:
 
 	// Enemy/Actor who is using the token
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	AAIEnemyBaseController* ClaimedBy;
+	class AAIEnemyBaseController* ClaimedBy;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	ETokenPriority ClaimPriority;
@@ -94,4 +119,7 @@ struct CATBOOMERSHOOTER_API FActorTokensCollection
 
 	/** Get the correct FTokenCollection based on the enum value */
 	FTokenCollection* GetCollectionOfType(ETokenType TokenType);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool Locked = false;
 };

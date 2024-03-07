@@ -40,6 +40,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* CameraMoveAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* InteractAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* MeleeAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* FireAction;
@@ -59,6 +61,7 @@ protected:
 	void InputJump(const FInputActionValue& Value);
 	void InputJumpEnd(const FInputActionValue& Value);
 	void InputCameraMove(const FInputActionValue& Value);
+	void InputInteract(const FInputActionValue& Value);
 	void InputMelee(const FInputActionValue& Value);
 	void InputFire_Start(const FInputActionValue& Value);
 	void InputFire_Stop(const FInputActionValue& Value);
@@ -79,6 +82,14 @@ protected:
 	// Reference to the InventoryComponent
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
 	UInventoryComponent* InventoryComponent;
+
+public:
+	UPROPERTY(EditAnywhere)
+	float InteractRange = 500.0f;
+
+	//Temporary variable until inventory system is finished
+	UPROPERTY(EditAnywhere)
+	TArray<FString> Keys;
 
 public:	
 	// Called every frame

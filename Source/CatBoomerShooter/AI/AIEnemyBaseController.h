@@ -4,8 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
-#include "BehaviorTree/BlackboardComponent.h"
-#include "Director/AIDirectorResources.h"
 #include "GameTeams.h"
 #include "AIEnemyBaseController.generated.h"
 
@@ -24,7 +22,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditDefaultsOnly, Category = "EnemyBase")
-	UBehaviorTree* DefaultBehaviorTree;
+	class UBehaviorTree* DefaultBehaviorTree;
 
 private:
 	/** Requests an enemy token of a given type.
@@ -35,6 +33,10 @@ private:
 	/** Returns a token from being used by an enemy */
 	UFUNCTION(BlueprintCallable, Category = "Tokens")
 	void ReleaseToken(UEnemyToken* Token, const float CustomCooldown = -1.0f);
+
+public:
+	UFUNCTION(BlueprintNativeEvent, Category = "Tokens")
+	void TokenRetracted(UEnemyToken* Token);
 
 	ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 };

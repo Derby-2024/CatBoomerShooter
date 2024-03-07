@@ -3,8 +3,9 @@
 
 #include "AIEnemyBaseController.h"
 #include "Navigation/CrowdFollowingComponent.h"
-#include "Director/AIDirectorGameMode.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Director/AIDirectorGameMode.h"
 
 AAIEnemyBaseController::AAIEnemyBaseController(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent")))
@@ -49,6 +50,11 @@ void AAIEnemyBaseController::ReleaseToken(UEnemyToken* Token, const float Custom
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("AAIEnemyBaseController::ReleaseToken: Could not get AIDirector Gamemode from current Gamemode."));
+}
+
+void AAIEnemyBaseController::TokenRetracted_Implementation(UEnemyToken* Token)
+{
+
 }
 
 ETeamAttitude::Type AAIEnemyBaseController::GetTeamAttitudeTowards(const AActor& Other) const
