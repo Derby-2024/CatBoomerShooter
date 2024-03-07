@@ -36,9 +36,10 @@
 			"Enabled": true
 		}
 	],
-    "TargetPlatforms": [
-        "LinuxArm64",
-        "Windows",
-        "Linux"
-    ]
+	"TargetPlatforms": [
+		"LinuxArm64",
+		"Windows",
+		"Linux",
+		"HoloLens"
+	]
 }
