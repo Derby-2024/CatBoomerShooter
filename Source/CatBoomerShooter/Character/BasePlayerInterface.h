@@ -23,7 +23,9 @@ class CATBOOMERSHOOTER_API IBasePlayerInterface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
-	USceneComponent* GetPlayerWhipLocation();
+	USkeletalMeshComponent* GetPlayerArms();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
 	ABaseWhip* GetPlayerWhip();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Camera")
+	UCameraComponent* GetPlayerCamera();
 };

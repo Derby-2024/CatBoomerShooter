@@ -19,11 +19,8 @@ ABasePlayerCharacter::ABasePlayerCharacter()
 	Camera->SetupAttachment(RootComponent);
 	Camera->bUsePawnControlRotation = true;
 
-	WhipLocation = CreateDefaultSubobject<USceneComponent>(TEXT("WhipLocation"));
-	WhipLocation->SetupAttachment(Camera);
-
-	//Set default value for variable
-	Weapon = nullptr;
+	SK_Arms = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Arms"));
+	SK_Arms->SetupAttachment(Camera);
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 }
@@ -119,14 +116,19 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ABasePlayerCharacter::ReloadWeapon);
 }
 
-USceneComponent *ABasePlayerCharacter::GetPlayerWhipLocation_Implementation()
+USkeletalMeshComponent *ABasePlayerCharacter::GetPlayerArms_Implementation()
 {
-    return WhipLocation;
+    return SK_Arms;
 }
 
 ABaseWhip *ABasePlayerCharacter::GetPlayerWhip_Implementation()
 {
     return Whip;
+}
+
+UCameraComponent *ABasePlayerCharacter::GetPlayerCamera_Implementation()
+{
+	return Camera;
 }
 
 
