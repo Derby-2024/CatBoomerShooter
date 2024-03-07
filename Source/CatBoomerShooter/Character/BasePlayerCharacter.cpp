@@ -21,6 +21,8 @@ ABasePlayerCharacter::ABasePlayerCharacter(const FObjectInitializer& ObjectIniti
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("PlayerCamera"));
 	Camera->SetupAttachment(RootComponent);
 	Camera->bUsePawnControlRotation = true;
+	//Test Health
+	Health = 100.0f;
 }
 
 // Called when the game starts or when spawned
@@ -111,3 +113,19 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	}
 }
 
+
+float ABasePlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float DamageCaused = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	// Reduce player health
+	Health -= DamageCaused;
+	UE_LOG(LogTemp, Warning, TEXT("Player Health: %f"), Health);
+
+	return DamageCaused;
+}
+
+void ABasePlayerCharacter::TrainImpact(FVector PushDirection, float PushForce)
+{
+	LaunchCharacter(PushDirection * PushForce, true, true);
+}

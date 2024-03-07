@@ -63,6 +63,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	float InteractRange = 500.0f;
 
+	//test health
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	float Health;
+
 	//Temporary variable until inventory system is finished
 	UPROPERTY(EditAnywhere)
 	TArray<FString> Keys;
@@ -73,4 +77,8 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+
+	void TrainImpact(FVector PushDirection, float PushForce);
 };
