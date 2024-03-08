@@ -75,7 +75,7 @@ public:
 	bool AddItem(const FItem& Item);
 	bool RemoveItem(const FItem& Item);
 
-	UPROPERTY(EditAnywhere, Category = "Item")
+	UPROPERTY(EditAnywhere, BlueprintRead, Category = "Item")
 	FAmmoCollection Ammo;
 
 	UPROPERTY(EditAnywhere, Category = "Item")
@@ -83,4 +83,8 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Item")
 	FCollectibles Collectibles;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	FAmmoContainer GetAmmoCollectionOfType(EAmmoType AmmoType);
 };

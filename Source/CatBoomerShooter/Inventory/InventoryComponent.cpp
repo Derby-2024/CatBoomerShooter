@@ -146,3 +146,8 @@ bool UInventoryComponent::RemoveItem(const FItem& Item)
     // Return false if the removal failed
     return false;
 }
+
+FAmmoContainer UInventoryComponent::GetAmmoCollectionOfType(EAmmoType AmmoType)
+{
+    return *Ammo.GetCollectionOfType(AmmoType);
+}
