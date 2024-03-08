@@ -36,24 +36,24 @@ void ABaseWeapon::BeginPlay()
 
 	if (!GetOwner())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Cannot get owner!"));
+		UE_LOG(LogTemp, Warning, TEXT("BaseWeapon::BeginPlay: Cannot get owner!"));
 		return;
 	}
 
 	OwningCharacter = Cast<APawn>(GetOwner());
 	if (!OwningCharacter)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Cannot cast to pawn"));
+		UE_LOG(LogTemp, Warning, TEXT("BaseWeapon::BeginPlay: Cannot cast to pawn"));
 		return;
 	}
 
 	if (OwningCharacter->Implements<UBasePlayerInterface>() == false)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Owner Doesn't Implement Interface!"));
+		UE_LOG(LogTemp, Warning, TEXT("BaseWeapon::BeginPlay: Owner Doesn't Implement Interface!"));
 		return;
 	}
+
 	USkeletalMeshComponent* Arms = IBasePlayerInterface::Execute_GetPlayerArms(OwningCharacter);
-	
 	if(IsValid(Arms))
 	{
 		this->AttachToComponent(Arms, FAttachmentTransformRules::SnapToTargetIncludingScale, HandSocketName);
@@ -109,7 +109,6 @@ void ABaseWeapon::StopShooting()
 
 void ABaseWeapon::Fire()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Shooting"));
 	UWorld* World = GetWorld();
 
 	ABasePlayerCharacter* Player = Cast<ABasePlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
@@ -128,15 +127,15 @@ void ABaseWeapon::Fire()
 
 			if (!InventoryComponent->RemoveItem(CurrentAmmo))
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Not enough ammo to fire!"));
+				UE_LOG(LogTemp, Warning, TEXT("BaseWeapon::Fire: Not enough ammo to fire!"));
 				StopShooting();
 				return;
 			}
 
-			FAmmoStructX* Collection = InventoryComponent->Ammo.GetCollectionOfType(AmmoType);
+			FAmmoStruct* Collection = InventoryComponent->Ammo.GetCollectionOfType(AmmoType);
 			if (Collection && Collection->AmmoAmount <= 0)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Not enough ammo to fire!"));
+				UE_LOG(LogTemp, Warning, TEXT("BaseWeapon::Fire: Not enough ammo to fire!"));
 				StopShooting();
 				return;
 			}
@@ -208,7 +207,7 @@ void ABaseWeapon::Fire()
 void ABaseWeapon::Reload()
 {
 	//Play Reload Animation
-	UE_LOG(LogTemp, Warning, TEXT("Reload Animation Placeholder!"));
+	UE_LOG(LogTemp, Warning, TEXT("BaseWeapon::Reload: Reload Animation Placeholder!"));
 }
 
 FRotator ABaseWeapon::RandomSpread(FRotator spawnRotation, float maxVertical, float maxHorizontal)

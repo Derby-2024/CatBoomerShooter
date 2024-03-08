@@ -8,6 +8,8 @@
 #include "Items/BaseCollectible.h"
 #include "InventoryComponent.generated.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogInventory, Log, All);
+
 UENUM(BlueprintType)
 enum class EItemType : uint8
 {

@@ -21,10 +21,8 @@ FAmmoCollection::FAmmoCollection()
 	SniperAmmo.TotalAmmo = 6;
 }
 
-FAmmoStructX* FAmmoCollection::GetCollectionOfType(EAmmoType AmmoType)
+FAmmoStruct* FAmmoCollection::GetCollectionOfType(EAmmoType AmmoType)
 {
-	UE_LOG(LogTemp, Log, TEXT("Getting collection"));
-
 	switch (AmmoType)
 	{
 	case EAmmoType::E_AssaultRifle:
@@ -41,26 +39,4 @@ FAmmoStructX* FAmmoCollection::GetCollectionOfType(EAmmoType AmmoType)
 	default:
 		return nullptr;
 	}
-}
-
-// Sets default values
-ABaseAmmo::ABaseAmmo()
-{
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
-}
-
-// Called when the game starts or when spawned
-void ABaseAmmo::BeginPlay()
-{
-	Super::BeginPlay();
-
-}
-
-// Called every frame
-void ABaseAmmo::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }

@@ -17,7 +17,7 @@ enum class EAmmoType : uint8
 };
 
 USTRUCT(BlueprintType)
-struct FAmmoStructX
+struct FAmmoStruct
 {
 	GENERATED_BODY()
 
@@ -36,56 +36,22 @@ struct FAmmoCollection
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	FAmmoStructX ShotgunAmmo;
+	FAmmoStruct ShotgunAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	FAmmoStructX AssaultRifleAmmo;
+	FAmmoStruct AssaultRifleAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	FAmmoStructX PistolAmmo;
+	FAmmoStruct PistolAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	FAmmoStructX SniperAmmo;
+	FAmmoStruct SniperAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	FAmmoStructX GrenadeAmmo;
+	FAmmoStruct GrenadeAmmo;
 
 	FAmmoCollection();
 
 	/** Get the correct FTokenCollection based on the enum value */
-	FAmmoStructX* GetCollectionOfType(EAmmoType AmmoType);
-};
-
-USTRUCT(BlueprintType)
-struct FAmmoStruct
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	int AmmoAmount;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	int TotalAmmo;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	EAmmoType AmmoType;
-};
-
-UCLASS()
-class CATBOOMERSHOOTER_API ABaseAmmo : public AActor
-{
-	GENERATED_BODY()
-
-public:
-	// Sets default values for this actor's properties
-	ABaseAmmo();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	FAmmoStruct* GetCollectionOfType(EAmmoType AmmoType);
 };

@@ -3,6 +3,8 @@
 
 #include "BaseWeaponProjectile.h"
 #include "CatBoomerShooter/Enemy/DamageInterface.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 ABaseWeaponProjectile::ABaseWeaponProjectile()
@@ -43,9 +45,23 @@ void ABaseWeaponProjectile::Tick(float DeltaTime)
 
 void ABaseWeaponProjectile::OnHit(UPrimitiveComponent *HitComponent, AActor *OtherActor, UPrimitiveComponent *OtherComponent, FVector NormalImpulse, const FHitResult &Hit)
 {
-	if(OtherActor->GetClass()->ImplementsInterface(UDamageInterface::StaticClass()))
+	AActor* MyOwner = GetOwner();
+	if (!MyOwner) {
+		UE_LOG(LogTemp, Warning, TEXT("ABaseWeaponProjectile::OnHit - Projectile %s has no owner."), *UKismetSystemLibrary::GetDisplayName(this))
+		return;
+	}
+
+	AController* MyInstigator = GetInstigatorController();
+	UClass* DamageType = UDamageType::StaticClass();
+
+	if (OtherActor && OtherActor != this && OtherActor != MyOwner)
+	{
+		UGameplayStatics::ApplyDamage(OtherActor, Damage, MyInstigator, this, DamageType);
+	}
+
+	/*if (OtherActor->GetClass()->ImplementsInterface(UDamageInterface::StaticClass()))
 	{
 		IDamageInterface::Execute_TakeHealthDamage(OtherActor, Damage);
-	}
+	}*/
 	Destroy();
 }

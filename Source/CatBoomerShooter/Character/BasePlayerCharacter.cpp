@@ -6,10 +6,11 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedPlayerInput.h"
 #include "../Environment/InteractInterface.h"
-#include "Components/InputComponent.h"
-#include "BaseCharacterMovementComponent.h"
 #include <GameFramework/MovementComponent.h>
 #include <Kismet/KismetMathLibrary.h>
+
+#include "Components/InputComponent.h"
+#include "BaseCharacterMovementComponent.h"
 #include "CatBoomerShooter/Whip/BaseWhip.h"
 #include "CatBoomerShooter/Weapons/BaseWeapon.h"
 
