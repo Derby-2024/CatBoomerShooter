@@ -55,11 +55,6 @@ void ABaseWeaponProjectile::OnHit(UPrimitiveComponent *HitComponent, AActor *Oth
 	if (OtherActor && OtherActor != this && OtherActor != MyOwner)
 	{
 		UGameplayStatics::ApplyDamage(OtherActor, Damage, MyInstigator, this, DamageType);
+		Destroy();
 	}
-
-	/*if (OtherActor->GetClass()->ImplementsInterface(UDamageInterface::StaticClass()))
-	{
-		IDamageInterface::Execute_TakeHealthDamage(OtherActor, Damage);
-	}*/
-	Destroy();
 }
