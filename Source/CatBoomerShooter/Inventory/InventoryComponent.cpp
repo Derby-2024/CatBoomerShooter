@@ -37,14 +37,14 @@ bool UInventoryComponent::AddItem(const FItem& Item)
     {
     case EItemType::Ammo:
     {
-        FAmmoStruct* Collection = Ammo.GetCollectionOfType(Item.AmmoType);
-        UE_LOG(LogInventory, Log, TEXT("AddAmmo, %d, %d, %d"), Item.AmmoAmount, Collection->AmmoAmount, Collection->TotalAmmo);
+        FAmmoContainer* Collection = Ammo.GetCollectionOfType(Item.AmmoType);
+        UE_LOG(LogInventory, Log, TEXT("AddAmmo, %d, %d, %d"), Item.AmmoAmount, Collection->AmmoAmount, Collection->MaxAmmo);
         
         // Calculate the remaining ammo needed to reach the totalammo
-        int RemainingAmmo = Collection->TotalAmmo - Collection->AmmoAmount;
+        int RemainingAmmo = Collection->MaxAmmo - Collection->AmmoAmount;
 
 
-        if (Collection->AmmoAmount + Item.AmmoAmount > Collection->TotalAmmo)
+        if (Collection->AmmoAmount + Item.AmmoAmount > Collection->MaxAmmo)
         {
             UE_LOG(LogInventory, Warning, TEXT("Maximum ammo capacity reached, cannot pick up more ammo."));
             return false;
@@ -104,7 +104,7 @@ bool UInventoryComponent::RemoveItem(const FItem& Item)
     {
     case EItemType::Ammo:
     {
-        FAmmoStruct* Collection = Ammo.GetCollectionOfType(Item.AmmoType);
+        FAmmoContainer* Collection = Ammo.GetCollectionOfType(Item.AmmoType);
 
         // Check if the amount to remove is valid (not negative)
         if (Collection->AmmoAmount >= Item.AmmoAmount)

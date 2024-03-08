@@ -17,7 +17,7 @@ enum class EAmmoType : uint8
 };
 
 USTRUCT(BlueprintType)
-struct FAmmoStruct
+struct FAmmoContainer
 {
 	GENERATED_BODY()
 
@@ -26,7 +26,7 @@ public:
 	int AmmoAmount = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	int TotalAmmo = 0;
+	int MaxAmmo = 0;
 };
 
 USTRUCT(BlueprintType)
@@ -36,22 +36,22 @@ struct FAmmoCollection
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	FAmmoStruct ShotgunAmmo;
+	FAmmoContainer ShotgunAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	FAmmoStruct AssaultRifleAmmo;
+	FAmmoContainer AssaultRifleAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	FAmmoStruct PistolAmmo;
+	FAmmoContainer PistolAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	FAmmoStruct SniperAmmo;
+	FAmmoContainer SniperAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-	FAmmoStruct GrenadeAmmo;
+	FAmmoContainer GrenadeAmmo;
 
 	FAmmoCollection();
 
 	/** Get the correct FTokenCollection based on the enum value */
-	FAmmoStruct* GetCollectionOfType(EAmmoType AmmoType);
+	FAmmoContainer* GetCollectionOfType(EAmmoType AmmoType);
 };

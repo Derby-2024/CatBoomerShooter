@@ -132,7 +132,7 @@ void ABaseWeapon::Fire()
 				return;
 			}
 
-			FAmmoStruct* Collection = InventoryComponent->Ammo.GetCollectionOfType(AmmoType);
+			FAmmoContainer* Collection = InventoryComponent->Ammo.GetCollectionOfType(AmmoType);
 			if (Collection && Collection->AmmoAmount <= 0)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("BaseWeapon::Fire: Not enough ammo to fire!"));

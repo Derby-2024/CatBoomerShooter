@@ -6,22 +6,22 @@
 FAmmoCollection::FAmmoCollection()
 {
 	ShotgunAmmo.AmmoAmount = 8;
-	ShotgunAmmo.TotalAmmo = 8;
+	ShotgunAmmo.MaxAmmo = 8;
 
 	AssaultRifleAmmo.AmmoAmount = 30;
-	AssaultRifleAmmo.TotalAmmo = 65;
+	AssaultRifleAmmo.MaxAmmo = 65;
 
 	GrenadeAmmo.AmmoAmount = 1;
-	GrenadeAmmo.TotalAmmo = 3;
+	GrenadeAmmo.MaxAmmo = 3;
 
 	PistolAmmo.AmmoAmount = 6;
-	PistolAmmo.TotalAmmo = 12;
+	PistolAmmo.MaxAmmo = 12;
 
 	SniperAmmo.AmmoAmount = 3;
-	SniperAmmo.TotalAmmo = 6;
+	SniperAmmo.MaxAmmo = 6;
 }
 
-FAmmoStruct* FAmmoCollection::GetCollectionOfType(EAmmoType AmmoType)
+FAmmoContainer* FAmmoCollection::GetCollectionOfType(EAmmoType AmmoType)
 {
 	switch (AmmoType)
 	{
