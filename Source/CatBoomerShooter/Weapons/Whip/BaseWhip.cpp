@@ -1,12 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "BaseWhip.h"
 #include "Kismet/GameplayStatics.h"
 #include "CatBoomerShooter/Character/BasePlayerCharacter.h"
 #include "CatBoomerShooter/Character/BasePlayerInterface.h"
-#include "CatBoomerShooter/Enemy/DamageInterface.h"
-
 
 // Sets default values
 ABaseWhip::ABaseWhip()
@@ -73,7 +70,11 @@ void ABaseWhip::Attack()
 
 	for (ACharacter* enemy : EnemiesHit)
 	{
-		IDamageInterface::Execute_TakeHealthDamage(enemy, Damage);
+		AController* MyInstigator = GetInstigatorController();
+		UClass* DamageType = UDamageType::StaticClass();
+
+		UGameplayStatics::ApplyDamage(enemy, Damage, MyInstigator, this, DamageType);
+
 		if (!hasBigKnockback)
 		{
 			LaunchVelocity = PlayerCharacter->GetActorForwardVector() * KnockbackPower;

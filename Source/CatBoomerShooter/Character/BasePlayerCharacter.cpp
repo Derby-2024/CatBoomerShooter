@@ -11,7 +11,7 @@
 
 #include "Components/InputComponent.h"
 #include "BaseCharacterMovementComponent.h"
-#include "CatBoomerShooter/Whip/BaseWhip.h"
+#include "CatBoomerShooter/Weapons/Whip/BaseWhip.h"
 #include "CatBoomerShooter/Weapons/BaseWeapon.h"
 
 // Sets default values

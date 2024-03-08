@@ -26,9 +26,6 @@ protected:
 	UPROPERTY(EditAnywhere)
 	class UStaticMeshComponent* BulletMesh;
 
-	
-
-
 	//Default Values
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	float Damage = 0.0f;
