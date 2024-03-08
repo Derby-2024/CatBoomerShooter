@@ -8,8 +8,9 @@ public class CatBoomerShooterEditorTarget : TargetRules
 	public CatBoomerShooterEditorTarget( TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
-		DefaultBuildSettings = BuildSettingsVersion.V4;
-		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_3;
+		DefaultBuildSettings = BuildSettingsVersion.V2;
+		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_1;
 		ExtraModuleNames.Add("CatBoomerShooter");
-	}
+        ExtraModuleNames.Add("CatBoomerEditor");
+    }
 }
