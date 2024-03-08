@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "BasePickup.h"
-#include "../../Character/BasePlayerCharacter.h"
 #include "../InventoryComponent.h"
 #include "CatPickup.generated.h"
 

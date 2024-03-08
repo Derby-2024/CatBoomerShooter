@@ -3,8 +3,6 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/SphereComponent.h"
-#include "GameFramework/Actor.h"
 #include "BasePickup.generated.h"
 
 UCLASS()
@@ -22,7 +20,7 @@ protected:
     FString ItemInfo;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
-    USphereComponent* CollisionComponent;
+    class USphereComponent* CollisionComponent;
 
     // Static mesh component for the pickup
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pickup")

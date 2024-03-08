@@ -14,7 +14,7 @@ enum class ECollectibleType : uint8
 };
 
 USTRUCT(BlueprintType)
-struct FCollectibleStructX
+struct FCollectibleData
 {
 	GENERATED_BODY()
 
@@ -36,49 +36,10 @@ struct FCollectibles
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collectible")
-	FCollectibleStructX Cats;
+	FCollectibleData Cats;
 
 	FCollectibles();
 
 	/** Get the correct FTokenCollection based on the enum value */
-	FCollectibleStructX* GetCollectionOfType(ECollectibleType CollectibleType);
-};
-
-
-USTRUCT(BlueprintType)
-struct FCollectibleStruct
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Collectible")
-	FString ItemInformation;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collectible")
-	int CatCount = 0;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collectible")
-	int TotalCats = 10;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collectible")
-	ECollectibleType CollectibleType;
-};
-
-UCLASS()
-class CATBOOMERSHOOTER_API ABaseCollectible : public AActor
-{
-	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	ABaseCollectible();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
+	FCollectibleData* GetCollectionOfType(ECollectibleType CollectibleType);
 };

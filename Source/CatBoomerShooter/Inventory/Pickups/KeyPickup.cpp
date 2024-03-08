@@ -2,7 +2,6 @@
 
 
 #include "KeyPickup.h"
-#include "Components/SphereComponent.h"
 #include "../../Character/BasePlayerCharacter.h"
 
 

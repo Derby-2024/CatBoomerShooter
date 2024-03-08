@@ -2,6 +2,7 @@
 
 
 #include "BasePickup.h"
+#include "Components/SphereComponent.h"
 
 // Sets default values
 ABasePickup::ABasePickup()

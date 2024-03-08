@@ -54,7 +54,7 @@ void ABaseWhip::Attack()
 	{
 		return;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Attacking"));
+	UE_LOG(LogTemp, Warning, TEXT("BaseWhip: Attacking"));
 	isAttacking = true;
 	this->SetActorHiddenInGame(false);
 
@@ -97,11 +97,11 @@ void ABaseWhip::Attack()
 	isAttacking = false;
 	EnemiesHit = {};
 	//this->SetActorHiddenInGame(true);
-	UE_LOG(LogTemp, Warning, TEXT("Attack Ended"));
+	UE_LOG(LogTemp, Warning, TEXT("BaseWhip: Attack Ended"));
 }
 
 void ABaseWhip::ResetCombo()
 {
 	hasBigKnockback = true;
-	UE_LOG(LogTemp, Warning, TEXT("Attack Reset"));
+	UE_LOG(LogTemp, Warning, TEXT("BaseWhip: Attack Reset"));
 }

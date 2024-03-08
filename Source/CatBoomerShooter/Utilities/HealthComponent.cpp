@@ -2,7 +2,6 @@
 
 
 #include "HealthComponent.h"
-#include "Components/StaticMeshComponent.h"
 #include "GameFramework/DamageType.h"
 #include "Kismet/GameplayStatics.h"
 

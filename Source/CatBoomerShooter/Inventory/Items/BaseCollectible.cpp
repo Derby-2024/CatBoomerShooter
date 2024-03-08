@@ -9,7 +9,7 @@ FCollectibles::FCollectibles()
 	Cats.ItemInformation = "Cats";
 }
 
-FCollectibleStructX* FCollectibles::GetCollectionOfType(ECollectibleType CollectibleType)
+FCollectibleData* FCollectibles::GetCollectionOfType(ECollectibleType CollectibleType)
 {
 	UE_LOG(LogTemp, Log, TEXT("Getting collection"));
 
@@ -22,28 +22,5 @@ FCollectibleStructX* FCollectibles::GetCollectionOfType(ECollectibleType Collect
 	default:
 		return nullptr;
 	}
-
-}
-
-
-// Sets default values
-ABaseCollectible::ABaseCollectible()
-{
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
-}
-
-// Called when the game starts or when spawned
-void ABaseCollectible::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void ABaseCollectible::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 
 }

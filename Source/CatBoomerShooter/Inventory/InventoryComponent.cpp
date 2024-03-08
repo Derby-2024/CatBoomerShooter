@@ -1,4 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
+
+
 #include "InventoryComponent.h"
 
 DEFINE_LOG_CATEGORY(LogInventory);
@@ -8,7 +10,7 @@ UInventoryComponent::UInventoryComponent()
 {
     // Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
     // off to improve performance if you don't need them.
-    PrimaryComponentTick.bCanEverTick = true;
+    PrimaryComponentTick.bCanEverTick = false;
 
 }
 
@@ -76,7 +78,7 @@ bool UInventoryComponent::AddItem(const FItem& Item)
 
     case EItemType::Collectible:
     {
-        if (FCollectibleStructX* Collection = Collectibles.GetCollectionOfType(Item.CollectibleType)) {
+        if (FCollectibleData* Collection = Collectibles.GetCollectionOfType(Item.CollectibleType)) {
             Collection->CatCount += Item.CatCount;
 
             return true;
