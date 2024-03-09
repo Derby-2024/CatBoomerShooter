@@ -75,7 +75,7 @@ public:
 	bool AddItem(const FItem& Item);
 	bool RemoveItem(const FItem& Item);
 
-	UPROPERTY(EditAnywhere, BlueprintRead, Category = "Item")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item")
 	FAmmoCollection Ammo;
 
 	UPROPERTY(EditAnywhere, Category = "Item")

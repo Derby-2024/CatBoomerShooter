@@ -12,7 +12,7 @@ ABaseWeaponProjectile::ABaseWeaponProjectile()
 
 	BulletMesh = CreateDefaultSubobject<UStaticMeshComponent>("Bullet Mesh");
 	BulletMesh->BodyInstance.SetCollisionProfileName(TEXT("Projectile"));
-	BulletMesh->OnComponentHit.AddDynamic(this, &ABaseWeaponProjectile::OnHit);
+	BulletMesh->OnComponentBeginOverlap.AddDynamic(this, &ABaseWeaponProjectile::OnOverlap);
 	RootComponent = BulletMesh;
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("Projectile Movement");
@@ -41,7 +41,7 @@ void ABaseWeaponProjectile::Tick(float DeltaTime)
 
 }
 
-void ABaseWeaponProjectile::OnHit(UPrimitiveComponent *HitComponent, AActor *OtherActor, UPrimitiveComponent *OtherComponent, FVector NormalImpulse, const FHitResult &Hit)
+void ABaseWeaponProjectile::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	AActor* MyOwner = GetOwner();
 	if (!MyOwner) {
@@ -52,8 +52,10 @@ void ABaseWeaponProjectile::OnHit(UPrimitiveComponent *HitComponent, AActor *Oth
 	AController* MyInstigator = GetInstigatorController();
 	UClass* DamageType = UDamageType::StaticClass();
 
-	if (OtherActor && OtherActor != this && OtherActor != MyOwner)
+
+	if (OtherActor && OtherActor != this && OtherActor != MyOwner && OtherActor != MyOwner->GetOwner())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Hit %s"), *UKismetSystemLibrary::GetDisplayName(OtherActor))
 		UGameplayStatics::ApplyDamage(OtherActor, Damage, MyInstigator, this, DamageType);
 		Destroy();
 	}
