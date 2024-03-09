@@ -12,6 +12,7 @@
 
 #include "EMSAsyncSaveGame.h"
 #include "EMSAsyncLoadGame.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "BaseCharacterMovementComponent.h"
 #include "CatBoomerShooter/Weapons/Whip/BaseWhip.h"
@@ -120,6 +121,8 @@ void ABasePlayerCharacter::InputFire_Stop(const FInputActionValue &Value)
 
 void ABasePlayerCharacter::InputQuickSave(const FInputActionValue& Value)
 {
+	
+
 	int32 Flags = ENUM_TO_FLAG(ESaveTypeFlags::SF_Level) | ENUM_TO_FLAG(ESaveTypeFlags::SF_Player);
 
 	auto EMSAsyncSaveGame = UEMSAsyncSaveGame::AsyncSaveActors(this, Flags);
@@ -130,6 +133,14 @@ void ABasePlayerCharacter::InputQuickSave(const FInputActionValue& Value)
 
 void ABasePlayerCharacter::InputQuickLoad(const FInputActionValue& Value)
 {
+	TSubclassOf<ABaseWeaponProjectile> Projectileclass = ABaseWeaponProjectile::StaticClass();
+	TArray<AActor*> FoundProjectiles;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), Projectileclass, FoundProjectiles);
+
+	for (AActor* a : FoundProjectiles) {
+		a->Destroy();
+	}
+
 	int32 Flags = ENUM_TO_FLAG(ESaveTypeFlags::SF_Level) | ENUM_TO_FLAG(ESaveTypeFlags::SF_Player);
 
 	auto EMSAsyncLoadGame = UEMSAsyncLoadGame::AsyncLoadActors(this, Flags, true);

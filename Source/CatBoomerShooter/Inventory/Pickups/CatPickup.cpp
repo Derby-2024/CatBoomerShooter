@@ -32,7 +32,8 @@ void ACatPickup::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
 
             if (InventoryComponent->AddItem(CatItem))
             {
-                Destroy();
+                bIsDisabled = true;
+                CheckActorDisabled();
             }
         }
     }
