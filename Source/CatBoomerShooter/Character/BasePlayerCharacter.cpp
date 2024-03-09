@@ -9,6 +9,10 @@
 #include <GameFramework/MovementComponent.h>
 #include <Kismet/KismetMathLibrary.h>
 #include "Components/InputComponent.h"
+
+#include "EMSAsyncSaveGame.h"
+#include "EMSAsyncLoadGame.h"
+
 #include "BaseCharacterMovementComponent.h"
 #include "CatBoomerShooter/Weapons/Whip/BaseWhip.h"
 #include "CatBoomerShooter/Weapons/BaseWeapon.h"
@@ -114,6 +118,31 @@ void ABasePlayerCharacter::InputFire_Stop(const FInputActionValue &Value)
 	}
 }
 
+void ABasePlayerCharacter::InputQuickSave(const FInputActionValue& Value)
+{
+	int32 Flags = ENUM_TO_FLAG(ESaveTypeFlags::SF_Level) | ENUM_TO_FLAG(ESaveTypeFlags::SF_Player);
+
+	auto EMSAsyncSaveGame = UEMSAsyncSaveGame::AsyncSaveActors(this, Flags);
+	if (IsValid(EMSAsyncSaveGame)) {
+		EMSAsyncSaveGame->Activate();
+	}
+}
+
+void ABasePlayerCharacter::InputQuickLoad(const FInputActionValue& Value)
+{
+	int32 Flags = ENUM_TO_FLAG(ESaveTypeFlags::SF_Level) | ENUM_TO_FLAG(ESaveTypeFlags::SF_Player);
+
+	auto EMSAsyncLoadGame = UEMSAsyncLoadGame::AsyncLoadActors(this, Flags, true);
+	if (IsValid(EMSAsyncLoadGame)) {
+		EMSAsyncLoadGame->Activate();
+	}
+}
+
+void ABasePlayerCharacter::ComponentsToSave_Implementation(TArray<UActorComponent*>& Components)
+{
+	Components.Add(InventoryComponent);
+}
+
 // Called every frame
 void ABasePlayerCharacter::Tick(float DeltaTime)
 {
@@ -142,6 +171,9 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputFire_Start);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &ABasePlayerCharacter::InputFire_Stop);
 
+		EnhancedInputComponent->BindAction(QuickSaveAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputQuickSave);
+		EnhancedInputComponent->BindAction(QuickLoadAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputQuickLoad);
+
 		InputMoveVal = &EnhancedInputComponent->BindActionValue(MoveAction);
 		InputCameraMoveVal = &EnhancedInputComponent->BindActionValue(CameraMoveAction);
 	}
@@ -164,7 +196,6 @@ UCameraComponent *ABasePlayerCharacter::GetPlayerCamera_Implementation()
 {
 	return Camera;
 }
-
 
 void ABasePlayerCharacter::ReloadWeapon()
 {

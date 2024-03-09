@@ -47,6 +47,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* FireAction;
 
+	// EMS Quick Load/Save Inputs
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* QuickSaveAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* QuickLoadAction;
+
 	// Input Variables
 	UPROPERTY(EditAnywhere, Category = Input)
 	bool EnableAutoJump = true;
@@ -66,6 +72,8 @@ protected:
 	void InputMelee(const FInputActionValue& Value);
 	void InputFire_Start(const FInputActionValue& Value);
 	void InputFire_Stop(const FInputActionValue& Value);
+	void InputQuickSave(const FInputActionValue& Value);
+	void InputQuickLoad(const FInputActionValue& Value);
 
 	//Whip
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Whip")
@@ -89,7 +97,7 @@ public:
 	float InteractRange = 500.0f;
 
 	//Temporary variable until inventory system is finished
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, SaveGame)
 	TArray<FString> Keys;
 
 public:	
@@ -111,6 +119,5 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Camera")
 	UCameraComponent* GetPlayerCamera(); virtual UCameraComponent* GetPlayerCamera_Implementation() override;
 
-
-
+	void ComponentsToSave_Implementation(TArray<UActorComponent*>& Components) override;
 };
