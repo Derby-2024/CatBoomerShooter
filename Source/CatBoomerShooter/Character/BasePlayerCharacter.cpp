@@ -8,7 +8,6 @@
 #include "../Environment/InteractInterface.h"
 #include <GameFramework/MovementComponent.h>
 #include <Kismet/KismetMathLibrary.h>
-
 #include "Components/InputComponent.h"
 #include "BaseCharacterMovementComponent.h"
 #include "CatBoomerShooter/Weapons/Whip/BaseWhip.h"

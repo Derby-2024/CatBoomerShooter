@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "BasePlayerInterface.h"
+#include "EMSActorSaveInterface.h"
 #include "../Inventory/InventoryComponent.h"
 #include "BasePlayerCharacter.generated.h"
 
@@ -13,7 +14,7 @@ class UInputMappingContext;
 class UInputAction;
 
 UCLASS()
-class CATBOOMERSHOOTER_API ABasePlayerCharacter : public ACharacter, public IBasePlayerInterface
+class CATBOOMERSHOOTER_API ABasePlayerCharacter : public ACharacter, public IBasePlayerInterface, public IEMSActorSaveInterface
 {
 	GENERATED_BODY()
 
@@ -95,6 +96,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	UInventoryComponent* GetInventoryComponent() const { return InventoryComponent; }
+
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -108,6 +112,5 @@ public:
 	UCameraComponent* GetPlayerCamera(); virtual UCameraComponent* GetPlayerCamera_Implementation() override;
 
 
-	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	UInventoryComponent* GetInventoryComponent() const { return InventoryComponent; }
+
 };
