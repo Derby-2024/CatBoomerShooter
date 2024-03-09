@@ -33,6 +33,7 @@ private:
 	
 	FQuat InitialRotation;
 	FVector InitialLocation;
+	UPROPERTY(SaveGame)
 	EDoorState TargetState = EDoorState::Closed;
 
 public:
