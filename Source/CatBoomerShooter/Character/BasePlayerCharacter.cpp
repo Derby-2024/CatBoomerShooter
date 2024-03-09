@@ -6,10 +6,13 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedPlayerInput.h"
 #include "../Environment/InteractInterface.h"
-#include "Components/InputComponent.h"
-#include "BaseCharacterMovementComponent.h"
 #include <GameFramework/MovementComponent.h>
 #include <Kismet/KismetMathLibrary.h>
+
+#include "Components/InputComponent.h"
+#include "BaseCharacterMovementComponent.h"
+#include "CatBoomerShooter/Weapons/Whip/BaseWhip.h"
+#include "CatBoomerShooter/Weapons/BaseWeapon.h"
 
 // Sets default values
 ABasePlayerCharacter::ABasePlayerCharacter(const FObjectInitializer& ObjectInitializer):
@@ -21,6 +24,11 @@ ABasePlayerCharacter::ABasePlayerCharacter(const FObjectInitializer& ObjectIniti
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("PlayerCamera"));
 	Camera->SetupAttachment(RootComponent);
 	Camera->bUsePawnControlRotation = true;
+
+	SK_Arms = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Arms"));
+	SK_Arms->SetupAttachment(Camera);
+
+	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -83,10 +91,36 @@ void ABasePlayerCharacter::InputInteract(const FInputActionValue& Value)
 	}
 }
 
+void ABasePlayerCharacter::InputMelee(const FInputActionValue& Value)
+{
+	if(Whip)
+	{
+		Whip->Attack();
+	}
+}
+
+void ABasePlayerCharacter::InputFire_Start(const FInputActionValue &Value)
+{
+	if(Weapon)
+	{
+		Weapon->StartShooting();
+	}
+}
+
+void ABasePlayerCharacter::InputFire_Stop(const FInputActionValue &Value)
+{
+	if(Weapon)
+	{
+		Weapon->StopShooting();
+	}
+}
+
 // Called every frame
 void ABasePlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	
 }
 
 // Called to bind functionality to input
@@ -105,9 +139,35 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ABasePlayerCharacter::InputJumpEnd);
 		EnhancedInputComponent->BindAction(CameraMoveAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputCameraMove);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputInteract);
+		EnhancedInputComponent->BindAction(MeleeAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputMelee);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputFire_Start);
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &ABasePlayerCharacter::InputFire_Stop);
 
 		InputMoveVal = &EnhancedInputComponent->BindActionValue(MoveAction);
 		InputCameraMoveVal = &EnhancedInputComponent->BindActionValue(CameraMoveAction);
 	}
+	
+	//Bind Reload Event
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ABasePlayerCharacter::ReloadWeapon);
 }
 
+USkeletalMeshComponent *ABasePlayerCharacter::GetPlayerArms_Implementation()
+{
+    return SK_Arms;
+}
+
+ABaseWhip *ABasePlayerCharacter::GetPlayerWhip_Implementation()
+{
+    return Whip;
+}
+
+UCameraComponent *ABasePlayerCharacter::GetPlayerCamera_Implementation()
+{
+	return Camera;
+}
+
+
+void ABasePlayerCharacter::ReloadWeapon()
+{
+
+}
