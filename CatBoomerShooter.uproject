@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "5.3",
+	"EngineAssociation": "5.2",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -11,6 +11,7 @@
 			"AdditionalDependencies": [
 				"AIModule",
 				"Engine",
+				"CoreUObject",
 				"DeveloperSettings"
 			]
 		},
@@ -30,6 +31,10 @@
 			"TargetAllowList": [
 				"Editor"
 			]
+		},
+		{
+			"Name": "CommonUI",
+			"Enabled": true
 		}
 	]
 }
