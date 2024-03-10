@@ -6,9 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Components/ShapeComponent.h"
 #include "Components/SplineComponent.h"
-#include "Components/TimelineComponent.h"
 #include "Components/BoxComponent.h"
-#include "TimerManager.h"
 #include "../CatBoomerShooter/Character/BasePlayerCharacter.h"
 #include "Train.generated.h"
 
@@ -18,15 +16,16 @@ class CATBOOMERSHOOTER_API ATrain : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	ATrain();
 
+	UPROPERTY(EditAnywhere)
+	float RandomDelay;
+
+
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Train", meta=(AllowPrivateAccess = "true"))
@@ -47,15 +46,16 @@ public:
 	UPROPERTY(EditAnywhere)
 	float PushForce;
 
-	bool bMovingForward;
-
 	UFUNCTION()
 	void OnTrainOverlap(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 private:
 	FVector NextTargetLocation;
-	FTimerHandle MoveTimerHandle;
+	FVector StartLocation;
+	FTimerHandle TeleportDelay;
+
 
 	void SetNextTargetPoint();
 	void MoveTowardsTarget();
+	bool bMovingForward = true;
 };
