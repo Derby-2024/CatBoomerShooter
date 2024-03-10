@@ -5,7 +5,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "GameFramework/CharacterMovementComponent.h" 
 #include "BasePlayerCharacter.generated.h"
+
 
 
 class UInputMappingContext;
@@ -41,14 +43,12 @@ protected:
 	UInputAction* CameraMoveAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* DashAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* TapDashAction;
 
-	//variables for dashingS
+	//variables for dashing
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	int DashCount=3;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	int DashSpeed=100000;
+	int DashSpeed=25000;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	float DashCooldown = 2.0;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -58,8 +58,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	int NumOfTaps = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	FVector OldVel;
-	
+	FVector2D StoredDirectionValue;
 
 	FTimerHandle DashTimerHandle;
 	FTimerHandle InvTimerHandle;
