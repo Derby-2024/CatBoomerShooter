@@ -46,6 +46,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	float PushForce;
 
+	bool bIsTeleportTimerActive;
+
 	UFUNCTION()
 	void OnTrainOverlap(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
@@ -57,5 +59,5 @@ private:
 
 	void SetNextTargetPoint();
 	void MoveTowardsTarget();
-	bool bMovingForward = true;
+	void TeleportTrain();
 };
