@@ -82,26 +82,27 @@ void AAIDirectorGameMode::GetEnemyActorsTyped(const EEnemyType EnemyType, TArray
 	EnemyActors = *Enemies.GetCollectionOfType(EnemyType);
 }
 
-void AAIDirectorGameMode::GetEnemyActorsInRange(const FVector Origin, const float MinRadius, const float MaxRadius, TArray<AActor*>& EnemyActors)
+void AAIDirectorGameMode::GetEnemyActorsInRange(const FVector Origin, const float MinRadius, const float MaxRadius, const TArray<AActor*> ActorsToIgnore, TArray<AActor*>& EnemyActors)
 {
 	for (AActor*& Enemy : Enemies.Enemies)
 	{
 		float Distance = FVector::Distance(Origin, Enemy->GetActorLocation());
 
-		if (MinRadius <= Distance && Distance < MaxRadius)
+		if (MinRadius <= Distance && Distance < MaxRadius && !ActorsToIgnore.Contains(Enemy))
 		{
+
 			EnemyActors.Add(Enemy);
 		}
 	}
 }
 
-void AAIDirectorGameMode::GetEnemyActorsInRangeTyped(const FVector Origin, const float MinRadius, const float MaxRadius, const EEnemyType EnemyType, TArray<AActor*>& EnemyActors)
+void AAIDirectorGameMode::GetEnemyActorsInRangeTyped(const FVector Origin, const float MinRadius, const float MaxRadius, const EEnemyType EnemyType, const TArray<AActor*> ActorsToIgnore, TArray<AActor*>& EnemyActors)
 {
 	for (AActor*& Enemy : *Enemies.GetCollectionOfType(EnemyType))
 	{
 		float Distance = FVector::Distance(Origin, Enemy->GetActorLocation());
 
-		if (MinRadius <= Distance && Distance < MaxRadius)
+		if (MinRadius <= Distance && Distance < MaxRadius && !ActorsToIgnore.Contains(Enemy))
 		{
 			EnemyActors.Add(Enemy);
 		}
