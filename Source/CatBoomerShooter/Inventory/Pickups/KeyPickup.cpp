@@ -37,7 +37,8 @@ void AKeyPickup::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
             // Add the key to the inventory
             if (InventoryComponent->AddItem(KeyItem))
             {
-                Destroy();
+                bIsDisabled = true;
+                CheckActorDisabled();
             }
         }
     }

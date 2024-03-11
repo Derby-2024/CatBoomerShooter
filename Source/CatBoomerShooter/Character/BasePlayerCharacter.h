@@ -7,6 +7,7 @@
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h" 
 #include "BasePlayerInterface.h"
+#include "EMSActorSaveInterface.h"
 #include "../Inventory/InventoryComponent.h"
 #include "BasePlayerCharacter.generated.h"
 
@@ -16,7 +17,7 @@ class UInputMappingContext;
 class UInputAction;
 
 UCLASS()
-class CATBOOMERSHOOTER_API ABasePlayerCharacter : public ACharacter, public IBasePlayerInterface
+class CATBOOMERSHOOTER_API ABasePlayerCharacter : public ACharacter, public IBasePlayerInterface, public IEMSActorSaveInterface
 {
 	GENERATED_BODY()
 
@@ -48,6 +49,12 @@ protected:
 	UInputAction* MeleeAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* FireAction;
+
+	// EMS Quick Load/Save Inputs
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* QuickSaveAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* QuickLoadAction;
 
 	// Input Variables
 	UPROPERTY(EditAnywhere, Category = Input)
@@ -93,6 +100,8 @@ protected:
 	void InputFire_Stop(const FInputActionValue& Value);
 	void Dash(const FInputActionValue& Value);
 	void TapDash(const FInputActionValue& Value);
+	void InputQuickSave(const FInputActionValue& Value);
+	void InputQuickLoad(const FInputActionValue& Value);
 
 	//Whip
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Whip")
@@ -120,12 +129,15 @@ public:
 	float Health;
 
 	//Temporary variable until inventory system is finished
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, SaveGame)
 	TArray<FString> Keys;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	UInventoryComponent* GetInventoryComponent() const { return InventoryComponent; }
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -147,7 +159,5 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Camera")
 	UCameraComponent* GetPlayerCamera(); virtual UCameraComponent* GetPlayerCamera_Implementation() override;
 
-
-	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	UInventoryComponent* GetInventoryComponent() const { return InventoryComponent; }
+	void ComponentsToSave_Implementation(TArray<UActorComponent*>& Components) override;
 };

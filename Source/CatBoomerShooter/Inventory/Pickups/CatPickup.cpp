@@ -29,10 +29,12 @@ void ACatPickup::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherAct
             CatItem.ItemType = EItemType::Collectible;
             CatItem.CatCount = Quantity;
             CatItem.CollectibleInfo = ItemInformation;
+            CatItem.CollectibleType = CollectibleType;
 
             if (InventoryComponent->AddItem(CatItem))
             {
-                Destroy();
+                bIsDisabled = true;
+                CheckActorDisabled();
             }
         }
     }

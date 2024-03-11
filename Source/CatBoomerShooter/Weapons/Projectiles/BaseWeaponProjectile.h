@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "EMSActorSaveInterface.h"
 #include "BaseWeaponProjectile.generated.h"
 
 UCLASS()
-class CATBOOMERSHOOTER_API ABaseWeaponProjectile : public AActor
+class CATBOOMERSHOOTER_API ABaseWeaponProjectile : public AActor, public IEMSActorSaveInterface
 {
 	GENERATED_BODY()
 	
@@ -27,7 +28,7 @@ protected:
 	class UStaticMeshComponent* BulletMesh;
 
 	//Default Values
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	UPROPERTY(EditAnywhere, SaveGame, BlueprintReadWrite, Category = "Defaults")
 	float Damage = 0.0f;
 
 public:	
