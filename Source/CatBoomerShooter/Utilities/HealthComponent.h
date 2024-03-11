@@ -6,6 +6,9 @@
 #include "Components/ActorComponent.h"
 #include "HealthComponent.generated.h"
 
+UDELEGATE()
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FHealthAnyDamageSignature, float, Damage, float, CurrentHealth, class AController*, InstigatedBy, AActor*, DamageCauser);
+
 
 UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CATBOOMERSHOOTER_API UHealthComponent : public UActorComponent
@@ -27,4 +30,12 @@ protected:
 
 	UFUNCTION(BlueprintNativeEvent)
 	void DamageApplication(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* Instigator, AActor* DamageCauser);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void HealthDestroyed(class AController* FinalInstigator, AActor* FinalDamageCauser);
+
+public:
+
+	UPROPERTY(BlueprintAssignable)
+	FHealthAnyDamageSignature OnTakeAnyDamage;
 };

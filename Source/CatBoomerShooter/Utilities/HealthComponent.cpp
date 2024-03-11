@@ -33,9 +33,16 @@ void UHealthComponent::DamageApplication_Implementation(AActor* DamagedActor, fl
 	Health -= Damage;
 	UE_LOG(LogTemp, Warning, TEXT("Health: %f"), Health)
 
+	OnTakeAnyDamage.Broadcast(Damage, Health, Instigator, DamageCauser);
+
 	if (Health <= 0.f)
 	{
-		GetOwner()-> Destroy();
+		HealthDestroyed(Instigator, DamageCauser);
 	}
 	if (Health > MaxHealth) Health = MaxHealth;
+}
+
+void UHealthComponent::HealthDestroyed_Implementation(class AController* FinalInstigator, AActor* FinalDamageCauser)
+{
+	GetOwner()->Destroy();
 }
