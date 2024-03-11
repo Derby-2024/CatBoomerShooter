@@ -29,6 +29,8 @@ ABasePlayerCharacter::ABasePlayerCharacter(const FObjectInitializer& ObjectIniti
 	SK_Arms->SetupAttachment(Camera);
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
+	//Test Health
+	Health = 100.0f;
 }
 
 // Called when the game starts or when spawned
@@ -247,4 +249,19 @@ UCameraComponent *ABasePlayerCharacter::GetPlayerCamera_Implementation()
 void ABasePlayerCharacter::ReloadWeapon()
 {
 
+}
+float ABasePlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float DamageCaused = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+
+	// Reduce player health
+	Health -= DamageCaused;
+	UE_LOG(LogTemp, Warning, TEXT("Player Health: %f"), Health);
+
+	return DamageCaused;
+}
+
+void ABasePlayerCharacter::TrainImpact(FVector PushDirection, float PushForce)
+{
+	LaunchCharacter(PushDirection * PushForce, true, true);
 }
