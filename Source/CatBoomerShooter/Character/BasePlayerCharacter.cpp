@@ -42,27 +42,37 @@ void ABasePlayerCharacter::InputMove(const FInputActionValue& Value)
 
 void ABasePlayerCharacter::TapDash(const FInputActionValue& Value){
 	FVector2D DirectionValue = Value.Get<FVector2D>();
-	if (NumOfTaps == 0){
+
+	if(DirectionValue.Equals(StoredDirectionValue) && !StoredDirectionValue.Equals(FVector2D::Zero())){
+		Dash(DirectionValue);
+		StoredDirectionValue = FVector2D::Zero();
+	}
+	else{
 		StoredDirectionValue = DirectionValue;
 	}
-	NumOfTaps = NumOfTaps + 1;
-	// makes sure the player doesnt spam a directional key and dash multiple times
-	if(NumOfTaps==2){
-		if(DirectionValue == StoredDirectionValue){
-			if(DirectionValue.X!=0){
-				DirectionValue.X=500;
-				Dash(StoredDirectionValue);
-				NumOfTaps=0;
-			}
-			if(DirectionValue.Y!=0){
-				DirectionValue.Y=500;
-				Dash(StoredDirectionValue);
-				NumOfTaps=0;
-			}
-		}
-		NumOfTaps=0;
-	}
-	GetWorldTimerManager().SetTimer(TapTimerHandle, this, &ABasePlayerCharacter::ResetNumOfTaps, 2.0f,true, 2.0f);
+
+	UE_LOG(LogTemp, Log, TEXT("%s"), *StoredDirectionValue.ToString());
+
+	// if (NumOfTaps == 0){
+	// 	StoredDirectionValue = DirectionValue;
+	// 	UE_LOG(LogTemp, Log, TEXT("%s"), *StoredDirectionValue.ToString());
+	// 	NumOfTaps++;
+	// }
+	
+	// // makes sure the player doesnt spam a directional key and dash multiple times
+	// if(NumOfTaps==1){
+	// 	if(DirectionValue.Equals(StoredDirectionValue)){
+	// 		Dash(DirectionValue);
+	// 		NumOfTaps=0;
+	// 	}
+	// 	else{
+	// 		NumOfTaps = 0;
+	// 		StoredDirectionValue = DirectionValue;
+	// 	}
+	//	GetWorldTimerManager().SetTimer(TapTimerHandle, this, &ABasePlayerCharacter::ResetNumOfTaps, 2.0f,true, 2.0f);
+	// 	
+	// }
+	
 }
 void ABasePlayerCharacter::InputJump(const FInputActionValue& Value)
 {
@@ -77,13 +87,12 @@ void ABasePlayerCharacter::Dash(const FInputActionValue& Value)
 	//this happens if dash is pressed and the player has a dash available
 	if(DashCount>0)
 	{
-		FVector DashVel = GetVelocity();
+		FVector DashVel = FVector(Value.Get<FVector2D>(), 0);
 		DashVel.Normalize();
 		DashVel.Z = 0;
 		DashVel = DashVel * DashSpeed;
 		if((DashVel.X!=0) ||(DashVel.Y !=0)){
-			bool IsFalling = GetMovementComponent()->IsFalling();
-			if(IsFalling == false){
+			if(!GetMovementComponent()->IsFalling()){
 				//sets the player invincible
 				IsInvincible = true;
 				this -> LaunchCharacter(DashVel,false,false);
