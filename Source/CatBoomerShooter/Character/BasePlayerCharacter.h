@@ -5,9 +5,12 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "GameFramework/CharacterMovementComponent.h" 
 #include "BasePlayerInterface.h"
 #include "../Inventory/InventoryComponent.h"
 #include "BasePlayerCharacter.generated.h"
+
+
 
 class UInputMappingContext;
 class UInputAction;
@@ -56,6 +59,29 @@ protected:
 	struct FEnhancedInputActionValueBinding* InputMoveVal;
 	struct FEnhancedInputActionValueBinding* InputCameraMoveVal;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* DashAction;
+
+	//variables for dashing
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	int DashCount=3;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	int DashSpeed=25000;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	float DashCooldown = 2.0;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	bool IsInvincible = false;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	float InvincibleDuration = 0.15;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	int NumOfTaps = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	FVector2D StoredDirectionValue;
+
+	FTimerHandle DashTimerHandle;
+	FTimerHandle InvTimerHandle;
+	FTimerHandle TapTimerHandle;
+
 	// Input Functions
 	void InputMove(const FInputActionValue& Value);
 	void InputJump(const FInputActionValue& Value);
@@ -65,6 +91,8 @@ protected:
 	void InputMelee(const FInputActionValue& Value);
 	void InputFire_Start(const FInputActionValue& Value);
 	void InputFire_Stop(const FInputActionValue& Value);
+	void Dash(const FInputActionValue& Value);
+	void TapDash(const FInputActionValue& Value);
 
 	//Whip
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Whip")
@@ -98,9 +126,13 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void ResetDashCounter();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
 	USkeletalMeshComponent* GetPlayerArms(); virtual USkeletalMeshComponent* GetPlayerArms_Implementation() override;
 
+	void ResetInvincibility();
+
+	void ResetNumOfTaps();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
 	ABaseWhip* GetPlayerWhip(); virtual ABaseWhip* GetPlayerWhip_Implementation() override;
 
