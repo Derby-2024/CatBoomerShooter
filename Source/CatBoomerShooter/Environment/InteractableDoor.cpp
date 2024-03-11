@@ -91,7 +91,7 @@ bool AInteractableDoor::OnInteract_Implementation(AActor* OwningActor)
 	// Check for key
 	ABasePlayerCharacter* OwningPlayer = Cast<ABasePlayerCharacter>(OwningActor);
 	if (bRequireKey && OwningPlayer) {
-		if (!OwningPlayer->Keys.Contains(RequiredKey))
+		if (!OwningPlayer->GetInventoryComponent()->Keys.Contains(RequiredKey))
 			return false;
 	}
 
