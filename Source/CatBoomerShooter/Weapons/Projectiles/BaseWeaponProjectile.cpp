@@ -44,7 +44,6 @@ void ABaseWeaponProjectile::Tick(float DeltaTime)
 
 void ABaseWeaponProjectile::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Hit %s"), *UKismetSystemLibrary::GetDisplayName(OtherActor));
 	AActor* MyOwner = GetOwner();
 	if (!MyOwner) {
 		UE_LOG(LogTemp, Warning, TEXT("ABaseWeaponProjectile::OnHit - Projectile %s has no owner."), *UKismetSystemLibrary::GetDisplayName(this))
@@ -55,7 +54,7 @@ void ABaseWeaponProjectile::OnOverlap(UPrimitiveComponent* OverlappedComp, AActo
 	UClass* DamageType = UDamageType::StaticClass();
 
 
-	if (OtherActor && OtherActor != MyOwner && OtherActor != MyOwner->GetOwner())
+	if (OtherActor && OtherActor != this && OtherActor != MyOwner && OtherActor != MyOwner->GetOwner())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Hit %s"), *UKismetSystemLibrary::GetDisplayName(OtherActor))
 		UGameplayStatics::ApplyDamage(OtherActor, Damage, MyInstigator, this, DamageType);
