@@ -130,6 +130,7 @@ void ABaseWeapon::Fire()
 			{
 				UE_LOG(LogTemp, Warning, TEXT("BaseWeapon::Fire: Not enough ammo to fire!"));
 				StopShooting();
+				GetWorldTimerManager().ClearTimer(Handle_ReFire);
 				return;
 			}
 		}
@@ -176,7 +177,7 @@ void ABaseWeapon::Fire()
 				SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, Hit.TraceEnd);
 			}
 
-			FTransform SpawnTransform = FTransform(RandomSpread(SpawnRotation, MaxVerticalSpread, MaxHorizontalSpread), SpawnLocation);
+			FTransform SpawnTransform = FTransform(RandomSpread(SpawnRotation, MaxHorizontalSpread, MaxVerticalSpread), SpawnLocation);
 
 			ABaseWeaponProjectile* Projectile = World->SpawnActor<ABaseWeaponProjectile>(ProjectileClass, SpawnTransform, SpawnParams);
 
