@@ -46,7 +46,14 @@ public:
 	UPROPERTY(EditAnywhere)
 	float PushForce;
 
+	UPROPERTY(EditAnywhere)
+	float MinRandomDelay;
+
+	UPROPERTY(EditAnywhere)
+	float MaxRandomDelay;
+
 	bool bIsTeleportTimerActive;
+	int32 CurrentSplineIndex;
 
 	UFUNCTION()
 	void OnTrainOverlap(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

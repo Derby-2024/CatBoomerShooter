@@ -1,40 +1,39 @@
-
 #include "Train.h"
 #include "Engine/DamageEvents.h"
 
 ATrain::ATrain()
 {
-
     PrimaryActorTick.bCanEverTick = true;
+
+    TrainMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TrainMesh"));
+    RootComponent = TrainMesh;
 
     SplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
     SplineComponent->SetupAttachment(RootComponent);
 
-    TrainMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("TrainMesh"));
-    TrainMesh->SetupAttachment(SplineComponent);
-
     CollisionComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionComponent"));
     CollisionComponent->SetCollisionProfileName(TEXT("OverlapAll"));
     CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ATrain::OnTrainOverlap);
-    CollisionComponent->SetupAttachment(TrainMesh);
+    CollisionComponent->SetupAttachment(RootComponent);
+
+    CurrentSplineIndex = 0;
+    bIsTeleportTimerActive = false;
 
     DamageAmount = 10.0f;
     PushForce = 2000.0f;
 
-
-    bIsTeleportTimerActive = false;
+    MinRandomDelay = 1.0f;
+    MaxRandomDelay = 8.0f;
 }
-
 
 void ATrain::BeginPlay()
 {
     Super::BeginPlay();
-    
-    //Start location
+
+    // Start location
     StartLocation = GetActorLocation();
     SetNextTargetPoint();
 }
-
 
 void ATrain::Tick(float DeltaTime)
 {
@@ -44,8 +43,17 @@ void ATrain::Tick(float DeltaTime)
 
 void ATrain::SetNextTargetPoint()
 {
-    float EndInputKey = SplineComponent->GetNumberOfSplinePoints() - 1;
-    NextTargetLocation = SplineComponent->GetLocationAtSplineInputKey(EndInputKey, ESplineCoordinateSpace::World);
+    // Ensure CurrentSplineIndex stays within valid range
+    if (CurrentSplineIndex >= SplineComponent->GetNumberOfSplinePoints() - 1)
+    {
+        CurrentSplineIndex = 0; // Reset to the start if reached the end
+    }
+    else
+    {
+        CurrentSplineIndex++;
+    }
+        
+    NextTargetLocation = SplineComponent->GetLocationAtSplinePoint(CurrentSplineIndex, ESplineCoordinateSpace::World);
 
     // Generate a random speed
     TrainSpeed = FMath::RandRange(900.0f, 2500.0f);
@@ -53,34 +61,46 @@ void ATrain::SetNextTargetPoint()
 
 void ATrain::MoveTowardsTarget()
 {
-    FVector CurrentLocation = GetActorLocation();
-    // Check if the train has reached the end of the spline
+    FVector CurrentLocation = TrainMesh->GetComponentLocation();
     float DistanceToTarget = FVector::Distance(CurrentLocation, NextTargetLocation);
-    if (DistanceToTarget < 1.0f && !bIsTeleportTimerActive)
+
+    // If the train has reached the final node and teleportation timer is not active
+    if (DistanceToTarget < 10.0f && !bIsTeleportTimerActive)
     {
-        UE_LOG(LogTemp, Warning, TEXT("Set Timer Delay"));
+        if (CurrentSplineIndex == SplineComponent->GetNumberOfSplinePoints() - 1)
+        {
+            UE_LOG(LogTemp, Warning, TEXT("Set Timer Delay"));
 
-        // Calculate a random delay
-        RandomDelay = FMath::FRandRange(1.0f, 8.0f);
+            // Calculate a random delay
+            RandomDelay = FMath::FRandRange(MinRandomDelay, MaxRandomDelay);
 
-        // Start a timer to teleport the train after the random delay
-        GetWorld()->GetTimerManager().SetTimer(TeleportDelay, this, &ATrain::TeleportTrain, RandomDelay, false);
+            // Start a timer to teleport the train
+            GetWorld()->GetTimerManager().SetTimer(TeleportDelay, this, &ATrain::TeleportTrain, RandomDelay, false);
 
-        bIsTeleportTimerActive = true;
-        return;
+            // Set timer active
+            bIsTeleportTimerActive = true;
+
+            // Generate a random speed after teleportation
+            TrainSpeed = FMath::RandRange(900.0f, 2500.0f);
+        }
+        else
+        {
+            SetNextTargetPoint();
+        }
     }
 
+    // Calculate movement direction
     FVector Direction = NextTargetLocation - CurrentLocation;
     Direction.Normalize();
     FVector NewLocation = CurrentLocation + Direction * TrainSpeed * GetWorld()->GetDeltaSeconds();
-    SetActorLocation(NewLocation);
+    TrainMesh->SetWorldLocation(NewLocation);
 }
 
 void ATrain::TeleportTrain()
 {
     // Teleport the train back to the start
     UE_LOG(LogTemp, Warning, TEXT("Teleported!"));
-    SetActorLocation(StartLocation);
+    TrainMesh->SetWorldLocation(StartLocation);
     SetNextTargetPoint();
 
     bIsTeleportTimerActive = false;
@@ -93,9 +113,7 @@ void ATrain::OnTrainOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
     {
         PlayerCharacter->TakeDamage(DamageAmount, FDamageEvent(), nullptr, nullptr);
 
-        // Calculate the direction from the train to the player
-        FVector PushDirection = PlayerCharacter->GetActorLocation() - GetActorLocation();
-        PushDirection.Normalize();
+        FVector PushDirection = -SweepResult.ImpactNormal;
 
         PlayerCharacter->LaunchCharacter(PushDirection * PushForce, true, true);
     }
