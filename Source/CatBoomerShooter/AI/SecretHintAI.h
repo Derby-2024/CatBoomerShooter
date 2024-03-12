@@ -4,20 +4,25 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "SecretHint_Ai.generated.h"
+#include "SecretHintAI.generated.h"
 
 UCLASS()
-class CATBOOMERSHOOTER_API ASecretHint_Ai : public ACharacter
+class CATBOOMERSHOOTER_API ASecretHintAI : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	ASecretHint_Ai();
+	ASecretHintAI();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+private: 
+	float hintMoveSpeed = 5.0f;
+	float activeMoveDist = 10.0f;
+	int y = 0;
+	int x = 0;
 
 public:	
 	// Called every frame
