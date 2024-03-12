@@ -204,6 +204,11 @@ void ABaseWeapon::Reload()
 	UE_LOG(LogTemp, Warning, TEXT("BaseWeapon::Reload: Reload Animation Placeholder!"));
 }
 
+USkeletalMeshComponent* ABaseWeapon::GetWeaponMesh()
+{
+	return WeaponMesh;
+}
+
 FRotator ABaseWeapon::RandomSpread(FRotator spawnRotation, float maxVertical, float maxHorizontal)
 {
 	float h_Spread = UKismetMathLibrary::RandomFloatInRange(-maxHorizontal, maxHorizontal);

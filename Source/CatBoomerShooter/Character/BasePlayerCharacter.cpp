@@ -29,12 +29,24 @@ ABasePlayerCharacter::ABasePlayerCharacter(const FObjectInitializer& ObjectIniti
 	SK_Arms->SetupAttachment(Camera);
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
 }
 
 // Called when the game starts or when spawned
 void ABasePlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void ABasePlayerCharacter::Destroyed()
+{
+	Super::Destroyed();
+	TArray<AActor*> AttachedActors;
+	GetAttachedActors(AttachedActors);
+	for (AActor* actor : AttachedActors)
+	{
+		actor->Destroy();
+	}
 }
 
 void ABasePlayerCharacter::InputMove(const FInputActionValue& Value)
@@ -115,6 +127,21 @@ void ABasePlayerCharacter::InputFire_Stop(const FInputActionValue &Value)
 	}
 }
 
+void ABasePlayerCharacter::InputWeapon1(const FInputActionValue& Value)
+{
+	EquipWeapon(0);
+}
+
+void ABasePlayerCharacter::InputWeapon2(const FInputActionValue& Value)
+{
+	EquipWeapon(1);
+}
+
+void ABasePlayerCharacter::InputWeapon3(const FInputActionValue& Value)
+{
+	EquipWeapon(2);
+}
+
 // Called every frame
 void ABasePlayerCharacter::Tick(float DeltaTime)
 {
@@ -142,13 +169,13 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EnhancedInputComponent->BindAction(MeleeAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputMelee);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputFire_Start);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &ABasePlayerCharacter::InputFire_Stop);
+		EnhancedInputComponent->BindAction(Weapon1, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputWeapon1);
+		EnhancedInputComponent->BindAction(Weapon2, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputWeapon2);
+		EnhancedInputComponent->BindAction(Weapon3, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputWeapon3);
 
 		InputMoveVal = &EnhancedInputComponent->BindActionValue(MoveAction);
 		InputCameraMoveVal = &EnhancedInputComponent->BindActionValue(CameraMoveAction);
 	}
-	
-	//Bind Reload Event
-	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ABasePlayerCharacter::ReloadWeapon);
 }
 
 USkeletalMeshComponent *ABasePlayerCharacter::GetPlayerArms_Implementation()
@@ -166,8 +193,32 @@ UCameraComponent *ABasePlayerCharacter::GetPlayerCamera_Implementation()
 	return Camera;
 }
 
-
-void ABasePlayerCharacter::ReloadWeapon()
+void ABasePlayerCharacter::EquipWeapon(int WeaponIndex)
 {
+	if (!WeaponList.IsValidIndex(WeaponIndex))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Not a valid weapon index"));
+		return;
+	}
+	CurrentWeaponIndex = WeaponIndex;
+	for (ABaseWeapon* weapon : WeaponList)
+	{
+		if (WeaponList[CurrentWeaponIndex] == weapon)
+		{
+			weapon->SetActorHiddenInGame(false);
+			Weapon = weapon;
+		}
+		else
+		{
+			weapon->SetActorHiddenInGame(true);
+		}
+	}
+}
 
+int ABasePlayerCharacter::AddWeapon(TSubclassOf<class ABaseWeapon> WeaponClass)
+{
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = GetInstigator();
+	return WeaponList.AddUnique(GetWorld()->SpawnActor<ABaseWeapon>(WeaponClass, GetActorTransform(), SpawnParams));
 }
