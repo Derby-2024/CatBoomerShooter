@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h" 
+#include "BasePlayerInterface.h"
+#include "../Inventory/InventoryComponent.h"
 #include "BasePlayerCharacter.generated.h"
 
 
@@ -14,13 +16,14 @@ class UInputMappingContext;
 class UInputAction;
 
 UCLASS()
-class CATBOOMERSHOOTER_API ABasePlayerCharacter : public ACharacter
+class CATBOOMERSHOOTER_API ABasePlayerCharacter : public ACharacter, public IBasePlayerInterface
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	ABasePlayerCharacter();
+	// ABasePlayerCharacter();
+	ABasePlayerCharacter(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	// Called when the game starts or when spawned
@@ -29,12 +32,10 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere)
 	class UCameraComponent* Camera;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class USkeletalMeshComponent* SK_Arms;
 
 	// Inputs
-	// Move to player controller later
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputMappingContext* InputMappingContext;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* MoveAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -43,6 +44,12 @@ protected:
 	UInputAction* CameraMoveAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* DashAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* InteractAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* MeleeAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* FireAction;
 
 	//variables for dashing
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -64,12 +71,54 @@ protected:
 	FTimerHandle InvTimerHandle;
 	FTimerHandle TapTimerHandle;
 
+	
+
+	// Input Variables
+	UPROPERTY(EditAnywhere, Category = Input)
+	bool EnableAutoJump = true;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	float MouseSensitivity = 1.0f;
+
+	struct FEnhancedInputActionValueBinding* InputMoveVal;
+	struct FEnhancedInputActionValueBinding* InputCameraMoveVal;
+	
 	// Input Functions
 	void InputMove(const FInputActionValue& Value);
 	void InputJump(const FInputActionValue& Value);
+	void InputJumpEnd(const FInputActionValue& Value);
 	void InputCameraMove(const FInputActionValue& Value);
 	void Dash(const FInputActionValue& Value);
 	void TapDash(const FInputActionValue& Value);
+	void InputInteract(const FInputActionValue& Value);
+	void InputMelee(const FInputActionValue& Value);
+	void InputFire_Start(const FInputActionValue& Value);
+	void InputFire_Stop(const FInputActionValue& Value);
+
+	//Whip
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Whip")
+ 	class ABaseWhip* Whip;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+ 	class ABaseWeapon* Weapon;
+
+	//Reload Weapon
+	void ReloadWeapon();
+
+	//Triggers out of ammo notification that they are out of ammo
+	UFUNCTION(BlueprintImplementableEvent, Category = "HUD")
+	void TriggerOutOfAmmo();
+
+	// Reference to the InventoryComponent
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
+	UInventoryComponent* InventoryComponent;
+
+public:
+	UPROPERTY(EditAnywhere)
+	float InteractRange = 500.0f;
+
+	//Temporary variable until inventory system is finished
+	UPROPERTY(EditAnywhere)
+	TArray<FString> Keys;
 
 public:	
 	// Called every frame
@@ -83,4 +132,16 @@ public:
 	void ResetInvincibility();
 
 	void ResetNumOfTaps();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
+	USkeletalMeshComponent* GetPlayerArms(); virtual USkeletalMeshComponent* GetPlayerArms_Implementation() override;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
+	ABaseWhip* GetPlayerWhip(); virtual ABaseWhip* GetPlayerWhip_Implementation() override;
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Camera")
+	UCameraComponent* GetPlayerCamera(); virtual UCameraComponent* GetPlayerCamera_Implementation() override;
+
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	UInventoryComponent* GetInventoryComponent() const { return InventoryComponent; }
 };
