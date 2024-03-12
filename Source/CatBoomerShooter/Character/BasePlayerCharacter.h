@@ -63,8 +63,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	float InvincibleDuration = 0.15;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	int NumOfTaps = 0;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	FVector2D StoredDirectionValue;
 
 	FTimerHandle DashTimerHandle;
@@ -131,7 +129,7 @@ public:
 
 	void ResetInvincibility();
 
-	void ResetNumOfTaps();
+	void ResetStoredDirectionValue();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
 	USkeletalMeshComponent* GetPlayerArms(); virtual USkeletalMeshComponent* GetPlayerArms_Implementation() override;
 
