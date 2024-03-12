@@ -57,11 +57,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	int DashSpeed=25000;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	float DashCooldown = 2.0;
+	float DashCooldown = 2.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	float TapIntervalTime = 1.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	bool IsInvincible = false;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	float InvincibleDuration = 0.15;
+	float InvincibleDuration = 0.15f;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	FVector2D StoredDirectionValue;
 

@@ -56,7 +56,7 @@ void ABasePlayerCharacter::TapDash(const FInputActionValue& Value){
 		StoredDirectionValue = DirectionValue;
 	}
 	UE_LOG(LogTemp, Log, TEXT("%s"), *StoredDirectionValue.ToString());
-	GetWorldTimerManager().SetTimer(TapTimerHandle, this, &ABasePlayerCharacter::ResetStoredDirectionValue, 1.0f,true, 1.0f);
+	GetWorldTimerManager().SetTimer(TapTimerHandle, this, &ABasePlayerCharacter::ResetStoredDirectionValue, TapIntervalTime,false, TapIntervalTime);
 	
 }
 void ABasePlayerCharacter::InputJump(const FInputActionValue& Value)
@@ -88,7 +88,7 @@ void ABasePlayerCharacter::Dash(const FInputActionValue& Value)
 				IsInvincible = true;
 				this -> LaunchCharacter(DashVel,false,false);
 				//resets the players invincibility
-				GetWorldTimerManager().SetTimer(InvTimerHandle, this, &ABasePlayerCharacter::ResetInvincibility, 1.0f,true, InvincibleDuration);
+				GetWorldTimerManager().SetTimer(InvTimerHandle, this, &ABasePlayerCharacter::ResetInvincibility, InvincibleDuration,false, InvincibleDuration);
 				DashCount=DashCount-1;
 				//ResetDashCounter();
 				//this uses a timer to call the restdashcounter, the first DashCooldown is the time betwwen the first loop and the second loop the second dashCooldwon is time for the first loop to occur.
