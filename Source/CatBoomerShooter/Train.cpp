@@ -94,6 +94,10 @@ void ATrain::MoveTowardsTarget()
     }
     else 
     {
+        float DistanceAlongSpline = SplineComponent->GetDistanceAlongSplineAtSplinePoint(CurrentSplineIndex);
+        //Get the rotation at the calculated distance along the spline
+        FRotator SplineRotation = SplineComponent->GetRotationAtDistanceAlongSpline(DistanceAlongSpline, ESplineCoordinateSpace::World);
+
         //Calculate movement direction
         FVector Direction = NextTargetLocation - CurrentLocation;
         Direction.Normalize();
