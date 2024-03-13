@@ -30,7 +30,6 @@ void ATrain::BeginPlay()
 {
     Super::BeginPlay();
 
-    // Start location
     StartLocation = GetActorLocation();
     SetNextTargetPoint();
 }
@@ -43,10 +42,10 @@ void ATrain::Tick(float DeltaTime)
 
 void ATrain::SetNextTargetPoint()
 {
-    // Ensure CurrentSplineIndex stays within valid range
+    //CurrentSplineIndex stays within valid range
     if (CurrentSplineIndex >= SplineComponent->GetNumberOfSplinePoints() - 1)
     {
-        CurrentSplineIndex = 0; // Reset to the start if reached the end
+        CurrentSplineIndex = 0; //Reset to the start if reached the end
     }
     else
     {
@@ -54,9 +53,6 @@ void ATrain::SetNextTargetPoint()
     }
         
     NextTargetLocation = SplineComponent->GetLocationAtSplinePoint(CurrentSplineIndex, ESplineCoordinateSpace::World);
-
-    // Generate a random speed
-    TrainSpeed = FMath::RandRange(900.0f, 2500.0f);
 }
 
 void ATrain::MoveTowardsTarget()
@@ -64,41 +60,51 @@ void ATrain::MoveTowardsTarget()
     FVector CurrentLocation = TrainMesh->GetComponentLocation();
     float DistanceToTarget = FVector::Distance(CurrentLocation, NextTargetLocation);
 
-    // If the train has reached the final node and teleportation timer is not active
-    if (DistanceToTarget < 10.0f && !bIsTeleportTimerActive)
+    //If the train has reached the target spline point and teleportation timer is not active
+    if (DistanceToTarget < TrainSpeed * GetWorld()->GetDeltaSeconds() && !bIsTeleportTimerActive)
     {
+        //Stop the train
+        TrainMesh->SetWorldLocation(NextTargetLocation);
+
+        //Check if train has reached the end of the spline point
         if (CurrentSplineIndex == SplineComponent->GetNumberOfSplinePoints() - 1)
         {
             UE_LOG(LogTemp, Warning, TEXT("Set Timer Delay"));
 
-            // Calculate a random delay
+            //Calculate a random delay
             RandomDelay = FMath::FRandRange(MinRandomDelay, MaxRandomDelay);
 
-            // Start a timer to teleport the train
+            //Start a timer to teleport the train
             GetWorld()->GetTimerManager().SetTimer(TeleportDelay, this, &ATrain::TeleportTrain, RandomDelay, false);
 
-            // Set timer active
+            //Set timer active
             bIsTeleportTimerActive = true;
 
-            // Generate a random speed after teleportation
+            //Generate a random speed after teleportation
             TrainSpeed = FMath::RandRange(900.0f, 2500.0f);
+
+            return;
         }
         else
         {
             SetNextTargetPoint();
         }
-    }
 
-    // Calculate movement direction
-    FVector Direction = NextTargetLocation - CurrentLocation;
-    Direction.Normalize();
-    FVector NewLocation = CurrentLocation + Direction * TrainSpeed * GetWorld()->GetDeltaSeconds();
-    TrainMesh->SetWorldLocation(NewLocation);
+        return;
+    }
+    else 
+    {
+        //Calculate movement direction
+        FVector Direction = NextTargetLocation - CurrentLocation;
+        Direction.Normalize();
+        FVector NewLocation = CurrentLocation + Direction * TrainSpeed * GetWorld()->GetDeltaSeconds();
+        TrainMesh->SetWorldLocation(NewLocation);
+    }
 }
 
 void ATrain::TeleportTrain()
 {
-    // Teleport the train back to the start
+    //Teleport the train back to the start
     UE_LOG(LogTemp, Warning, TEXT("Teleported!"));
     TrainMesh->SetWorldLocation(StartLocation);
     SetNextTargetPoint();
