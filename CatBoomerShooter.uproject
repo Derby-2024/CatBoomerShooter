@@ -11,9 +11,18 @@
 			"AdditionalDependencies": [
 				"AIModule",
 				"Engine",
+				"CoreUObject",
 				"DeveloperSettings"
 			]
 		},
+		{
+			"Name": "CatBoomerEditor",
+			"Type": "Editor",
+			"LoadingPhase": "PostEngineInit",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		}
 	],
 	"Plugins": [
 		{
@@ -22,6 +31,10 @@
 			"TargetAllowList": [
 				"Editor"
 			]
+		},
+		{
+			"Name": "CommonUI",
+			"Enabled": true
 		}
 	]
 }
