@@ -11,6 +11,7 @@
 			"AdditionalDependencies": [
 				"AIModule",
 				"Engine",
+				"CoreUObject",
 				"DeveloperSettings"
 			]
 		},
@@ -30,6 +31,10 @@
 			"TargetAllowList": [
 				"Editor"
 			]
+		},
+		{
+			"Name": "CommonUI",
+			"Enabled": true
 		}
 	]
 }
