@@ -6,6 +6,11 @@
 #include "Components/ActorComponent.h"
 #include "HealthComponent.generated.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogHealth, Log, All);
+
+UDELEGATE()
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FHealthAnyDamageSignature, float, Damage, float, CurrentHealth, class AController*, InstigatedBy, AActor*, DamageCauser);
+
 
 UCLASS(Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class CATBOOMERSHOOTER_API UHealthComponent : public UActorComponent
@@ -21,10 +26,24 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Health = 100.f;
 
+	UPROPERTY(EditAnywhere)
+	bool ResetHealthOnBeginplay = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Invincible = false;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintNativeEvent)
 	void DamageApplication(AActor* DamagedActor, float Damage, const UDamageType* DamageType, class AController* Instigator, AActor* DamageCauser);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnKill(class AController* FinalInstigator, AActor* FinalDamageCauser);
+
+public:
+
+	UPROPERTY(BlueprintAssignable)
+	FHealthAnyDamageSignature OnTakeAnyDamage;
 };
