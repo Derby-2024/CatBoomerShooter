@@ -88,6 +88,9 @@ public:
 	void StopShooting();
 	void Reload();
 
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	USkeletalMeshComponent* GetWeaponMesh();
+
 	FRotator RandomSpread(FRotator spawnRotation, float maxVertical, float maxHorizontal);
 
 };

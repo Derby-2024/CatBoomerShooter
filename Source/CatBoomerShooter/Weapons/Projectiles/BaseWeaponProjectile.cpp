@@ -12,7 +12,7 @@ ABaseWeaponProjectile::ABaseWeaponProjectile()
 
 	BulletMesh = CreateDefaultSubobject<UStaticMeshComponent>("Bullet Mesh");
 	BulletMesh->BodyInstance.SetCollisionProfileName(TEXT("Projectile"));
-	BulletMesh->OnComponentBeginOverlap.AddDynamic(this, &ABaseWeaponProjectile::OnOverlap);
+
 	RootComponent = BulletMesh;
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("Projectile Movement");
@@ -31,7 +31,8 @@ ABaseWeaponProjectile::ABaseWeaponProjectile()
 void ABaseWeaponProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	BulletMesh->OnComponentBeginOverlap.AddDynamic(this, &ABaseWeaponProjectile::OnOverlap);
 }
 
 // Called every frame

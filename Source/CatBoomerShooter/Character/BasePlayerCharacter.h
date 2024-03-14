@@ -7,7 +7,9 @@
 #include "InputActionValue.h"
 #include "BasePlayerInterface.h"
 #include "../Inventory/InventoryComponent.h"
+#include "../Utilities/HealthComponent.h"
 #include "BasePlayerCharacter.generated.h"
+
 
 class UInputMappingContext;
 class UInputAction;
@@ -25,6 +27,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual void Destroyed() override;
 	
 protected:
 	UPROPERTY(EditAnywhere)
@@ -45,6 +49,12 @@ protected:
 	UInputAction* MeleeAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* FireAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* Weapon1;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* Weapon2;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* Weapon3;
 
 	// Input Variables
 	UPROPERTY(EditAnywhere, Category = Input)
@@ -65,15 +75,19 @@ protected:
 	void InputMelee(const FInputActionValue& Value);
 	void InputFire_Start(const FInputActionValue& Value);
 	void InputFire_Stop(const FInputActionValue& Value);
+	void InputWeapon1(const FInputActionValue& Value);
+	void InputWeapon2(const FInputActionValue& Value);
+	void InputWeapon3(const FInputActionValue& Value);
 
 	//Whip
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Whip")
  	class ABaseWhip* Whip;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
  	class ABaseWeapon* Weapon;
-
-	//Reload Weapon
-	void ReloadWeapon();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	int CurrentWeaponIndex = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	TArray<ABaseWeapon*> WeaponList = {};
 
 	//Triggers out of ammo notification that they are out of ammo
 	UFUNCTION(BlueprintImplementableEvent, Category = "HUD")
@@ -82,6 +96,10 @@ protected:
 	// Reference to the InventoryComponent
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
 	UInventoryComponent* InventoryComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
+	UHealthComponent* HealthComponent;
+
 
 public:
 	UPROPERTY(EditAnywhere)
@@ -106,4 +124,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	UInventoryComponent* GetInventoryComponent() const { return InventoryComponent; }
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void EquipWeapon(int WeaponIndex);
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	int AddWeapon(TSubclassOf<class ABaseWeapon> WeaponClass);
 };
