@@ -142,6 +142,41 @@ void ABasePlayerCharacter::InputWeapon3(const FInputActionValue& Value)
 	EquipWeapon(2);
 }
 
+void ABasePlayerCharacter::InputNextWeapon(const FInputActionValue& Value)
+{
+	if (WeaponList.Num() == 0)
+	{
+		return;
+	}
+	WeaponList[CurrentWeaponIndex]->StopShooting();
+	CurrentWeaponIndex++;
+	if (CurrentWeaponIndex >= WeaponList.Num())
+	{
+		CurrentWeaponIndex = 0;
+	}
+	EquipWeapon(CurrentWeaponIndex);
+}
+
+void ABasePlayerCharacter::InputPreviousWeapon(const FInputActionValue& Value)
+{
+	if (WeaponList.Num() == 0)
+	{
+		return;
+	}
+	WeaponList[CurrentWeaponIndex]->StopShooting();
+	CurrentWeaponIndex--;
+	if (CurrentWeaponIndex < 0)
+	{
+		CurrentWeaponIndex = WeaponList.Num() - 1;
+	}
+	EquipWeapon(CurrentWeaponIndex);
+}
+
+void ABasePlayerCharacter::InputPause(const FInputActionValue& Value)
+{
+
+}
+
 // Called every frame
 void ABasePlayerCharacter::Tick(float DeltaTime)
 {
@@ -172,6 +207,9 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EnhancedInputComponent->BindAction(Weapon1, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputWeapon1);
 		EnhancedInputComponent->BindAction(Weapon2, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputWeapon2);
 		EnhancedInputComponent->BindAction(Weapon3, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputWeapon3);
+		EnhancedInputComponent->BindAction(PauseAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputPause);
+		EnhancedInputComponent->BindAction(NextWeapon, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputNextWeapon);
+		EnhancedInputComponent->BindAction(PreviousWeapon, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputPreviousWeapon);
 
 		InputMoveVal = &EnhancedInputComponent->BindActionValue(MoveAction);
 		InputCameraMoveVal = &EnhancedInputComponent->BindActionValue(CameraMoveAction);
@@ -200,6 +238,9 @@ void ABasePlayerCharacter::EquipWeapon(int WeaponIndex)
 		UE_LOG(LogTemp, Warning, TEXT("Not a valid weapon index"));
 		return;
 	}
+
+	WeaponList[CurrentWeaponIndex]->StopShooting();
+
 	CurrentWeaponIndex = WeaponIndex;
 	for (ABaseWeapon* weapon : WeaponList)
 	{

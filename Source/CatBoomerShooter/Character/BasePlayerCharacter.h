@@ -55,6 +55,13 @@ protected:
 	UInputAction* Weapon2;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* Weapon3;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* NextWeapon;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* PreviousWeapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* PauseAction;
 
 	// Input Variables
 	UPROPERTY(EditAnywhere, Category = Input)
@@ -78,6 +85,9 @@ protected:
 	void InputWeapon1(const FInputActionValue& Value);
 	void InputWeapon2(const FInputActionValue& Value);
 	void InputWeapon3(const FInputActionValue& Value);
+	void InputNextWeapon(const FInputActionValue& Value);
+	void InputPreviousWeapon(const FInputActionValue& Value);
+	void InputPause(const FInputActionValue& Value);
 
 	//Whip
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Whip")
