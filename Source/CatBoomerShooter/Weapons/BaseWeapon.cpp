@@ -40,24 +40,28 @@ void ABaseWeapon::BeginPlay()
 		return;
 	}
 
-	OwningCharacter = Cast<APawn>(GetOwner());
-	if (!OwningCharacter)
+	OwningPawn = Cast<APawn>(GetOwner());
+	if (!OwningPawn)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("BaseWeapon::BeginPlay: Cannot cast to pawn"));
 		return;
 	}
 
-	if (OwningCharacter->Implements<UBasePlayerInterface>() == false)
+	if (OwningPawn->Implements<UBasePlayerInterface>())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("BaseWeapon::BeginPlay: Owner Doesn't Implement Interface!"));
-		return;
+		USkeletalMeshComponent* Arms = IBasePlayerInterface::Execute_GetPlayerArms(OwningPawn);
+		if (IsValid(Arms))
+		{
+			this->AttachToComponent(Arms, FAttachmentTransformRules::SnapToTargetIncludingScale, HandSocketName);
+			//this->SetActorHiddenInGame(true);
+		}
 	}
-
-	USkeletalMeshComponent* Arms = IBasePlayerInterface::Execute_GetPlayerArms(OwningCharacter);
-	if(IsValid(Arms))
-	{
-		this->AttachToComponent(Arms, FAttachmentTransformRules::SnapToTargetIncludingScale, HandSocketName);
-		//this->SetActorHiddenInGame(true);
+	else {
+		ACharacter* OwningCharacter = Cast<ACharacter>(OwningPawn);
+		if (OwningCharacter)
+		{
+			this->AttachToComponent(OwningCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, HandSocketName);
+		}
 	}
 
 	for (FName SocketName : WeaponMesh->GetAllSocketNames())
@@ -141,20 +145,20 @@ void ABaseWeapon::Fire()
 
 	FHitResult Hit;
 
-	if (OwningCharacter->IsPlayerControlled())
+	if (OwningPawn->IsPlayerControlled())
 	{
 		TraceStart = UGameplayStatics::GetPlayerCameraManager(World, 0)->GetCameraLocation();
 		TraceEnd = TraceStart + UGameplayStatics::GetPlayerCameraManager(World, 0)->GetActorForwardVector() * 5000;
 	}
 	else
 	{
-		TraceStart = OwningCharacter->GetActorLocation();
-		TraceEnd = TraceStart + OwningCharacter->GetActorForwardVector() * 5000;
+		TraceStart = OwningPawn->GetActorLocation();
+		TraceEnd = TraceStart + OwningPawn->GetActorForwardVector() * 5000;
 	}
 
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(this);
-	QueryParams.AddIgnoredActor(OwningCharacter);
+	QueryParams.AddIgnoredActor(OwningPawn);
 
 	GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, TraceChannelProperty, QueryParams);
 	//DrawDebugLine(GetWorld(), TraceStart, TraceEnd, Hit.bBlockingHit ? FColor::Blue : FColor::Red, false, 5.0f, 0, 10.0f);

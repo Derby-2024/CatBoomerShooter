@@ -64,7 +64,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	FName HandSocketName = "R_HandSocket";
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
-	APawn* OwningCharacter;
+	APawn* OwningPawn;
 
 	int ShotsFired = 0;
 
@@ -82,10 +82,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
+	void StartShooting();
+	UFUNCTION(BlueprintCallable)
+	void StopShooting();
+
 	void Fire();
 	void BurstFire();
-	void StartShooting();
-	void StopShooting();
 	void Reload();
 
 	FRotator RandomSpread(FRotator spawnRotation, float maxVertical, float maxHorizontal);
