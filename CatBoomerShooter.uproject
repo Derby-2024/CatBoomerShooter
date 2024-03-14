@@ -33,8 +33,22 @@
 			]
 		},
 		{
+			"Name": "GPULightmass",
+			"Enabled": true
+		},
+		{
+			"Name": "NiagaraFluids",
+			"Enabled": true
+		},
+		{
 			"Name": "CommonUI",
 			"Enabled": true
 		}
+	],
+	"TargetPlatforms": [
+		"LinuxArm64",
+		"Windows",
+		"Linux",
+		"HoloLens"
 	]
 }
