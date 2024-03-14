@@ -92,17 +92,48 @@ void ATrain::MoveTowardsTarget()
 
         return;
     }
-    else 
+    else
     {
-        float DistanceAlongSpline = SplineComponent->GetDistanceAlongSplineAtSplinePoint(CurrentSplineIndex);
-        //Get the rotation at the calculated distance along the spline
-        FRotator SplineRotation = SplineComponent->GetRotationAtDistanceAlongSpline(DistanceAlongSpline, ESplineCoordinateSpace::World);
 
-        //Calculate movement direction
+        //Way in the video 
+        float DistanceAlongSpline = SplineComponent->GetDistanceAlongSplineAtSplinePoint(CurrentSplineIndex) + TrainSpeed;
         FVector Direction = NextTargetLocation - CurrentLocation;
         Direction.Normalize();
         FVector NewLocation = CurrentLocation + Direction * TrainSpeed * GetWorld()->GetDeltaSeconds();
         TrainMesh->SetWorldLocation(NewLocation);
+
+        FTransform TransformDistanceAlongSpline = SplineComponent->GetTransformAtDistanceAlongSpline(DistanceAlongSpline, ESplineCoordinateSpace::World); 
+
+        FVector Location = TransformDistanceAlongSpline.GetLocation();
+        FRotator Rotation = TransformDistanceAlongSpline.Rotator();
+
+        float LocationX = Location.X;
+        float LocationY = Location.Y;
+        float LocationZ = Location.Z + (-89.0f);
+
+        float RotationPitch = Rotation.Pitch;
+        float RotationYaw = Rotation.Yaw + (-90.0f);
+        float RotationRoll = Rotation.Roll;
+
+        TrainMesh->SetRelativeLocationAndRotation(FVector(LocationX, LocationY, LocationZ), FRotator(RotationPitch, RotationYaw, RotationRoll)); 
+
+
+        //Way that somewhat works
+        
+        //float DistanceAlongSpline = SplineComponent->GetDistanceAlongSplineAtSplinePoint(CurrentSplineIndex);
+
+        ////Calculate movement direction
+        //FVector Direction = NextTargetLocation - CurrentLocation;
+        //Direction.Normalize();
+        //FVector NewLocation = CurrentLocation + Direction * TrainSpeed * GetWorld()->GetDeltaSeconds();
+        //TrainMesh->SetWorldLocation(NewLocation);
+
+        ////Calculate rotation based on the tangent of the spline
+        //FVector Tangent = SplineComponent->GetTangentAtDistanceAlongSpline(DistanceAlongSpline, ESplineCoordinateSpace::World);
+        //FRotator NewRotation = Tangent.Rotation();
+
+        ////Set the train's new rotation
+        //TrainMesh->SetWorldRotation(NewRotation);
     }
 }
 
