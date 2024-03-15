@@ -12,7 +12,10 @@
 				"AIModule",
 				"Engine",
 				"CoreUObject",
-				"DeveloperSettings"
+				"DeveloperSettings",
+				"Slate",
+				"SlateCore",
+				"UMG"
 			]
 		},
 		{

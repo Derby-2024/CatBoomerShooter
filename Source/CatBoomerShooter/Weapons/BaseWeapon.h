@@ -49,6 +49,8 @@ protected:
 	EFiringMode FiringMode;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	int BurstAmount = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	UTexture* GunImage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	TArray<FName> MuzzleSockets = {};
@@ -72,9 +74,14 @@ protected:
 	TEnumAsByte<ECollisionChannel> TraceChannelProperty = ECC_Pawn;
 
 	FTimerHandle Handle_ReFire;
+	FTimerHandle Handle_Reload;
 
 	FVector TraceStart;
 	FVector TraceEnd;
+
+	bool canShoot = true;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	float ReloadTime = 1.0f;
 
 
 
@@ -88,8 +95,15 @@ public:
 	void StopShooting();
 
 	void Fire();
-	void BurstFire();
+	void StartShooting();
+	void StopShooting();
 	void Reload();
+	void ResetShot();
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Reloading")
+	void BPEnableReloadWidget();
+	UFUNCTION(BlueprintNativeEvent, Category = "Reloading")
+	void BPDisableReloadWidget();
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	USkeletalMeshComponent* GetWeaponMesh();

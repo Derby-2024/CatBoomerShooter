@@ -10,6 +10,7 @@
 #include "CatBoomerShooter/Character/BasePlayerInterface.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/Pawn.h"
+#include "Blueprint/UserWidget.h"
 
 // Sets default values
 ABaseWeapon::ABaseWeapon()
@@ -83,25 +84,27 @@ void ABaseWeapon::Tick(float DeltaTime)
 
 void ABaseWeapon::StartShooting()
 {
-	switch (FiringMode)
+	if (canShoot)
 	{
-	case(EFiringMode::Semi):
-		Fire();
-		return;
-	case(EFiringMode::Automatic):
-		Fire();
-		GetWorldTimerManager().SetTimer(Handle_ReFire, this, &ABaseWeapon::Fire, 60.0f / FireRate, true);
-		return;
-	case(EFiringMode::Burst):
-		if (!GetWorldTimerManager().IsTimerActive(Handle_ReFire))
+		switch (FiringMode)
 		{
-			ShotsFired = 0;
+		case(EFiringMode::Semi):
+			Fire();
+			return;
+		case(EFiringMode::Automatic):
 			Fire();
 			GetWorldTimerManager().SetTimer(Handle_ReFire, this, &ABaseWeapon::Fire, 60.0f / FireRate, true);
+			return;
+		case(EFiringMode::Burst):
+			if (!GetWorldTimerManager().IsTimerActive(Handle_ReFire))
+			{
+				ShotsFired = 0;
+				Fire();
+				GetWorldTimerManager().SetTimer(Handle_ReFire, this, &ABaseWeapon::Fire, 60.0f / FireRate, true);
+			}
+			return;
 		}
-		return;
 	}
-
 }
 
 void ABaseWeapon::StopShooting()
@@ -204,8 +207,28 @@ void ABaseWeapon::Fire()
 
 void ABaseWeapon::Reload()
 {
+	canShoot = false;
+
+	BPEnableReloadWidget();
+
 	//Play Reload Animation
 	UE_LOG(LogTemp, Warning, TEXT("BaseWeapon::Reload: Reload Animation Placeholder!"));
+
+	GetWorldTimerManager().SetTimer(Handle_Reload, this, &ABaseWeapon::ResetShot, ReloadTime, false);
+}
+
+void ABaseWeapon::ResetShot()
+{
+	canShoot = true;
+	BPDisableReloadWidget();
+}
+
+void ABaseWeapon::BPEnableReloadWidget_Implementation()
+{
+}
+
+void ABaseWeapon::BPDisableReloadWidget_Implementation()
+{
 }
 
 USkeletalMeshComponent* ABaseWeapon::GetWeaponMesh()
