@@ -18,7 +18,6 @@ FCollectibleData* FCollectibles::GetCollectionOfType(ECollectibleType Collectibl
 	case ECollectibleType::E_Cat:
 		return &Cats;
 
-
 	default:
 		return nullptr;
 	}

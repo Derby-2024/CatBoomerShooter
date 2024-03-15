@@ -3,10 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EMSActorSaveInterface.h"
 #include "BasePickup.generated.h"
 
 UCLASS()
-class CATBOOMERSHOOTER_API ABasePickup : public AActor
+class CATBOOMERSHOOTER_API ABasePickup : public AActor, public IEMSActorSaveInterface
 {
 	GENERATED_BODY()
 	
@@ -18,6 +19,9 @@ protected:
     // Item info
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup")
     FString ItemInfo;
+
+    UPROPERTY(SaveGame)
+    bool bIsDisabled = false;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision")
     class USphereComponent* CollisionComponent;
@@ -39,4 +43,9 @@ public:
 
     UFUNCTION()
     virtual void OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+    void CheckActorDisabled();
+
+    // EMS Interface
+    void ActorLoaded_Implementation() override;
 };

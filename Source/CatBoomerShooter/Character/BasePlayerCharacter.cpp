@@ -8,8 +8,12 @@
 #include "../Environment/InteractInterface.h"
 #include <GameFramework/MovementComponent.h>
 #include <Kismet/KismetMathLibrary.h>
-
 #include "Components/InputComponent.h"
+
+#include "EMSAsyncSaveGame.h"
+#include "EMSAsyncLoadGame.h"
+#include "Kismet/GameplayStatics.h"
+
 #include "BaseCharacterMovementComponent.h"
 #include "CatBoomerShooter/Weapons/Whip/BaseWhip.h"
 #include "CatBoomerShooter/Weapons/BaseWeapon.h"
@@ -142,6 +146,41 @@ void ABasePlayerCharacter::InputWeapon3(const FInputActionValue& Value)
 	EquipWeapon(2);
 }
 
+void ABasePlayerCharacter::InputQuickSave(const FInputActionValue& Value)
+{
+	
+
+	int32 Flags = ENUM_TO_FLAG(ESaveTypeFlags::SF_Level) | ENUM_TO_FLAG(ESaveTypeFlags::SF_Player);
+
+	auto EMSAsyncSaveGame = UEMSAsyncSaveGame::AsyncSaveActors(this, Flags);
+	if (IsValid(EMSAsyncSaveGame)) {
+		EMSAsyncSaveGame->Activate();
+	}
+}
+
+void ABasePlayerCharacter::InputQuickLoad(const FInputActionValue& Value)
+{
+	TSubclassOf<ABaseWeaponProjectile> Projectileclass = ABaseWeaponProjectile::StaticClass();
+	TArray<AActor*> FoundProjectiles;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), Projectileclass, FoundProjectiles);
+
+	for (AActor* a : FoundProjectiles) {
+		a->Destroy();
+	}
+
+	int32 Flags = ENUM_TO_FLAG(ESaveTypeFlags::SF_Level) | ENUM_TO_FLAG(ESaveTypeFlags::SF_Player);
+
+	auto EMSAsyncLoadGame = UEMSAsyncLoadGame::AsyncLoadActors(this, Flags, true);
+	if (IsValid(EMSAsyncLoadGame)) {
+		EMSAsyncLoadGame->Activate();
+	}
+}
+
+void ABasePlayerCharacter::ComponentsToSave_Implementation(TArray<UActorComponent*>& Components)
+{
+	Components.Add(InventoryComponent);
+}
+
 // Called every frame
 void ABasePlayerCharacter::Tick(float DeltaTime)
 {
@@ -172,6 +211,9 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EnhancedInputComponent->BindAction(Weapon1, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputWeapon1);
 		EnhancedInputComponent->BindAction(Weapon2, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputWeapon2);
 		EnhancedInputComponent->BindAction(Weapon3, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputWeapon3);
+
+		EnhancedInputComponent->BindAction(QuickSaveAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputQuickSave);
+		EnhancedInputComponent->BindAction(QuickLoadAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputQuickLoad);
 
 		InputMoveVal = &EnhancedInputComponent->BindActionValue(MoveAction);
 		InputCameraMoveVal = &EnhancedInputComponent->BindActionValue(CameraMoveAction);

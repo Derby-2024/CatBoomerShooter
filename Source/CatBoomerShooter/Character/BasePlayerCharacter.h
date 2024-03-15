@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "BasePlayerInterface.h"
+#include "EMSActorSaveInterface.h"
 #include "../Inventory/InventoryComponent.h"
 #include "../Utilities/HealthComponent.h"
 #include "BasePlayerCharacter.generated.h"
@@ -15,7 +16,7 @@ class UInputMappingContext;
 class UInputAction;
 
 UCLASS()
-class CATBOOMERSHOOTER_API ABasePlayerCharacter : public ACharacter, public IBasePlayerInterface
+class CATBOOMERSHOOTER_API ABasePlayerCharacter : public ACharacter, public IBasePlayerInterface, public IEMSActorSaveInterface
 {
 	GENERATED_BODY()
 
@@ -56,6 +57,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* Weapon3;
 
+	// EMS Quick Load/Save Inputs
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* QuickSaveAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* QuickLoadAction;
+
 	// Input Variables
 	UPROPERTY(EditAnywhere, Category = Input)
 	bool EnableAutoJump = true;
@@ -78,6 +85,8 @@ protected:
 	void InputWeapon1(const FInputActionValue& Value);
 	void InputWeapon2(const FInputActionValue& Value);
 	void InputWeapon3(const FInputActionValue& Value);
+	void InputQuickSave(const FInputActionValue& Value);
+	void InputQuickLoad(const FInputActionValue& Value);
 
 	//Whip
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Whip")
@@ -109,6 +118,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	UInventoryComponent* GetInventoryComponent() const { return InventoryComponent; }
+
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -121,13 +133,10 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Camera")
 	UCameraComponent* GetPlayerCamera(); virtual UCameraComponent* GetPlayerCamera_Implementation() override;
 
-
-	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	UInventoryComponent* GetInventoryComponent() const { return InventoryComponent; }
-
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void EquipWeapon(int WeaponIndex);
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	int AddWeapon(TSubclassOf<class ABaseWeapon> WeaponClass);
+	void ComponentsToSave_Implementation(TArray<UActorComponent*>& Components) override;
 };
