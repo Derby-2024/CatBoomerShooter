@@ -40,6 +40,14 @@ ABasePlayerCharacter::ABasePlayerCharacter(const FObjectInitializer& ObjectIniti
 void ABasePlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	AAIDirectorGameMode* GameMode = Cast<AAIDirectorGameMode>(GetWorld()->GetAuthGameMode()); 
+	if (GameMode) { 
+		GameMode->AddDefaultTokensToActor(this); 
+	} 
+	else { 
+		UE_LOG(LogTemp, Error, TEXT("ABasePlayerCharacter::BeginPlay: Couldn't get ai game mode")) 
+	} 
 }
 
 void ABasePlayerCharacter::Destroyed()
