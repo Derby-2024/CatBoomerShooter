@@ -119,11 +119,12 @@ void ABaseWeapon::Fire()
 {
 	UWorld* World = GetWorld();
 
-	ABasePlayerCharacter* Player = Cast<ABasePlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	
 
 	// Check if PlayerCharacter is valid
-	if (Player)
+	if (OwningPawn->IsPlayerControlled())
 	{
+		ABasePlayerCharacter* Player = Cast<ABasePlayerCharacter>(OwningPawn);
 		UInventoryComponent* InventoryComponent = Player->GetInventoryComponent();
 		if (InventoryComponent)
 		{

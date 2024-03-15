@@ -33,6 +33,11 @@ void ABaseWeaponProjectile::BeginPlay()
 	Super::BeginPlay();
 
 	BulletMesh->OnComponentBeginOverlap.AddDynamic(this, &ABaseWeaponProjectile::OnOverlap);
+	BulletMesh->OnComponentHit.AddDynamic(this, &ABaseWeaponProjectile::OnHit);
+
+	//Add Ignores to weapon and its holder
+	BulletMesh->IgnoreActorWhenMoving(GetOwner(), true);
+	BulletMesh->IgnoreActorWhenMoving(GetOwner()->GetOwner(), true);
 }
 
 // Called every frame
@@ -44,6 +49,8 @@ void ABaseWeaponProjectile::Tick(float DeltaTime)
 
 void ABaseWeaponProjectile::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Overlapped with: %s"), *UKismetSystemLibrary::GetDisplayName(OtherActor));
+
 	AActor* MyOwner = GetOwner();
 	if (!MyOwner) {
 		UE_LOG(LogTemp, Warning, TEXT("ABaseWeaponProjectile::OnHit - Projectile %s has no owner."), *UKismetSystemLibrary::GetDisplayName(this))
@@ -60,4 +67,11 @@ void ABaseWeaponProjectile::OnOverlap(UPrimitiveComponent* OverlappedComp, AActo
 		UGameplayStatics::ApplyDamage(OtherActor, Damage, MyInstigator, this, DamageType);
 		Destroy();
 	}
+}
+
+// Hit even on is triggered when hitting a static or dynamic objects so we only need to destroy the actor
+// We only want to generate overlap events with characters as it should not push or apply physics on them
+void ABaseWeaponProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector normalImpulse, const FHitResult& Hit)
+{
+	Destroy();
 }
