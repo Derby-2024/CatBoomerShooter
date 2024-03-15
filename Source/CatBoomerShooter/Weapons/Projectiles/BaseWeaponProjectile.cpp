@@ -49,8 +49,6 @@ void ABaseWeaponProjectile::Tick(float DeltaTime)
 
 void ABaseWeaponProjectile::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Overlapped with: %s"), *UKismetSystemLibrary::GetDisplayName(OtherActor));
-
 	AActor* MyOwner = GetOwner();
 	if (!MyOwner) {
 		UE_LOG(LogTemp, Warning, TEXT("ABaseWeaponProjectile::OnHit - Projectile %s has no owner."), *UKismetSystemLibrary::GetDisplayName(this))
@@ -63,7 +61,7 @@ void ABaseWeaponProjectile::OnOverlap(UPrimitiveComponent* OverlappedComp, AActo
 
 	if (OtherActor && OtherActor != this && OtherActor != MyOwner && OtherActor != MyOwner->GetOwner())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Hit %s"), *UKismetSystemLibrary::GetDisplayName(OtherActor))
+		UE_LOG(LogTemp, Warning, TEXT("Overlapped %s"), *UKismetSystemLibrary::GetDisplayName(OtherActor))
 		UGameplayStatics::ApplyDamage(OtherActor, Damage, MyInstigator, this, DamageType);
 		Destroy();
 	}
@@ -73,5 +71,6 @@ void ABaseWeaponProjectile::OnOverlap(UPrimitiveComponent* OverlappedComp, AActo
 // We only want to generate overlap events with characters as it should not push or apply physics on them
 void ABaseWeaponProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector normalImpulse, const FHitResult& Hit)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Hit %s"), *UKismetSystemLibrary::GetDisplayName(OtherActor))
 	Destroy();
 }
