@@ -22,8 +22,8 @@ UCLASS()
 class CATBOOMERSHOOTER_API ABaseWeapon : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ABaseWeapon();
 
@@ -64,28 +64,31 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	FName HandSocketName = "R_HandSocket";
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
-	APawn* OwningCharacter;
+	APawn* OwningPawn;
 
 	int ShotsFired = 0;
 
-	UPROPERTY(EditAnywhere, Category="Collision")
+	UPROPERTY(EditAnywhere, Category = "Collision")
 	TEnumAsByte<ECollisionChannel> TraceChannelProperty = ECC_Pawn;
 
 	FTimerHandle Handle_ReFire;
 
 	FVector TraceStart;
 	FVector TraceEnd;
-	
 
 
-public:	
+
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
+	void StartShooting();
+	UFUNCTION(BlueprintCallable)
+	void StopShooting();
+
 	void Fire();
 	void BurstFire();
-	void StartShooting();
-	void StopShooting();
 	void Reload();
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
