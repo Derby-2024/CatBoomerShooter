@@ -156,30 +156,12 @@ void ABasePlayerCharacter::InputWeapon3(const FInputActionValue& Value)
 
 void ABasePlayerCharacter::InputQuickSave(const FInputActionValue& Value)
 {
-	int32 Flags = ENUM_TO_FLAG(ESaveTypeFlags::SF_Level) | ENUM_TO_FLAG(ESaveTypeFlags::SF_Player);
-
-	auto EMSAsyncSaveGame = UEMSAsyncSaveGame::AsyncSaveActors(this, Flags);
-	if (IsValid(EMSAsyncSaveGame)) {
-		EMSAsyncSaveGame->Activate();
-	}
+	QuickSave();
 }
 
 void ABasePlayerCharacter::InputQuickLoad(const FInputActionValue& Value)
 {
-	TSubclassOf<ABaseWeaponProjectile> Projectileclass = ABaseWeaponProjectile::StaticClass();
-	TArray<AActor*> FoundProjectiles;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), Projectileclass, FoundProjectiles);
-
-	for (AActor* a : FoundProjectiles) {
-		a->Destroy();
-	}
-
-	int32 Flags = ENUM_TO_FLAG(ESaveTypeFlags::SF_Level) | ENUM_TO_FLAG(ESaveTypeFlags::SF_Player);
-
-	auto EMSAsyncLoadGame = UEMSAsyncLoadGame::AsyncLoadActors(this, Flags, true);
-	if (IsValid(EMSAsyncLoadGame)) {
-		EMSAsyncLoadGame->Activate();
-	}
+	QuickLoad();
 }
 
 void ABasePlayerCharacter::ComponentsToSave_Implementation(TArray<UActorComponent*>& Components)
@@ -310,4 +292,32 @@ int ABasePlayerCharacter::AddWeapon(TSubclassOf<class ABaseWeapon> WeaponClass)
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = GetInstigator();
 	return WeaponList.AddUnique(GetWorld()->SpawnActor<ABaseWeapon>(WeaponClass, GetActorTransform(), SpawnParams));
+}
+
+void ABasePlayerCharacter::QuickSave() 
+{
+	int32 Flags = ENUM_TO_FLAG(ESaveTypeFlags::SF_Level) | ENUM_TO_FLAG(ESaveTypeFlags::SF_Player);
+
+	auto EMSAsyncSaveGame = UEMSAsyncSaveGame::AsyncSaveActors(this, Flags);
+	if (IsValid(EMSAsyncSaveGame)) {
+		EMSAsyncSaveGame->Activate();
+	}
+}
+
+void ABasePlayerCharacter::QuickLoad()
+{
+	TSubclassOf<ABaseWeaponProjectile> Projectileclass = ABaseWeaponProjectile::StaticClass();
+	TArray<AActor*> FoundProjectiles;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), Projectileclass, FoundProjectiles);
+
+	for (AActor* a : FoundProjectiles) {
+		a->Destroy();
+	}
+
+	int32 Flags = ENUM_TO_FLAG(ESaveTypeFlags::SF_Level) | ENUM_TO_FLAG(ESaveTypeFlags::SF_Player);
+
+	auto EMSAsyncLoadGame = UEMSAsyncLoadGame::AsyncLoadActors(this, Flags, true);
+	if (IsValid(EMSAsyncLoadGame)) {
+		EMSAsyncLoadGame->Activate();
+	}
 }

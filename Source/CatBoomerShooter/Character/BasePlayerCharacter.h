@@ -149,4 +149,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	int AddWeapon(TSubclassOf<class ABaseWeapon> WeaponClass);
 	void ComponentsToSave_Implementation(TArray<UActorComponent*>& Components) override;
+
+	// Expose save and load
+	UFUNCTION(BlueprintCallable, Category = "SaveLoad")
+	void QuickSave();
+
+	UFUNCTION(BlueprintCallable, Category = "SaveLoad")
+	void QuickLoad();
+	
 };
