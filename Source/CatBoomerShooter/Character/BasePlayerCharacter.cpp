@@ -9,11 +9,13 @@
 #include <GameFramework/MovementComponent.h>
 #include <Kismet/KismetMathLibrary.h>
 #include "Components/InputComponent.h"
+#include "Blueprint/UserWidget.h"
 
 #include "EMSAsyncSaveGame.h"
 #include "EMSAsyncLoadGame.h"
-#include "Kismet/GameplayStatics.h"
+#include "EMSFunctionLibrary.h"
 
+#include "Kismet/GameplayStatics.h"
 #include "BaseCharacterMovementComponent.h"
 #include "CatBoomerShooter/Weapons/Whip/BaseWhip.h"
 #include "CatBoomerShooter/Weapons/BaseWeapon.h"
@@ -169,6 +171,15 @@ void ABasePlayerCharacter::ComponentsToSave_Implementation(TArray<UActorComponen
 	Components.Add(InventoryComponent);
 }
 
+void ABasePlayerCharacter::ActorLoaded_Implementation()
+{
+	if (WeaponClassList.Num() > 0) {
+		for (TSubclassOf<class ABaseWeapon> LoadedWeapon : WeaponClassList) {
+			AddWeapon(LoadedWeapon);
+		}
+	}
+}
+
 void ABasePlayerCharacter::InputNextWeapon(const FInputActionValue& Value)
 {
 	if (WeaponList.Num() == 0)
@@ -296,6 +307,12 @@ int ABasePlayerCharacter::AddWeapon(TSubclassOf<class ABaseWeapon> WeaponClass)
 
 void ABasePlayerCharacter::QuickSave() 
 {
+	WeaponClassList.Empty();
+
+	for (ABaseWeapon* LoadedWeapon : WeaponList) {
+		WeaponClassList.Add(LoadedWeapon->GetClass());
+	}
+
 	int32 Flags = ENUM_TO_FLAG(ESaveTypeFlags::SF_Level) | ENUM_TO_FLAG(ESaveTypeFlags::SF_Player);
 
 	auto EMSAsyncSaveGame = UEMSAsyncSaveGame::AsyncSaveActors(this, Flags);
@@ -307,10 +324,13 @@ void ABasePlayerCharacter::QuickSave()
 void ABasePlayerCharacter::QuickLoad()
 {
 	TSubclassOf<ABaseWeaponProjectile> Projectileclass = ABaseWeaponProjectile::StaticClass();
-	TArray<AActor*> FoundProjectiles;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), Projectileclass, FoundProjectiles);
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), Projectileclass, FoundActors);
 
-	for (AActor* a : FoundProjectiles) {
+	TSubclassOf<ABaseWeapon> WeaponClass = ABaseWeapon::StaticClass();
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), WeaponClass, FoundActors);
+
+	for (AActor* a : FoundActors) {
 		a->Destroy();
 	}
 
@@ -320,4 +340,11 @@ void ABasePlayerCharacter::QuickLoad()
 	if (IsValid(EMSAsyncLoadGame)) {
 		EMSAsyncLoadGame->Activate();
 	}
+
+	// A better aproach that reloads the whole level but requires GameMode implementation to load everything properly
+	//FString SaveGameName;
+
+	//UEMSInfoSaveGame* SaveSlot = UEMSFunctionLibrary::GetSlotInfoSaveGame(this, SaveGameName);
+
+	//UGameplayStatics::OpenLevel(this, SaveSlot->SlotInfo.Level);
 }

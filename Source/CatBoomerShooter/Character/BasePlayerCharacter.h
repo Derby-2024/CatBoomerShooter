@@ -103,10 +103,12 @@ protected:
  	class ABaseWhip* Whip;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
  	class ABaseWeapon* Weapon;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	UPROPERTY(EditAnywhere, SaveGame, BlueprintReadWrite, Category = "Weapon")
 	int CurrentWeaponIndex = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TArray<ABaseWeapon*> WeaponList = {};
+	UPROPERTY(EditAnywhere, SaveGame, BlueprintReadWrite, Category = "Weapon")
+	TArray<TSubclassOf<class ABaseWeapon>> WeaponClassList = {};
 
 	//Triggers out of ammo notification that they are out of ammo
 	UFUNCTION(BlueprintImplementableEvent, Category = "HUD")
@@ -143,11 +145,12 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Camera")
 	UCameraComponent* GetPlayerCamera(); virtual UCameraComponent* GetPlayerCamera_Implementation() override;
 
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	UFUNCTION(BlueprintNativeEvent, Category = "Weapon")
 	void EquipWeapon(int WeaponIndex);
 
-	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	UFUNCTION(BlueprintNativeEvent, Category = "Weapon")
 	int AddWeapon(TSubclassOf<class ABaseWeapon> WeaponClass);
+
 	void ComponentsToSave_Implementation(TArray<UActorComponent*>& Components) override;
 
 	// Expose save and load
@@ -157,4 +160,5 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SaveLoad")
 	void QuickLoad();
 	
+	void ActorLoaded_Implementation() override;
 };
