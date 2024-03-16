@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/ArrowComponent.h"
+#include "NiagaraComponent.h"
+#include "NiagaraSystem.h"
 #include "../Inventory/InventoryComponent.h"
 #include "../Inventory/Items/BaseAmmo.h"
 #include "Projectiles/BaseWeaponProjectile.h"
@@ -54,6 +56,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	TArray<FName> MuzzleSockets = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	UNiagaraComponent* NiagaraComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	UNiagaraSystem* NiagaraSystemToPlay;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	FName MuzzleFlashSocketName = "Muzzle_1";
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	float MaxVerticalSpread = 0.0f;

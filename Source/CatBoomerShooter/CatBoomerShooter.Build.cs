@@ -8,7 +8,7 @@ public class CatBoomerShooter : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "EasyMultiSave" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "EasyMultiSave", "Niagara" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 

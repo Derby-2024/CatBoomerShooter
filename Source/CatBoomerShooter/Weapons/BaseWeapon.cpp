@@ -27,6 +27,10 @@ ABaseWeapon::ABaseWeapon()
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon Mesh");
 	WeaponMesh->SetupAttachment(RootComponent);
 
+	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("NiagaraMuzzleFlash");
+	NiagaraComponent->bAutoActivate = false;
+	NiagaraComponent->SetupAttachment(WeaponMesh, MuzzleFlashSocketName);
+
 	AmmoType = EAmmoType::E_AssaultRifle;
 }
 
@@ -34,6 +38,8 @@ ABaseWeapon::ABaseWeapon()
 void ABaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+
+	NiagaraComponent->SetAsset(NiagaraSystemToPlay);
 
 	if (!GetOwner())
 	{
@@ -119,8 +125,6 @@ void ABaseWeapon::Fire()
 {
 	UWorld* World = GetWorld();
 
-	
-
 	// Check if PlayerCharacter is valid
 	if (OwningPawn->IsPlayerControlled())
 	{
@@ -193,6 +197,9 @@ void ABaseWeapon::Fire()
 
 		}
 	}
+
+	NiagaraComponent->Activate(true);
+
 	if (FiringMode == EFiringMode::Burst)
 	{
 		ShotsFired++;
