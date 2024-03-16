@@ -103,7 +103,7 @@ protected:
  	class ABaseWhip* Whip;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
  	class ABaseWeapon* Weapon;
-	UPROPERTY(EditAnywhere, SaveGame, BlueprintReadWrite, Category = "Weapon")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	int CurrentWeaponIndex = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	TArray<ABaseWeapon*> WeaponList = {};

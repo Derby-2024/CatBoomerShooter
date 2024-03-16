@@ -21,9 +21,9 @@ public:
 	// Sets default values for this component's properties
 	UHealthComponent();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "1", UIMin = "1"))
+	UPROPERTY(EditAnywhere, SaveGame, BlueprintReadWrite, meta = (ClampMin = "1", UIMin = "1"))
 	float MaxHealth = 100.0f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, SaveGame, BlueprintReadWrite)
 	float Health = 100.f;
 
 	UPROPERTY(EditAnywhere)

@@ -172,6 +172,7 @@ void ABasePlayerCharacter::InputQuickLoad(const FInputActionValue& Value)
 void ABasePlayerCharacter::ComponentsToSave_Implementation(TArray<UActorComponent*>& Components)
 {
 	Components.Add(InventoryComponent);
+	Components.Add(HealthComponent);
 }
 
 void ABasePlayerCharacter::ActorLoaded_Implementation()
