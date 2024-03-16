@@ -144,6 +144,8 @@ void ABaseWeapon::Fire()
 		}
 	}
 
+	OnFire();
+
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = GetInstigator();
@@ -222,6 +224,11 @@ void ABaseWeapon::ResetShot()
 {
 	canShoot = true;
 	BPDisableReloadWidget();
+}
+
+void ABaseWeapon::OnFire_Implementation()
+{
+
 }
 
 void ABaseWeapon::BPEnableReloadWidget_Implementation()

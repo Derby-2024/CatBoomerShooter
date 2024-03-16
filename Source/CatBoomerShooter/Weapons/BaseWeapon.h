@@ -98,6 +98,9 @@ public:
 	void Reload();
 	void ResetShot();
 
+	UFUNCTION(BlueprintNativeEvent)
+	void OnFire();
+
 	UFUNCTION(BlueprintNativeEvent, Category = "Reloading")
 	void BPEnableReloadWidget();
 	UFUNCTION(BlueprintNativeEvent, Category = "Reloading")
