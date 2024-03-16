@@ -145,10 +145,10 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Camera")
 	UCameraComponent* GetPlayerCamera(); virtual UCameraComponent* GetPlayerCamera_Implementation() override;
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Weapon")
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void EquipWeapon(int WeaponIndex);
 
-	UFUNCTION(BlueprintNativeEvent, Category = "Weapon")
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	int AddWeapon(TSubclassOf<class ABaseWeapon> WeaponClass);
 
 	void ComponentsToSave_Implementation(TArray<UActorComponent*>& Components) override;
@@ -161,4 +161,5 @@ public:
 	void QuickLoad();
 	
 	void ActorLoaded_Implementation() override;
+	void ActorPreSave_Implementation() override;
 };

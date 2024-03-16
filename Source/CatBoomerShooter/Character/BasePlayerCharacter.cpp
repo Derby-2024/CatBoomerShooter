@@ -9,7 +9,7 @@
 #include <GameFramework/MovementComponent.h>
 #include <Kismet/KismetMathLibrary.h>
 #include "Components/InputComponent.h"
-#include "Blueprint/UserWidget.h"
+#include "../AI/Director/AIDirectorGameMode.h"
 
 #include "EMSAsyncSaveGame.h"
 #include "EMSAsyncLoadGame.h"
@@ -49,7 +49,10 @@ void ABasePlayerCharacter::BeginPlay()
 	} 
 	else { 
 		UE_LOG(LogTemp, Error, TEXT("ABasePlayerCharacter::BeginPlay: Couldn't get ai game mode")) 
-	} 
+	}
+
+	// When Spawning, We quickly load the player and level data, if level was not played before nothing will be affected
+	QuickLoad();
 }
 
 void ABasePlayerCharacter::Destroyed()
@@ -177,6 +180,16 @@ void ABasePlayerCharacter::ActorLoaded_Implementation()
 		for (TSubclassOf<class ABaseWeapon> LoadedWeapon : WeaponClassList) {
 			AddWeapon(LoadedWeapon);
 		}
+	}
+	EquipWeapon(CurrentWeaponIndex);
+}
+
+void ABasePlayerCharacter::ActorPreSave_Implementation()
+{
+	WeaponClassList.Empty();
+
+	for (ABaseWeapon* LoadedWeapon : WeaponList) {
+		WeaponClassList.Add(LoadedWeapon->GetClass());
 	}
 }
 
@@ -307,12 +320,6 @@ int ABasePlayerCharacter::AddWeapon(TSubclassOf<class ABaseWeapon> WeaponClass)
 
 void ABasePlayerCharacter::QuickSave() 
 {
-	WeaponClassList.Empty();
-
-	for (ABaseWeapon* LoadedWeapon : WeaponList) {
-		WeaponClassList.Add(LoadedWeapon->GetClass());
-	}
-
 	int32 Flags = ENUM_TO_FLAG(ESaveTypeFlags::SF_Level) | ENUM_TO_FLAG(ESaveTypeFlags::SF_Player);
 
 	auto EMSAsyncSaveGame = UEMSAsyncSaveGame::AsyncSaveActors(this, Flags);
@@ -333,6 +340,8 @@ void ABasePlayerCharacter::QuickLoad()
 	for (AActor* a : FoundActors) {
 		a->Destroy();
 	}
+
+	WeaponList.Empty();
 
 	int32 Flags = ENUM_TO_FLAG(ESaveTypeFlags::SF_Level) | ENUM_TO_FLAG(ESaveTypeFlags::SF_Player);
 
