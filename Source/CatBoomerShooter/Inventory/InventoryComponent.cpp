@@ -46,11 +46,11 @@ bool UInventoryComponent::AddItem(const FItem& Item)
         int RemainingAmmo = Collection->MaxAmmo - Collection->AmmoAmount;
 
 
-        //if (Collection->AmmoAmount + Item.AmmoAmount > Collection->MaxAmmo)
-        //{
-        //    UE_LOG(LogInventory, Warning, TEXT("Maximum ammo capacity reached, cannot pick up more ammo."));
-        //    //return false;
-        //}
+        if (Collection->AmmoAmount + Item.AmmoAmount > Collection->MaxAmmo)
+        {
+            UE_LOG(LogInventory, Warning, TEXT("Maximum ammo capacity reached, cannot pick up more ammo."));
+            return false;
+        }
 
         // Add the minimum between remaining ammo
         int AddedAmmo = FMath::Min(Item.AmmoAmount, RemainingAmmo);
@@ -62,7 +62,7 @@ bool UInventoryComponent::AddItem(const FItem& Item)
         if (AddedAmmo < Item.AmmoAmount)
         {
             UE_LOG(LogInventory, Warning, TEXT("Maximum ammo capacity reached, could only pick up %d of %d ammo."), AddedAmmo, Item.AmmoAmount);
-            return true;
+            return false;
         }
 
         return true;
