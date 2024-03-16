@@ -333,7 +333,7 @@ void ABasePlayerCharacter::QuickSave()
 
 void ABasePlayerCharacter::QuickLoad()
 {
-	TSubclassOf<ABaseWeaponProjectile> Projectileclass = ABaseWeaponProjectile::StaticClass();
+	/*TSubclassOf<ABaseWeaponProjectile> Projectileclass = ABaseWeaponProjectile::StaticClass();
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), Projectileclass, FoundActors);
 
@@ -344,7 +344,7 @@ void ABasePlayerCharacter::QuickLoad()
 		a->Destroy();
 	}
 
-	WeaponList.Empty();
+	WeaponList.Empty();*/
 
 	int32 Flags = ENUM_TO_FLAG(ESaveTypeFlags::SF_Level) | ENUM_TO_FLAG(ESaveTypeFlags::SF_Player);
 
