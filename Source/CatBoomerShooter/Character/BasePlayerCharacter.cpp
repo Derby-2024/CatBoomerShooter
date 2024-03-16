@@ -18,6 +18,8 @@
 #include "CatBoomerShooter/Weapons/Whip/BaseWhip.h"
 #include "CatBoomerShooter/Weapons/BaseWeapon.h"
 
+#include "CatBoomerShooter/AI/Director/AIDirectorGameMode.h"
+
 // Sets default values
 ABasePlayerCharacter::ABasePlayerCharacter(const FObjectInitializer& ObjectInitializer):
 	Super(ObjectInitializer.SetDefaultSubobjectClass<UBaseCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
