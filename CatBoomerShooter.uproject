@@ -52,11 +52,6 @@
 			"Enabled": false
 		},
 		{
-			"Name": "HoudiniNiagara",
-			"Enabled": true,
-			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/79d2dd58387c4696a0f3458275f739d6"
-		},
-		{
 			"Name": "MovieRenderPipeline",
 			"Enabled": true
 		},

@@ -28,31 +28,31 @@ struct FItem
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	EItemType ItemType;
+	EItemType ItemType = EItemType::Ammo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	int AmmoAmount;
+	int AmmoAmount = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	int TotalAmmo;
+	int TotalAmmo = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	EAmmoType AmmoType;
+	EAmmoType AmmoType = EAmmoType::E_AssaultRifle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	FString ItemInfo;
+	FString ItemInfo = FString();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	int TotalCats;
+	int TotalCats = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	int CatCount;
+	int CatCount = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	FString CollectibleInfo;
+	FString CollectibleInfo = FString();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	ECollectibleType CollectibleType;
+	ECollectibleType CollectibleType = ECollectibleType::E_Cat;
 };
 
 
