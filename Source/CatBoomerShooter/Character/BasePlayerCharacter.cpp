@@ -196,6 +196,9 @@ void ABasePlayerCharacter::InputMelee(const FInputActionValue& Value)
 	{
 		Whip->Attack();
 	}
+	else {
+		UE_LOG(LogTemp, Log, TEXT("No whip"));
+	}
 }
 
 void ABasePlayerCharacter::InputFire_Start(const FInputActionValue &Value)
