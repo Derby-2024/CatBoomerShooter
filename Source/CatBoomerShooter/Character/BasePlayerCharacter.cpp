@@ -77,6 +77,19 @@ void ABasePlayerCharacter::InputMove(const FInputActionValue& Value)
 
 }
 
+void ABasePlayerCharacter::TapDash(const FInputActionValue& Value){
+	FVector2D DirectionValue = Value.Get<FVector2D>();
+	if(DirectionValue.Equals(StoredDirectionValue) && !StoredDirectionValue.Equals(FVector2D::Zero())){
+		Dash(DirectionValue);
+		StoredDirectionValue = FVector2D::Zero();
+	}
+	else{
+		StoredDirectionValue = DirectionValue;
+	}
+	UE_LOG(LogTemp, Log, TEXT("%s"), *StoredDirectionValue.ToString());
+	GetWorldTimerManager().SetTimer(TapTimerHandle, this, &ABasePlayerCharacter::ResetStoredDirectionValue, TapIntervalTime,false, TapIntervalTime);
+	
+}
 void ABasePlayerCharacter::InputJump(const FInputActionValue& Value)
 {
 	const bool ShouldJump = Value.Get<bool>();
@@ -84,6 +97,61 @@ void ABasePlayerCharacter::InputJump(const FInputActionValue& Value)
 		Jump();
 	}
 }
+
+void ABasePlayerCharacter::Dash(const FInputActionValue& Value)
+{
+	//this happens if dash is pressed and the player has a dash available
+	if(DashCount>0)
+	{
+		FVector2D InputVal = FVector2D::Zero();
+		if(Value.GetValueType() ==EInputActionValueType::Boolean)
+			InputVal = InputMoveVal->GetValue().Get<FVector2D>();
+		else
+			InputVal = Value.Get<FVector2D>();
+			
+		FVector DashVel = GetActorForwardVector()* InputVal.X + GetActorRightVector()* InputVal.Y;
+		DashVel.Normalize();
+		DashVel.Z = 0;
+		DashVel = DashVel * DashSpeed;
+		if((DashVel.X!=0) ||(DashVel.Y !=0)){
+			if(!GetMovementComponent()->IsFalling()){
+				//sets the player invincible
+				IsInvincible = true;
+				this -> LaunchCharacter(DashVel,false,false);
+				//resets the players invincibility
+				GetWorldTimerManager().SetTimer(InvTimerHandle, this, &ABasePlayerCharacter::ResetInvincibility, InvincibleDuration,false, InvincibleDuration);
+				DashCount=DashCount-1;
+				//ResetDashCounter();
+				//this uses a timer to call the restdashcounter, the first DashCooldown is the time betwwen the first loop and the second loop the second dashCooldwon is time for the first loop to occur.
+				GetWorldTimerManager().SetTimer(DashTimerHandle, this, &ABasePlayerCharacter::ResetDashCounter,DashCooldown, true,DashCooldown);
+			}
+			
+		}
+	}
+}
+void ABasePlayerCharacter::ResetInvincibility()
+{
+	if(IsInvincible != false){
+		IsInvincible = false;
+	}
+	
+}
+
+void ABasePlayerCharacter::ResetDashCounter()
+{
+	if (DashCount < 3){
+		DashCount=DashCount+1;
+	}
+	
+}
+
+void ABasePlayerCharacter::ResetStoredDirectionValue()
+{
+	StoredDirectionValue = FVector2D::Zero();
+	
+}
+
+
 
 void ABasePlayerCharacter::InputJumpEnd(const FInputActionValue& Value)
 {
@@ -248,6 +316,7 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	// Bind Input to functions
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputMove);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::TapDash);
 		if(EnableAutoJump)
 			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputJump);
 		else
@@ -264,6 +333,7 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EnhancedInputComponent->BindAction(PauseAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputPause);
 		EnhancedInputComponent->BindAction(NextWeapon, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputNextWeapon);
 		EnhancedInputComponent->BindAction(PreviousWeapon, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputPreviousWeapon);
+		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::Dash);
 
 		EnhancedInputComponent->BindAction(QuickSaveAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputQuickSave);
 		EnhancedInputComponent->BindAction(QuickLoadAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputQuickLoad);

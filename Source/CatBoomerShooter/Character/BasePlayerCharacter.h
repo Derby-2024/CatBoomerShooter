@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "GameFramework/CharacterMovementComponent.h" 
 #include "BasePlayerInterface.h"
 #include "EMSActorSaveInterface.h"
 #include "../Inventory/InventoryComponent.h"
@@ -45,6 +46,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* CameraMoveAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* DashAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* InteractAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* MeleeAction;
@@ -70,6 +73,28 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* QuickLoadAction;
 
+	//variables for dashing
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	int DashCount=3;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	int DashSpeed=25000;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	float DashCooldown = 2.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	float TapIntervalTime = 1.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	bool IsInvincible = false;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	float InvincibleDuration = 0.15f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	FVector2D StoredDirectionValue;
+
+	FTimerHandle DashTimerHandle;
+	FTimerHandle InvTimerHandle;
+	FTimerHandle TapTimerHandle;
+
+	
+
 	// Input Variables
 	UPROPERTY(EditAnywhere, Category = Input)
 	bool EnableAutoJump = true;
@@ -85,6 +110,8 @@ protected:
 	void InputJump(const FInputActionValue& Value);
 	void InputJumpEnd(const FInputActionValue& Value);
 	void InputCameraMove(const FInputActionValue& Value);
+	void Dash(const FInputActionValue& Value);
+	void TapDash(const FInputActionValue& Value);
 	void InputInteract(const FInputActionValue& Value);
 	void InputMelee(const FInputActionValue& Value);
 	void InputFire_Start(const FInputActionValue& Value);
@@ -136,6 +163,11 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void ResetDashCounter();
+
+	void ResetInvincibility();
+
+	void ResetStoredDirectionValue();
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
 	USkeletalMeshComponent* GetPlayerArms(); virtual USkeletalMeshComponent* GetPlayerArms_Implementation() override;
 
