@@ -9,7 +9,13 @@ ASpikeInterval::ASpikeInterval()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	staticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+	SetRootComponent(StaticMesh);
+	BoxCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("Box Collider"));
+	BoxCollider->SetupAttachment(StaticMesh);
+
+	BoxCollider->OnComponentBeginOverlap.AddDynamic(this, &ASpikeInterval::OnOverlap);
+	
 }
 
 // Called when the game starts or when spawned
@@ -37,6 +43,16 @@ void ASpikeInterval::Deactivate()
 	GetWorld()->GetTimerManager().SetTimer(ActTimerHandle, this, &ASpikeInterval::Activate, 5.0f, false);
 
 }
+
+void ASpikeInterval::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor && OtherActor != this) {
+		UE_LOG(LogTemp, Warning, TEXT("Damage"));
+	}
+}
+
+//UE_LOG(LogTemp, Warning, TEXT("Damage"));
+
 
 // Called every frame
 void ASpikeInterval::Tick(float DeltaTime)
