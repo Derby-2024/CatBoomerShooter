@@ -2,7 +2,13 @@
 
 
 #include "InteractableDoor.h"
+#include "InteractableDoorMesh.h"
 #include "../Character/BasePlayerCharacter.h"
+
+
+AInteractableDoor::AInteractableDoor() {
+	Mesh->DestroyComponent();
+}
 
 void AInteractableDoor::BeginPlay()
 {
@@ -12,72 +18,47 @@ void AInteractableDoor::BeginPlay()
 	InitialLocation = GetActorLocation();
 }
 
-FQuat AInteractableDoor::GetTargetRotation() const
-{
-	switch (TargetState) {
-	case EDoorState::Closed:
-		return InitialRotation;
-	case EDoorState::Opened:
-		return InitialRotation * FQuat::MakeFromEuler(OpenDelta);
-
-	default:
-		checkNoEntry();
-		return {};
-	}
-}
-
-FVector AInteractableDoor::GetTargetLocation() const
-{
-	switch (TargetState) {
-	case EDoorState::Closed:
-		return InitialLocation;
-	case EDoorState::Opened:
-		return InitialLocation + OpenDelta;
-
-	default:
-		checkNoEntry();
-		return{};
-	}
-}
-
 void AInteractableDoor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Smooth interpolate transform
-	// TODO if needed: Convert logic to utlize a transform rather than splitting into 2 seperate logic
-	switch (OpenMethod) {
-	case EDoorOpenMethod::Rotate: {
-		const FQuat CurrentRotation = GetActorQuat();
-		const FQuat TargetRotation = GetTargetRotation();
+	TArray<UInteractableDoorMesh*> DoorMeshArr;
+	GetComponents<UInteractableDoorMesh>(DoorMeshArr);
 
-		FQuat NewRotation;
+	for (UInteractableDoorMesh* DoorMesh : DoorMeshArr) {
+		switch (OpenMethod) {
+		case EDoorOpenMethod::Rotate: {
+			const FQuat CurrentRotation = DoorMesh->GetComponentQuat();
+			const FQuat TargetRotation = DoorMesh->GetTargetRotation(TargetState);
 
-		if (CurrentRotation.Equals(TargetRotation))
-			NewRotation = TargetRotation;
-		else
-			NewRotation = FQuat::Slerp(CurrentRotation, TargetRotation, OpenSpeed * DeltaTime);
+			FQuat NewRotation;
 
-		SetActorRotation(NewRotation);
-	}
-		break;
-	case EDoorOpenMethod::Move: {
-		const FVector CurrentLocation = GetActorLocation();
-		const FVector TargetLocation = GetTargetLocation();
+			if (CurrentRotation.Equals(TargetRotation))
+				NewRotation = TargetRotation;
+			else
+				NewRotation = FQuat::Slerp(CurrentRotation, TargetRotation, OpenSpeed * DeltaTime);
+			
+			DoorMesh->SetWorldRotation(NewRotation);
+			break;
+		}
+		case EDoorOpenMethod::Move: {
+			const FVector CurrentLocation = DoorMesh->GetComponentLocation();
+			const FVector TargetLocation = DoorMesh->GetTargetLocation(TargetState);
 
-		FVector NewLocation;
+			FVector NewLocation;
 
-		if (CurrentLocation.Equals(TargetLocation))
-			NewLocation = TargetLocation;
-		else
-			NewLocation = FMath::Lerp(CurrentLocation, TargetLocation, OpenSpeed * DeltaTime);
+			if (CurrentLocation.Equals(TargetLocation))
+				NewLocation = TargetLocation;
+			else
+				NewLocation = FMath::Lerp(CurrentLocation, TargetLocation, OpenSpeed * DeltaTime);
 
-		SetActorLocation(NewLocation);
-	}
-		break;
+			DoorMesh->SetWorldLocation(NewLocation);
+			break;
+		}
 
-	default:
-		checkNoEntry();
+		default:
+			checkNoEntry();
+		}
 	}
 }
 
@@ -91,7 +72,7 @@ bool AInteractableDoor::OnInteract_Implementation(AActor* OwningActor)
 	// Check for key
 	ABasePlayerCharacter* OwningPlayer = Cast<ABasePlayerCharacter>(OwningActor);
 	if (bRequireKey && OwningPlayer) {
-		if (!OwningPlayer->Keys.Contains(RequiredKey))
+		if (!OwningPlayer->GetInventoryComponent()->Keys.Contains(RequiredKey))
 			return false;
 	}
 

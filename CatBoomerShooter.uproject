@@ -11,7 +11,11 @@
 			"AdditionalDependencies": [
 				"AIModule",
 				"Engine",
-				"DeveloperSettings"
+				"CoreUObject",
+				"DeveloperSettings",
+				"Slate",
+				"SlateCore",
+				"UMG"
 			]
 		},
 		{
@@ -40,17 +44,21 @@
 			"Enabled": true
 		},
 		{
+			"Name": "CommonUI",
+			"Enabled": true
+		},
+		{
 			"Name": "HoudiniEngine",
 			"Enabled": false
 		},
 		{
-			"Name": "HoudiniNiagara",
-			"Enabled": true,
-			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/product/79d2dd58387c4696a0f3458275f739d6"
-		},
-		{
 			"Name": "MovieRenderPipeline",
 			"Enabled": true
+		},
+		{
+			"Name": "EasyMultiSave",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/7232621c23174bbbbb64c7bfb6583f6f"
 		}
 	],
 	"TargetPlatforms": [

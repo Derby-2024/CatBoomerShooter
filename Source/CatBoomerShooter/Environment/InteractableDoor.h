@@ -27,12 +27,13 @@ class CATBOOMERSHOOTER_API AInteractableDoor : public AInteractableActor
 	GENERATED_BODY()
 	
 private:
+	AInteractableDoor();
+
 	void BeginPlay() override;
-	FQuat GetTargetRotation() const;
-	FVector GetTargetLocation() const;
 	
 	FQuat InitialRotation;
 	FVector InitialLocation;
+	UPROPERTY(SaveGame)
 	EDoorState TargetState = EDoorState::Closed;
 
 public:
@@ -42,8 +43,6 @@ public:
 public:
 	UPROPERTY(EditAnywhere)
 	EDoorOpenMethod OpenMethod = EDoorOpenMethod::Rotate;
-	UPROPERTY(EditAnywhere)
-	FVector OpenDelta = FVector(0, 0, 90);
 
 	UPROPERTY(EditAnywhere)
 	float OpenSpeed = 3.0f;
