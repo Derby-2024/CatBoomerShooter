@@ -3,3 +3,7 @@
 
 #include "CatPath.h"
 
+void ACatPath::BeginPlay()
+{
+
+}

@@ -10,8 +10,15 @@
  * 
  */
 UCLASS()
-class CATBOOMERSHOOTER_API ACatPath : public ASplineMeshActor
+class CATBOOMERSHOOTER_API ACatPath : public AActor
 {
+
+
 	GENERATED_BODY()
-	
+
+public:
+
+	virtual void BeginPlay() override;
+	class USplineComponent* SplinePath;
+		
 };
