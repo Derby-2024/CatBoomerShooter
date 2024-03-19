@@ -37,6 +37,22 @@ void ABasePickup::OnPickup()
 
 void ABasePickup::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	OnPickup();
+	bIsDisabled = true;
+	CheckActorDisabled();
+}
+
+// Enables or Disables visibility and collision of the pickup actor based on the load/save state
+void ABasePickup::CheckActorDisabled()
+{
+	SetActorHiddenInGame(bIsDisabled);
+	if (bIsDisabled)
+		CollisionComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	else
+		CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+}
+
+void ABasePickup::ActorLoaded_Implementation()
+{
+	CheckActorDisabled();
 }
 

@@ -12,7 +12,10 @@
 				"AIModule",
 				"Engine",
 				"CoreUObject",
-				"DeveloperSettings"
+				"DeveloperSettings",
+				"Slate",
+				"SlateCore",
+				"UMG"
 			]
 		},
 		{
@@ -33,8 +36,35 @@
 			]
 		},
 		{
+			"Name": "GPULightmass",
+			"Enabled": true
+		},
+		{
+			"Name": "NiagaraFluids",
+			"Enabled": true
+		},
+		{
 			"Name": "CommonUI",
 			"Enabled": true
+		},
+		{
+			"Name": "HoudiniEngine",
+			"Enabled": false
+		},
+		{
+			"Name": "MovieRenderPipeline",
+			"Enabled": true
+		},
+		{
+			"Name": "EasyMultiSave",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/7232621c23174bbbbb64c7bfb6583f6f"
 		}
+	],
+	"TargetPlatforms": [
+		"LinuxArm64",
+		"Windows",
+		"Linux",
+		"HoloLens"
 	]
 }

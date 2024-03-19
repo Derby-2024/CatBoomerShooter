@@ -10,11 +10,12 @@
 #include "CatBoomerShooter/Character/BasePlayerInterface.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/Pawn.h"
+#include "Blueprint/UserWidget.h"
 
 // Sets default values
 ABaseWeapon::ABaseWeapon()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	DefaultSceneComponent = CreateDefaultSubobject<USceneComponent>("Default Scene Component");
@@ -24,7 +25,12 @@ ABaseWeapon::ABaseWeapon()
 	Arrow->SetupAttachment(RootComponent);
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon Mesh");
+	WeaponMesh->CastShadow = false;
 	WeaponMesh->SetupAttachment(RootComponent);
+
+	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("NiagaraMuzzleFlash");
+	NiagaraComponent->bAutoActivate = false;
+	NiagaraComponent->SetupAttachment(WeaponMesh, MuzzleFlashSocketName);
 
 	AmmoType = EAmmoType::E_AssaultRifle;
 }
@@ -34,30 +40,36 @@ void ABaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
+	NiagaraComponent->SetAsset(NiagaraSystemToPlay);
+
 	if (!GetOwner())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("BaseWeapon::BeginPlay: Cannot get owner!"));
 		return;
 	}
 
-	OwningCharacter = Cast<APawn>(GetOwner());
-	if (!OwningCharacter)
+	OwningPawn = Cast<APawn>(GetOwner());
+	if (!OwningPawn)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("BaseWeapon::BeginPlay: Cannot cast to pawn"));
 		return;
 	}
 
-	if (OwningCharacter->Implements<UBasePlayerInterface>() == false)
+	if (OwningPawn->Implements<UBasePlayerInterface>())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("BaseWeapon::BeginPlay: Owner Doesn't Implement Interface!"));
-		return;
+		USkeletalMeshComponent* Arms = IBasePlayerInterface::Execute_GetPlayerArms(OwningPawn);
+		if (IsValid(Arms))
+		{
+			this->AttachToComponent(Arms, FAttachmentTransformRules::SnapToTargetIncludingScale, HandSocketName);
+			//this->SetActorHiddenInGame(true);
+		}
 	}
-
-	USkeletalMeshComponent* Arms = IBasePlayerInterface::Execute_GetPlayerArms(OwningCharacter);
-	if(IsValid(Arms))
-	{
-		this->AttachToComponent(Arms, FAttachmentTransformRules::SnapToTargetIncludingScale, HandSocketName);
-		//this->SetActorHiddenInGame(true);
+	else {
+		ACharacter* OwningCharacter = Cast<ACharacter>(OwningPawn);
+		if (OwningCharacter)
+		{
+			this->AttachToComponent(OwningCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, HandSocketName);
+		}
 	}
 
 	for (FName SocketName : WeaponMesh->GetAllSocketNames())
@@ -67,7 +79,7 @@ void ABaseWeapon::BeginPlay()
 			MuzzleSockets.AddUnique(SocketName);
 		}
 	}
-	if (MuzzleSockets.Num() == 0) UE_LOG(LogTemp, Warning, TEXT("BaseWeapon::BeginPlay: Weapon mesh has no muzzle sockets."));	
+	if (MuzzleSockets.Num() == 0) UE_LOG(LogTemp, Warning, TEXT("BaseWeapon::BeginPlay: Weapon mesh has no muzzle sockets."));
 }
 
 // Called every frame
@@ -79,8 +91,10 @@ void ABaseWeapon::Tick(float DeltaTime)
 
 void ABaseWeapon::StartShooting()
 {
-	switch(FiringMode)
+	if (canShoot)
 	{
+		switch (FiringMode)
+		{
 		case(EFiringMode::Semi):
 			Fire();
 			return;
@@ -96,13 +110,13 @@ void ABaseWeapon::StartShooting()
 				GetWorldTimerManager().SetTimer(Handle_ReFire, this, &ABaseWeapon::Fire, 60.0f / FireRate, true);
 			}
 			return;
+		}
 	}
-	
 }
 
 void ABaseWeapon::StopShooting()
 {
-	if (FiringMode != EFiringMode::Burst)
+	if (FiringMode != EFiringMode::Burst && Handle_ReFire.IsValid())
 	{
 		GetWorldTimerManager().ClearTimer(Handle_ReFire);
 	}
@@ -112,11 +126,10 @@ void ABaseWeapon::Fire()
 {
 	UWorld* World = GetWorld();
 
-	ABasePlayerCharacter* Player = Cast<ABasePlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
-
 	// Check if PlayerCharacter is valid
-	if (Player)
+	if (OwningPawn->IsPlayerControlled())
 	{
+		ABasePlayerCharacter* Player = Cast<ABasePlayerCharacter>(OwningPawn);
 		UInventoryComponent* InventoryComponent = Player->GetInventoryComponent();
 		if (InventoryComponent)
 		{
@@ -130,31 +143,34 @@ void ABaseWeapon::Fire()
 			{
 				UE_LOG(LogTemp, Warning, TEXT("BaseWeapon::Fire: Not enough ammo to fire!"));
 				StopShooting();
+				GetWorldTimerManager().ClearTimer(Handle_ReFire);
 				return;
 			}
 		}
 	}
 
+	OnFire();
+
 	FActorSpawnParameters SpawnParams;
-    SpawnParams.Owner = this;
-    SpawnParams.Instigator = GetInstigator();
+	SpawnParams.Owner = this;
+	SpawnParams.Instigator = GetInstigator();
 
 	FHitResult Hit;
 
-	if (OwningCharacter->IsPlayerControlled())
+	if (OwningPawn->IsPlayerControlled())
 	{
 		TraceStart = UGameplayStatics::GetPlayerCameraManager(World, 0)->GetCameraLocation();
 		TraceEnd = TraceStart + UGameplayStatics::GetPlayerCameraManager(World, 0)->GetActorForwardVector() * 5000;
 	}
 	else
 	{
-		TraceStart = OwningCharacter->GetActorLocation();
-		TraceEnd = TraceStart + OwningCharacter->GetActorForwardVector() * 5000;
+		TraceStart = OwningPawn->GetActorLocation();
+		TraceEnd = TraceStart + OwningPawn->GetActorForwardVector() * 5000;
 	}
 
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(this);
-	QueryParams.AddIgnoredActor(OwningCharacter);
+	QueryParams.AddIgnoredActor(OwningPawn);
 
 	GetWorld()->LineTraceSingleByChannel(Hit, TraceStart, TraceEnd, TraceChannelProperty, QueryParams);
 	//DrawDebugLine(GetWorld(), TraceStart, TraceEnd, Hit.bBlockingHit ? FColor::Blue : FColor::Red, false, 5.0f, 0, 10.0f);
@@ -176,12 +192,15 @@ void ABaseWeapon::Fire()
 				SpawnRotation = UKismetMathLibrary::FindLookAtRotation(SpawnLocation, Hit.TraceEnd);
 			}
 
-			FTransform SpawnTransform = FTransform(RandomSpread(SpawnRotation, MaxVerticalSpread, MaxHorizontalSpread), SpawnLocation);
+			FTransform SpawnTransform = FTransform(RandomSpread(SpawnRotation, MaxHorizontalSpread, MaxVerticalSpread), SpawnLocation);
 
 			ABaseWeaponProjectile* Projectile = World->SpawnActor<ABaseWeaponProjectile>(ProjectileClass, SpawnTransform, SpawnParams);
 
 		}
 	}
+
+	NiagaraComponent->Activate(true);
+
 	if (FiringMode == EFiringMode::Burst)
 	{
 		ShotsFired++;
@@ -199,8 +218,38 @@ void ABaseWeapon::Fire()
 
 void ABaseWeapon::Reload()
 {
+	canShoot = false;
+
+	BPEnableReloadWidget();
+
 	//Play Reload Animation
 	UE_LOG(LogTemp, Warning, TEXT("BaseWeapon::Reload: Reload Animation Placeholder!"));
+
+	GetWorldTimerManager().SetTimer(Handle_Reload, this, &ABaseWeapon::ResetShot, ReloadTime, false);
+}
+
+void ABaseWeapon::ResetShot()
+{
+	canShoot = true;
+	BPDisableReloadWidget();
+}
+
+void ABaseWeapon::OnFire_Implementation()
+{
+
+}
+
+void ABaseWeapon::BPEnableReloadWidget_Implementation()
+{
+}
+
+void ABaseWeapon::BPDisableReloadWidget_Implementation()
+{
+}
+
+USkeletalMeshComponent* ABaseWeapon::GetWeaponMesh()
+{
+	return WeaponMesh;
 }
 
 FRotator ABaseWeapon::RandomSpread(FRotator spawnRotation, float maxVertical, float maxHorizontal)

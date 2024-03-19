@@ -37,7 +37,8 @@ void AAmmoPickup::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherAc
             // Add the ammo item to the inventory
             if (InventoryComponent->AddItem(AmmoItem))
             {
-                Destroy();
+                bIsDisabled = true;
+                CheckActorDisabled();
             }
         }
     }

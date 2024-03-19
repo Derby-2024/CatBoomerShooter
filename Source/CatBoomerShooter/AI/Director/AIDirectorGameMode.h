@@ -45,12 +45,12 @@ public:
 	/** Get all enemies in range of origin.
 	*	If setting origin to GetActorLocation, increase min radius to exclude that actor. */
 	UFUNCTION(BlueprintCallable, Category = "EnemyTracking")
-	void GetEnemyActorsInRange(const FVector Origin, const float MinRadius, const float MaxRadius, TArray<AActor*>& EnemyActors);
+	void GetEnemyActorsInRange(const FVector Origin, const float MinRadius, const float MaxRadius, const TArray<AActor*> ActorsToIgnore, TArray<AActor*>& EnemyActors);
 
 	/** Get all enemies of a given type in range of origin.
 	*	If setting origin to GetActorLocation, increase min radius to exclude that actor. */
 	UFUNCTION(BlueprintCallable, Category = "EnemyTracking")
-	void GetEnemyActorsInRangeTyped(const FVector Origin, const float MinRadius, const float MaxRadius, const EEnemyType EnemyType, TArray<AActor*>& EnemyActors);
+	void GetEnemyActorsInRangeTyped(const FVector Origin, const float MinRadius, const float MaxRadius, const EEnemyType EnemyType, const TArray<AActor*> ActorsToIgnore, TArray<AActor*>& EnemyActors);
 
 
 

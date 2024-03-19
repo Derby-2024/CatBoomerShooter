@@ -31,11 +31,16 @@ void ABaseWhip::BeginPlay()
 	Super::BeginPlay();
 
 	PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(),0);
+	
 	USkeletalMeshComponent* Arms = IBasePlayerInterface::Execute_GetPlayerArms(PlayerCharacter);
 	
 	if(IsValid(Arms))
 	{
 		this->AttachToComponent(Arms, FAttachmentTransformRules::SnapToTargetIncludingScale, "R_HandSocket");
+
+		ABasePlayerCharacter* PlayerCharacter2 = Cast<ABasePlayerCharacter>(PlayerCharacter);
+		PlayerCharacter2->SetWhip(this);
+
 		//this->SetActorHiddenInGame(true);
 	}
 	
@@ -50,6 +55,8 @@ void ABaseWhip::Tick(float DeltaTime)
 
 void ABaseWhip::Attack()
 {
+	UE_LOG(LogTemp, Log, TEXT("Whip attack"));
+
 	if(isAttacking)
 	{
 		return;

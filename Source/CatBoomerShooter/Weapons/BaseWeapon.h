@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/ArrowComponent.h"
+#include "NiagaraComponent.h"
+#include "NiagaraSystem.h"
 #include "../Inventory/InventoryComponent.h"
 #include "../Inventory/Items/BaseAmmo.h"
 #include "Projectiles/BaseWeaponProjectile.h"
@@ -22,8 +24,8 @@ UCLASS()
 class CATBOOMERSHOOTER_API ABaseWeapon : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ABaseWeapon();
 
@@ -49,9 +51,17 @@ protected:
 	EFiringMode FiringMode;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	int BurstAmount = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	UTexture* GunImage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	TArray<FName> MuzzleSockets = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	UNiagaraComponent* NiagaraComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	UNiagaraSystem* NiagaraSystemToPlay;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	FName MuzzleFlashSocketName = "Muzzle_1";
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	float MaxVerticalSpread = 0.0f;
@@ -64,29 +74,48 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	FName HandSocketName = "R_HandSocket";
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
-	APawn* OwningCharacter;
+	APawn* OwningPawn;
 
 	int ShotsFired = 0;
 
-	UPROPERTY(EditAnywhere, Category="Collision")
+	UPROPERTY(EditAnywhere, Category = "Collision")
 	TEnumAsByte<ECollisionChannel> TraceChannelProperty = ECC_Pawn;
 
 	FTimerHandle Handle_ReFire;
+	FTimerHandle Handle_Reload;
 
 	FVector TraceStart;
 	FVector TraceEnd;
-	
+
+	bool canShoot = true;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	float ReloadTime = 1.0f;
 
 
-public:	
+
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void Fire();
-	void BurstFire();
+	UFUNCTION(BlueprintCallable)
 	void StartShooting();
+	UFUNCTION(BlueprintCallable)
 	void StopShooting();
+
+	void Fire();
 	void Reload();
+	void ResetShot();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnFire();
+
+	UFUNCTION(BlueprintNativeEvent, Category = "Reloading")
+	void BPEnableReloadWidget();
+	UFUNCTION(BlueprintNativeEvent, Category = "Reloading")
+	void BPDisableReloadWidget();
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	USkeletalMeshComponent* GetWeaponMesh();
 
 	FRotator RandomSpread(FRotator spawnRotation, float maxVertical, float maxHorizontal);
 
