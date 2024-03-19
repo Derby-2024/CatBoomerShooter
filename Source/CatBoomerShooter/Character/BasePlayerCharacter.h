@@ -31,80 +31,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void Destroyed() override;
-	
-protected:
-	UPROPERTY(EditAnywhere)
-	class UCameraComponent* Camera;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	class USkeletalMeshComponent* SK_Arms;
 
-	// Inputs
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* MoveAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* JumpAction;	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* CameraMoveAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* DashAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* InteractAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* MeleeAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* FireAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* Weapon1;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* Weapon2;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* Weapon3;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* NextWeapon;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* PreviousWeapon;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* PauseAction;
-
-	// EMS Quick Load/Save Inputs
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* QuickSaveAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UInputAction* QuickLoadAction;
-
-	//variables for dashing
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	int DashCount=3;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	int DashSpeed=25000;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	float DashCooldown = 2.0f;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	float TapIntervalTime = 1.0f;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	bool IsInvincible = false;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	float InvincibleDuration = 0.15f;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	FVector2D StoredDirectionValue;
-
-	FTimerHandle DashTimerHandle;
-	FTimerHandle InvTimerHandle;
-	FTimerHandle TapTimerHandle;
-
-	
-
-	// Input Variables
-	UPROPERTY(EditAnywhere, Category = Input)
-	bool EnableAutoJump = true;
-
-	UPROPERTY(EditAnywhere, Category = Input)
-	float MouseSensitivity = 1.0f;
-
-	struct FEnhancedInputActionValueBinding* InputMoveVal;
-	struct FEnhancedInputActionValueBinding* InputCameraMoveVal;
-	
 	// Input Functions
 	void InputMove(const FInputActionValue& Value);
 	void InputJump(const FInputActionValue& Value);
@@ -125,11 +52,88 @@ protected:
 	void InputPreviousWeapon(const FInputActionValue& Value);
 	void InputPause(const FInputActionValue& Value);
 
-	//Whip
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Whip")
- 	class ABaseWhip* Whip;
+protected:
+	UPROPERTY(EditAnywhere)
+	class UCameraComponent* Camera;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	class USkeletalMeshComponent* ArmsMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
+	UInventoryComponent* InventoryComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
+	UHealthComponent* HealthComponent;
+
+	// Inputs
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* MoveAction = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* JumpAction = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* CameraMoveAction = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* DashAction = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* InteractAction = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* MeleeAction = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* FireAction = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* Weapon1Action = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* Weapon2Action = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* Weapon3Action = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* NextWeapon = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* PreviousWeapon = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* PauseAction = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* QuickSaveAction = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* QuickLoadAction = nullptr;
+
+	struct FEnhancedInputActionValueBinding* InputMoveVal;
+	struct FEnhancedInputActionValueBinding* InputCameraMoveVal;
+
+public:
+	// Input Variables
+	UPROPERTY(EditAnywhere, Category = Input)
+	float InteractRange = 500.0f;
+	UPROPERTY(EditAnywhere, Category = Input)
+	bool bEnableAutoJump = true;
+	UPROPERTY(EditAnywhere, Category = Input)
+	float MouseSensitivity = 1.0f;
+
+	//variables for dashing
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dash")
+	int DashCount = 3;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dash")
+	int DashSpeed = 25000;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dash")
+	float DashCooldown = 2.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dash")
+	float TapIntervalTime = 1.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dash")
+	bool IsInvincible = false;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Dash")
+	float InvincibleDuration = 0.15f;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Dash")
+	FVector2D StoredDirectionValue;
+
+	FTimerHandle DashTimerHandle;
+	FTimerHandle InvTimerHandle;
+	FTimerHandle TapTimerHandle;
+
+	// Weapons
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
- 	class ABaseWeapon* Weapon;
+	class ABaseWhip* Whip;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	class ABaseWeapon* Weapon;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
 	int CurrentWeaponIndex = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
@@ -137,23 +141,7 @@ protected:
 	UPROPERTY(EditAnywhere, SaveGame, BlueprintReadWrite, Category = "Weapon")
 	TArray<TSubclassOf<class ABaseWeapon>> WeaponClassList = {};
 
-	//Triggers out of ammo notification that they are out of ammo
-	UFUNCTION(BlueprintImplementableEvent, Category = "HUD")
-	void TriggerOutOfAmmo();
-
-	// Reference to the InventoryComponent
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
-	UInventoryComponent* InventoryComponent;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
-	UHealthComponent* HealthComponent;
-
-
 public:
-	UPROPERTY(EditAnywhere)
-	float InteractRange = 500.0f;
-
-public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -163,37 +151,45 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// Dash Functions
 	void ResetDashCounter();
-
 	void ResetInvincibility();
-
 	void ResetStoredDirectionValue();
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
-	USkeletalMeshComponent* GetPlayerArms(); virtual USkeletalMeshComponent* GetPlayerArms_Implementation() override;
 
-	void SetWhip(ABaseWhip* NewWhip) { Whip = NewWhip; }
+	// Quick Save and Load Functions
+	UFUNCTION(BlueprintCallable, Category = "SaveLoad")
+	void QuickSave();
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
-	ABaseWhip* GetPlayerWhip(); virtual ABaseWhip* GetPlayerWhip_Implementation() override;
+	UFUNCTION(BlueprintCallable, Category = "SaveLoad")
+	void QuickLoad();
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Camera")
-	UCameraComponent* GetPlayerCamera(); virtual UCameraComponent* GetPlayerCamera_Implementation() override;
-
+	// Weapon Functions
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void EquipWeapon(int WeaponIndex);
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	int AddWeapon(TSubclassOf<class ABaseWeapon> WeaponClass);
 
+	void SetWhip(ABaseWhip* NewWhip) { Whip = NewWhip; }
+
+	//Triggers out of ammo notification that they are out of ammo
+	UFUNCTION(BlueprintImplementableEvent, Category = "HUD")
+	void TriggerOutOfAmmo();
+
+	// Interface Implementaions
+
+	// Weapon Interface
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
+	USkeletalMeshComponent* GetPlayerArms(); virtual USkeletalMeshComponent* GetPlayerArms_Implementation() override { return GetMesh(); };
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Whip Interface")
+	ABaseWhip* GetPlayerWhip(); virtual ABaseWhip* GetPlayerWhip_Implementation() override { return Whip; };
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Camera")
+	UCameraComponent* GetPlayerCamera(); virtual UCameraComponent* GetPlayerCamera_Implementation() override { return Camera; };
+
+	// EMS Actor Interface
 	void ComponentsToSave_Implementation(TArray<UActorComponent*>& Components) override;
-
-	// Expose save and load
-	UFUNCTION(BlueprintCallable, Category = "SaveLoad")
-	void QuickSave();
-
-	UFUNCTION(BlueprintCallable, Category = "SaveLoad")
-	void QuickLoad();
-	
 	void ActorLoaded_Implementation() override;
 	void ActorPreSave_Implementation() override;
 };

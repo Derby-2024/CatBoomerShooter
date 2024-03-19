@@ -6,21 +6,16 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedPlayerInput.h"
 #include "../Environment/InteractInterface.h"
-#include <GameFramework/MovementComponent.h>
 #include <Kismet/KismetMathLibrary.h>
-#include "Components/InputComponent.h"
+//#include "Components/InputComponent.h"
 #include "../AI/Director/AIDirectorGameMode.h"
-
 #include "EMSAsyncSaveGame.h"
 #include "EMSAsyncLoadGame.h"
 #include "EMSFunctionLibrary.h"
-
 #include "Kismet/GameplayStatics.h"
 #include "BaseCharacterMovementComponent.h"
-#include "CatBoomerShooter/Weapons/Whip/BaseWhip.h"
-#include "CatBoomerShooter/Weapons/BaseWeapon.h"
-
-#include "CatBoomerShooter/AI/Director/AIDirectorGameMode.h"
+#include "../Weapons/Whip/BaseWhip.h"
+#include "../Weapons/BaseWeapon.h"
 
 // Sets default values
 ABasePlayerCharacter::ABasePlayerCharacter(const FObjectInitializer& ObjectInitializer):
@@ -33,8 +28,7 @@ ABasePlayerCharacter::ABasePlayerCharacter(const FObjectInitializer& ObjectIniti
 	Camera->SetupAttachment(RootComponent);
 	Camera->bUsePawnControlRotation = true;
 
-	SK_Arms = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Arms"));
-	SK_Arms->SetupAttachment(Camera);
+	GetMesh()->SetupAttachment(Camera);
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"));
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
@@ -90,6 +84,7 @@ void ABasePlayerCharacter::TapDash(const FInputActionValue& Value){
 	GetWorldTimerManager().SetTimer(TapTimerHandle, this, &ABasePlayerCharacter::ResetStoredDirectionValue, TapIntervalTime,false, TapIntervalTime);
 	
 }
+
 void ABasePlayerCharacter::InputJump(const FInputActionValue& Value)
 {
 	const bool ShouldJump = Value.Get<bool>();
@@ -129,6 +124,7 @@ void ABasePlayerCharacter::Dash(const FInputActionValue& Value)
 		}
 	}
 }
+
 void ABasePlayerCharacter::ResetInvincibility()
 {
 	if(IsInvincible != false){
@@ -150,8 +146,6 @@ void ABasePlayerCharacter::ResetStoredDirectionValue()
 	StoredDirectionValue = FVector2D::Zero();
 	
 }
-
-
 
 void ABasePlayerCharacter::InputJumpEnd(const FInputActionValue& Value)
 {
@@ -306,8 +300,6 @@ void ABasePlayerCharacter::InputPause(const FInputActionValue& Value)
 void ABasePlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	
 }
 
 // Called to bind functionality to input
@@ -320,7 +312,7 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputMove);
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::TapDash);
-		if(EnableAutoJump)
+		if(bEnableAutoJump)
 			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputJump);
 		else
 			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputJump);
@@ -330,9 +322,9 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		EnhancedInputComponent->BindAction(MeleeAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputMelee);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &ABasePlayerCharacter::InputFire_Start);
 		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &ABasePlayerCharacter::InputFire_Stop);
-		EnhancedInputComponent->BindAction(Weapon1, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputWeapon1);
-		EnhancedInputComponent->BindAction(Weapon2, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputWeapon2);
-		EnhancedInputComponent->BindAction(Weapon3, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputWeapon3);
+		EnhancedInputComponent->BindAction(Weapon1Action, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputWeapon1);
+		EnhancedInputComponent->BindAction(Weapon2Action, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputWeapon2);
+		EnhancedInputComponent->BindAction(Weapon3Action, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputWeapon3);
 		EnhancedInputComponent->BindAction(PauseAction, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputPause);
 		EnhancedInputComponent->BindAction(NextWeapon, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputNextWeapon);
 		EnhancedInputComponent->BindAction(PreviousWeapon, ETriggerEvent::Triggered, this, &ABasePlayerCharacter::InputPreviousWeapon);
@@ -344,21 +336,6 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		InputMoveVal = &EnhancedInputComponent->BindActionValue(MoveAction);
 		InputCameraMoveVal = &EnhancedInputComponent->BindActionValue(CameraMoveAction);
 	}
-}
-
-USkeletalMeshComponent *ABasePlayerCharacter::GetPlayerArms_Implementation()
-{
-    return SK_Arms;
-}
-
-ABaseWhip *ABasePlayerCharacter::GetPlayerWhip_Implementation()
-{
-    return Whip;
-}
-
-UCameraComponent *ABasePlayerCharacter::GetPlayerCamera_Implementation()
-{
-	return Camera;
 }
 
 void ABasePlayerCharacter::EquipWeapon(int WeaponIndex)
@@ -374,14 +351,16 @@ void ABasePlayerCharacter::EquipWeapon(int WeaponIndex)
 	CurrentWeaponIndex = WeaponIndex;
 	for (ABaseWeapon* weapon : WeaponList)
 	{
-		if (WeaponList[CurrentWeaponIndex] == weapon)
-		{
-			weapon->SetActorHiddenInGame(false);
-			Weapon = weapon;
-		}
-		else
-		{
-			weapon->SetActorHiddenInGame(true);
+		if (weapon) {
+			if (WeaponList[CurrentWeaponIndex] == weapon)
+			{
+				weapon->SetActorHiddenInGame(false);
+				Weapon = weapon;
+			}
+			else
+			{
+				weapon->SetActorHiddenInGame(true);
+			}
 		}
 	}
 }

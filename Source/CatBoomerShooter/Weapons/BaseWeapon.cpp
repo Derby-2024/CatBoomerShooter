@@ -25,6 +25,7 @@ ABaseWeapon::ABaseWeapon()
 	Arrow->SetupAttachment(RootComponent);
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>("Weapon Mesh");
+	WeaponMesh->CastShadow = false;
 	WeaponMesh->SetupAttachment(RootComponent);
 
 	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("NiagaraMuzzleFlash");
@@ -115,7 +116,7 @@ void ABaseWeapon::StartShooting()
 
 void ABaseWeapon::StopShooting()
 {
-	if (FiringMode != EFiringMode::Burst)
+	if (FiringMode != EFiringMode::Burst && Handle_ReFire.IsValid())
 	{
 		GetWorldTimerManager().ClearTimer(Handle_ReFire);
 	}
