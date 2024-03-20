@@ -119,20 +119,25 @@ void ATrain::MoveTowardsTarget()
 
 
         //Way that somewhat works
-        float DistanceAlongSpline = SplineComponent->GetDistanceAlongSplineAtSplinePoint(CurrentSplineIndex);
+        FTransform TransformDistanceAlongSpline = SplineComponent->GetTransformAtDistanceAlongSpline(DistanceToTarget, ESplineCoordinateSpace::World);
 
         //Calculate movement direction
-        FVector Direction = NextTargetLocation - CurrentLocation;
-        Direction.Normalize();
-        FVector NewLocation = CurrentLocation + Direction * TrainSpeed * GetWorld()->GetDeltaSeconds();
-        TrainMesh->SetWorldLocation(NewLocation);
+        FVector Direction = NextTargetLocation - CurrentLocation; 
+        Direction.Normalize(); 
+
+        float DistanceAlongSpline = SplineComponent->GetDistanceAlongSplineAtSplinePoint(CurrentSplineIndex); 
+        FVector Location = CurrentLocation + Direction * TrainSpeed * TransformDistanceAlongSpline.GetLocation(); 
+
+        //FVector NewLocation = CurrentLocation + Direction * TrainSpeed * GetWorld()->GetDeltaSeconds();
+
+        TrainMesh->SetWorldLocation(Location); 
 
         //Calculate rotation based on the tangent of the spline
         FVector Tangent = SplineComponent->GetTangentAtDistanceAlongSpline(DistanceAlongSpline, ESplineCoordinateSpace::World);
-        FRotator NewRotation = Tangent.Rotation();
+        FRotator NewRotation = Tangent.Rotation(); 
 
         //Set the train's new rotation
-        TrainMesh->SetWorldRotation(NewRotation);
+        TrainMesh->SetRelativeRotationExact(FRotator(NewRotation.Yaw));
     }
 }
 
