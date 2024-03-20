@@ -37,9 +37,11 @@ void ATrain::BeginPlay()
 void ATrain::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+    // Rename function to MoveAlongSpline
     MoveTowardsTarget();
 }
 
+// This we can remove
 void ATrain::SetNextTargetPoint()
 {
     //CurrentSplineIndex stays within valid range
@@ -59,6 +61,10 @@ void ATrain::MoveTowardsTarget()
 {
     FVector CurrentLocation = TrainMesh->GetComponentLocation();
     float DistanceToTarget = FVector::Distance(CurrentLocation, NextTargetLocation);
+
+
+    // Check if out current distance variable is higher than spline lenght
+    // if so we reset distance variable and teleport train mesh back to 0.
 
     //If the train has reached the target spline point and teleportation timer is not active
     if (DistanceToTarget < TrainSpeed * GetWorld()->GetDeltaSeconds() && !bIsTeleportTimerActive)
@@ -143,17 +149,23 @@ void ATrain::MoveTowardsTarget()
 
 void ATrain::TeleportTrain()
 {
+    // Teleport train back to index 0
+    // stop the train (boolean that is check on tick when trying to move)
+    // Start time to start train again.
+
+
     //Teleport the train back to the start
     UE_LOG(LogTemp, Warning, TEXT("Teleported!"));
     TrainMesh->SetWorldLocation(StartLocation);
-    SetNextTargetPoint();
+    SetNextTargetPoint();       // instead of setting next target, we teleport the train to spline index 0 location.
 
     bIsTeleportTimerActive = false;
 }
 
 void ATrain::OnTrainOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-    ABasePlayerCharacter* PlayerCharacter = Cast<ABasePlayerCharacter>(OtherActor);
+
+    ACharacter* PlayerCharacter = Cast<ACharacter>(OtherActor);
     if (PlayerCharacter)
     {
         PlayerCharacter->TakeDamage(DamageAmount, FDamageEvent(), nullptr, nullptr);

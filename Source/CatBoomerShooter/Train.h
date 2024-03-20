@@ -52,6 +52,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	float MaxRandomDelay;
 
+	// Replace with float of distance
 	bool bIsTeleportTimerActive;
 	int32 CurrentSplineIndex;
 
