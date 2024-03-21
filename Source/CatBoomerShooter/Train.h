@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+//Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -52,9 +52,15 @@ public:
 	UPROPERTY(EditAnywhere)
 	float MaxRandomDelay;
 
-	// Replace with float of distance
+	UPROPERTY(EditAnywhere)
+	float MinSpeed;
+
+	UPROPERTY(EditAnywhere)
+	float MaxSpeed;
+
 	bool bIsTeleportTimerActive;
-	int32 CurrentSplineIndex;
+
+	float CurrentDistance;
 
 	UFUNCTION()
 	void OnTrainOverlap(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -64,8 +70,7 @@ private:
 	FVector StartLocation;
 	FTimerHandle TeleportDelay;
 
-
-	void SetNextTargetPoint();
-	void MoveTowardsTarget();
+	void MoveAlongSpline();
 	void TeleportTrain();
+	void ResumeTrain();
 };
