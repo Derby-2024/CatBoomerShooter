@@ -72,3 +72,18 @@ EEnemyType AEnemyBaseCharacter::GetEnemyType_Implementation()
 {
 	return EnemyType;
 }
+
+float AEnemyBaseCharacter::GetMovementSpeed_Implementation(EMovementSpeed MovementSpeed)
+{
+	switch (MovementSpeed)
+	{
+	case EMovementSpeed::Run:
+		return RunSpeed;
+	case EMovementSpeed::Walk:
+		return WalkSpeed;
+
+	default: 
+		return 0.f;
+	}
+}
+

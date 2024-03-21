@@ -34,7 +34,14 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnemyBase")
 	EEnemyType EnemyType = EEnemyType::Ranged;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnemyBase")
+	float WalkSpeed = 800.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnemyBase")
+	float RunSpeed = 1000.f;
+
 	// Implement Interface Functions
 	EEnemySize GetEnemySize_Implementation() override;
 	EEnemyType GetEnemyType_Implementation() override;
+	float GetMovementSpeed_Implementation(EMovementSpeed MovementSpeed) override;
 };
