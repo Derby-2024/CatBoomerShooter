@@ -74,6 +74,7 @@ void ATrain::MoveAlongSpline()
 
         //Get the transform at the new distance along the spline
         FTransform NewTransform = SplineComponent->GetTransformAtDistanceAlongSpline(CurrentDistance, ESplineCoordinateSpace::World);
+        NewTransform.SetScale3D(TrainMesh->GetComponentScale());
 
         //Set the world transform of the train mesh
         TrainMesh->SetWorldTransform(NewTransform);
@@ -86,7 +87,8 @@ void ATrain::TeleportTrain()
 
     //Get the transform at spline point 0
     FTransform SplineTransform = SplineComponent->GetTransformAtSplinePoint(0, ESplineCoordinateSpace::World);
-    TrainMesh->SetRelativeTransform(SplineTransform);
+    SplineTransform.SetScale3D(TrainMesh->GetComponentScale());
+    TrainMesh->SetWorldTransform(SplineTransform);
    
     TrainSpeed = FMath::RandRange(MinSpeed, MaxSpeed);
 
