@@ -28,6 +28,12 @@ enum class EEnemyType : uint8
 	Boss
 };
 
+UENUM(BlueprintType)
+enum class EMovementSpeed : uint8
+{
+	Walk,
+	Run
+};
 /**
 * 
 */
@@ -51,4 +57,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "EnemyData")
 	EEnemyType GetEnemyType();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "EnemyData")
+	float GetMovementSpeed(EMovementSpeed MovementSpeed);
 };
+
