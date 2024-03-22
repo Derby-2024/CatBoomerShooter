@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "Items/BaseAmmo.h"
 #include "Items/BaseCollectible.h"
+#include "EMSCompSaveInterface.h"
 #include "InventoryComponent.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogInventory, Log, All);
@@ -27,31 +28,31 @@ struct FItem
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	EItemType ItemType;
+	EItemType ItemType = EItemType::Ammo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	int AmmoAmount;
+	int AmmoAmount = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	int TotalAmmo;
+	int TotalAmmo = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	EAmmoType AmmoType;
+	EAmmoType AmmoType = EAmmoType::E_AssaultRifle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	FString ItemInfo;
+	FString ItemInfo = FString();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	int TotalCats;
+	int TotalCats = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	int CatCount;
+	int CatCount = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	FString CollectibleInfo;
+	FString CollectibleInfo = FString();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	ECollectibleType CollectibleType;
+	ECollectibleType CollectibleType = ECollectibleType::E_Cat;
 };
 
 
@@ -71,17 +72,17 @@ protected:
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	UFUNCTION(BlueprintCallable)
 	bool AddItem(const FItem& Item);
 	bool RemoveItem(const FItem& Item);
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item")
+	UPROPERTY(EditAnywhere, SaveGame, BlueprintReadOnly, Category = "Item")
 	FAmmoCollection Ammo;
 
-	UPROPERTY(EditAnywhere, Category = "Item")
+	UPROPERTY(EditAnywhere, SaveGame, Category = "Item")
 	TArray<FString> Keys;
 
-	UPROPERTY(EditAnywhere, Category = "Item")
+	UPROPERTY(EditAnywhere, SaveGame, Category = "Item")
 	FCollectibles Collectibles;
 
 public:

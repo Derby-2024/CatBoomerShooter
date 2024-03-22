@@ -5,6 +5,7 @@
 #include "GameFramework/DamageType.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "../Character/BasePlayerCharacter.h"
 
 DEFINE_LOG_CATEGORY(LogHealth);
 
@@ -52,5 +53,11 @@ void UHealthComponent::DamageApplication_Implementation(AActor* DamagedActor, fl
 
 void UHealthComponent::OnKill_Implementation(class AController* FinalInstigator, AActor* FinalDamageCauser)
 {
-	GetOwner()->Destroy();
+	if (Cast<ABasePlayerCharacter>(GetOwner())) {
+		FName LevelString = FName(UGameplayStatics::GetCurrentLevelName(this));
+		UGameplayStatics::OpenLevel(this, LevelString);
+	}
+	else {
+		GetOwner()->Destroy();
+	}
 }

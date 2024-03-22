@@ -36,21 +36,21 @@ void AEnemyBasePawn::BeginPlay()
 
 	}
 }
-//
-//void AEnemyBasePawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
-//{
-//	if (HasAuthority())
-//	{
-//		if (EndPlayReason == EEndPlayReason::Destroyed || EndPlayReason == EEndPlayReason::RemovedFromWorld)
-//		{
-//			AAIDirectorGameMode* AIDirector =
-//			Cast<AAIDirectorGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-//			if (AIDirector) AIDirector->RemoveEnemy(this);
-//		}
-//	}
-//
-//	Super::EndPlay(EndPlayReason);
-//}
+
+void AEnemyBasePawn::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (HasAuthority())
+	{
+		if (EndPlayReason == EEndPlayReason::Destroyed || EndPlayReason == EEndPlayReason::RemovedFromWorld)
+		{
+			AAIDirectorGameMode* AIDirector =
+			Cast<AAIDirectorGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+			if (AIDirector) AIDirector->RemoveEnemy(this);
+		}
+	}
+
+	Super::EndPlay(EndPlayReason);
+}
 
 // Called every frame
 void AEnemyBasePawn::Tick(float DeltaTime)
