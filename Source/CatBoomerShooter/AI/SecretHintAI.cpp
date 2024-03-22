@@ -38,7 +38,7 @@ void ASecretHintAI::Tick(float DeltaTime)
 
 	FVector::Distance(playerPos, hintPos);
 
-	/*USplineComponent* Spline = CCatPath();
+	/* class USplineComponent* Spline = CCatPath();
 	CCatPath->GetSplineComponent();
 	
 	// Calls Move to for the amount of spline points that are in the path. 

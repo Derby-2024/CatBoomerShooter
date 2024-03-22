@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/SplineMeshActor.h"
+#include "Components/SplineComponent.h"
 #include "CatPath.generated.h"
 
 /**
