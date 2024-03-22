@@ -7,6 +7,7 @@
 #include "Components/ArrowComponent.h"
 #include "NiagaraComponent.h"
 #include "NiagaraSystem.h"
+#include "NiagaraFunctionLibrary.h"
 #include "../Inventory/InventoryComponent.h"
 #include "../Inventory/Items/BaseAmmo.h"
 #include "Projectiles/BaseWeaponProjectile.h"
@@ -57,11 +58,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	TArray<FName> MuzzleSockets = {};
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
-	UNiagaraComponent* NiagaraComponent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	UNiagaraSystem* NiagaraSystemToPlay;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
-	FName MuzzleFlashSocketName = "Muzzle_1";
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	float MaxVerticalSpread = 0.0f;
@@ -76,7 +73,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
 	APawn* OwningPawn;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	float PullOutTime = 0.0f;
+
 	int ShotsFired = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	int ShotsPerReload = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	TArray<UMaterialInstanceDynamic*> DynamicInstances;
 
 	UPROPERTY(EditAnywhere, Category = "Collision")
 	TEnumAsByte<ECollisionChannel> TraceChannelProperty = ECC_Pawn;
@@ -118,5 +123,7 @@ public:
 	USkeletalMeshComponent* GetWeaponMesh();
 
 	FRotator RandomSpread(FRotator spawnRotation, float maxVertical, float maxHorizontal);
+
+	void SetValues();
 
 };

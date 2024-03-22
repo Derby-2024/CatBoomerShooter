@@ -49,6 +49,12 @@ void ABasePlayerCharacter::BeginPlay()
 
 	// When Spawning, We quickly load the player and level data, if level was not played before nothing will be affected
 	QuickLoad();
+
+	for (int i = 0; i < GetMesh()->GetMaterials().Num(); i++)
+	{
+		DynamicInstances.Add(UMaterialInstanceDynamic::Create(GetMesh()->GetMaterial(i), this));
+		GetMesh()->SetMaterial(i, DynamicInstances[i]);
+	}
 }
 
 void ABasePlayerCharacter::Destroyed()
@@ -267,13 +273,16 @@ void ABasePlayerCharacter::InputNextWeapon(const FInputActionValue& Value)
 	{
 		return;
 	}
-	WeaponList[CurrentWeaponIndex]->StopShooting();
-	CurrentWeaponIndex++;
-	if (CurrentWeaponIndex >= WeaponList.Num())
+	if (bCanEquipWeapon)
 	{
-		CurrentWeaponIndex = 0;
+		WeaponList[CurrentWeaponIndex]->StopShooting();
+		CurrentWeaponIndex++;
+		if (CurrentWeaponIndex >= WeaponList.Num())
+		{
+			CurrentWeaponIndex = 0;
+		}
+		EquipWeapon(CurrentWeaponIndex);
 	}
-	EquipWeapon(CurrentWeaponIndex);
 }
 
 void ABasePlayerCharacter::InputPreviousWeapon(const FInputActionValue& Value)
@@ -282,13 +291,16 @@ void ABasePlayerCharacter::InputPreviousWeapon(const FInputActionValue& Value)
 	{
 		return;
 	}
-	WeaponList[CurrentWeaponIndex]->StopShooting();
-	CurrentWeaponIndex--;
-	if (CurrentWeaponIndex < 0)
+	if (bCanEquipWeapon)
 	{
-		CurrentWeaponIndex = WeaponList.Num() - 1;
+		WeaponList[CurrentWeaponIndex]->StopShooting();
+		CurrentWeaponIndex--;
+		if (CurrentWeaponIndex < 0)
+		{
+			CurrentWeaponIndex = WeaponList.Num() - 1;
+		}
+		EquipWeapon(CurrentWeaponIndex);
 	}
-	EquipWeapon(CurrentWeaponIndex);
 }
 
 void ABasePlayerCharacter::InputPause(const FInputActionValue& Value)
@@ -340,28 +352,56 @@ void ABasePlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 void ABasePlayerCharacter::EquipWeapon(int WeaponIndex)
 {
-	if (!WeaponList.IsValidIndex(WeaponIndex))
+	if (bCanEquipWeapon)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Not a valid weapon index"));
-		return;
-	}
+		if (!WeaponList.IsValidIndex(WeaponIndex))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Not a valid weapon index"));
+			return;
+		}
 
-	WeaponList[CurrentWeaponIndex]->StopShooting();
+		WeaponList[CurrentWeaponIndex]->StopShooting();
 
-	CurrentWeaponIndex = WeaponIndex;
-	for (ABaseWeapon* weapon : WeaponList)
-	{
-		if (weapon) {
-			if (WeaponList[CurrentWeaponIndex] == weapon)
-			{
-				weapon->SetActorHiddenInGame(false);
-				Weapon = weapon;
-			}
+		if (CurrentWeaponIndex == 0)
+		{
+			if (WeaponIndex == 2)
+				bNextWeapon = false;
 			else
-			{
-				weapon->SetActorHiddenInGame(true);
+				bNextWeapon = true;
+		}
+
+		if (CurrentWeaponIndex == 1)
+		{
+			if (WeaponIndex == 0)
+				bNextWeapon = false;
+			else
+				bNextWeapon = true;
+		}
+
+		if (CurrentWeaponIndex == 2)
+		{
+			if (WeaponIndex == 1)
+				bNextWeapon = false;
+			else
+				bNextWeapon = true;
+		}
+
+		CurrentWeaponIndex = WeaponIndex;
+		for (ABaseWeapon* weapon : WeaponList)
+		{
+			if (weapon) {
+				if (WeaponList[CurrentWeaponIndex] == weapon)
+				{
+					weapon->SetActorHiddenInGame(false);
+					Weapon = weapon;
+				}
+				else
+				{
+					weapon->SetActorHiddenInGame(true);
+				}
 			}
 		}
+		SetValues();
 	}
 }
 
@@ -411,4 +451,13 @@ void ABasePlayerCharacter::QuickLoad()
 	//UEMSInfoSaveGame* SaveSlot = UEMSFunctionLibrary::GetSlotInfoSaveGame(this, SaveGameName);
 
 	//UGameplayStatics::OpenLevel(this, SaveSlot->SlotInfo.Level);
+}
+
+void ABasePlayerCharacter::SetValues()
+{
+	for (UMaterialInstanceDynamic* Material : DynamicInstances)
+	{
+		Material->SetScalarParameterValue("EnableCustomDepth", 1.0f);
+		Material->SetScalarParameterValue("DepthValue", 0.1f);
+	}
 }

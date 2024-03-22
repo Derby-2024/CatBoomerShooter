@@ -140,6 +140,14 @@ public:
 	TArray<ABaseWeapon*> WeaponList = {};
 	UPROPERTY(EditAnywhere, SaveGame, BlueprintReadWrite, Category = "Weapon")
 	TArray<TSubclassOf<class ABaseWeapon>> WeaponClassList = {};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	bool bNextWeapon;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
+	bool bCanEquipWeapon = true;;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Defaults")
+	TArray<UMaterialInstanceDynamic*> DynamicInstances;
 
 public:
 	// Called every frame
@@ -192,4 +200,6 @@ public:
 	void ComponentsToSave_Implementation(TArray<UActorComponent*>& Components) override;
 	void ActorLoaded_Implementation() override;
 	void ActorPreSave_Implementation() override;
+
+	void SetValues();
 };

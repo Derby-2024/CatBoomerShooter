@@ -28,10 +28,6 @@ ABaseWeapon::ABaseWeapon()
 	WeaponMesh->CastShadow = false;
 	WeaponMesh->SetupAttachment(RootComponent);
 
-	NiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>("NiagaraMuzzleFlash");
-	NiagaraComponent->bAutoActivate = false;
-	NiagaraComponent->SetupAttachment(WeaponMesh, MuzzleFlashSocketName);
-
 	AmmoType = EAmmoType::E_AssaultRifle;
 }
 
@@ -39,8 +35,6 @@ ABaseWeapon::ABaseWeapon()
 void ABaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-
-	NiagaraComponent->SetAsset(NiagaraSystemToPlay);
 
 	if (!GetOwner())
 	{
@@ -80,6 +74,13 @@ void ABaseWeapon::BeginPlay()
 		}
 	}
 	if (MuzzleSockets.Num() == 0) UE_LOG(LogTemp, Warning, TEXT("BaseWeapon::BeginPlay: Weapon mesh has no muzzle sockets."));
+
+	for (int i = 0; i < WeaponMesh->GetMaterials().Num(); i++)
+	{
+		DynamicInstances.Add(UMaterialInstanceDynamic::Create(WeaponMesh->GetMaterial(i), this));
+		WeaponMesh->SetMaterial(i, DynamicInstances[i]);
+	}
+	SetValues();
 }
 
 // Called every frame
@@ -197,21 +198,24 @@ void ABaseWeapon::Fire()
 			ABaseWeaponProjectile* Projectile = World->SpawnActor<ABaseWeaponProjectile>(ProjectileClass, SpawnTransform, SpawnParams);
 
 		}
+		if (!UNiagaraFunctionLibrary::SpawnSystemAttached(NiagaraSystemToPlay, WeaponMesh, Muzzle, WeaponMesh->GetSocketLocation(Muzzle), WeaponMesh->GetSocketRotation(Muzzle), EAttachLocation::KeepWorldPosition, true, true))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("BaseWeapon::Fire: Couldn't Spawn Muzzle Flash"));
+		}
 	}
 
-	NiagaraComponent->Activate(true);
-
+	ShotsFired++;
 	if (FiringMode == EFiringMode::Burst)
 	{
-		ShotsFired++;
 		if (ShotsFired >= BurstAmount)
 		{
 			GetWorldTimerManager().ClearTimer(Handle_ReFire);
 		}
 	}
 
-	if (needsReload)
+	if (ShotsPerReload != 0 && ShotsFired >= ShotsPerReload)
 	{
+		StopShooting();
 		Reload();
 	}
 }
@@ -230,6 +234,7 @@ void ABaseWeapon::Reload()
 
 void ABaseWeapon::ResetShot()
 {
+	ShotsFired = 0;
 	canShoot = true;
 	BPDisableReloadWidget();
 }
@@ -258,4 +263,13 @@ FRotator ABaseWeapon::RandomSpread(FRotator spawnRotation, float maxVertical, fl
 	float v_Spread = UKismetMathLibrary::RandomFloatInRange(-maxVertical, maxVertical);
 
 	return UKismetMathLibrary::ComposeRotators(FRotator(h_Spread, v_Spread, 0.0f), spawnRotation);
+}
+
+void ABaseWeapon::SetValues()
+{
+	for (UMaterialInstanceDynamic* Material : DynamicInstances)
+	{
+		Material->SetScalarParameterValue("EnableCustomDepth", 1.0f);
+		Material->SetScalarParameterValue("DepthValue", 0.1f);
+	}
 }
