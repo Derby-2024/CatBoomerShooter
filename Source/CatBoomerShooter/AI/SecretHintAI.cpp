@@ -44,7 +44,7 @@ void ASecretHintAI::Tick(float DeltaTime)
 		for (int SplineCount = 0; SplineCount < (Spline->GetNumberOfSplinePoints() - 1); SplineCount++)
 		{
 			//Spline->SetLocationAtSplinePoint(SplineCount,);
-			if (SplineCount > Spline->GetNumberOfSplinePoints());
+			//if (SplineCount > Spline->GetNumberOfSplinePoints());
 
 		}
 	}
