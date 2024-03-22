@@ -21,6 +21,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	class ACatPath* CCatPath;
+	class USplineComponent* Spline;
 private: 
 	float hintMoveSpeed = 5.0f;
 	float activeMoveDist = 10.0f;

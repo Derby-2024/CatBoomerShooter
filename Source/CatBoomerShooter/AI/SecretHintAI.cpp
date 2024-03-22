@@ -37,25 +37,18 @@ void ASecretHintAI::Tick(float DeltaTime)
 	FVector hintPos = GetActorLocation();
 
 	FVector::Distance(playerPos, hintPos);
-
-	/* class USplineComponent* Spline = CCatPath();
-	CCatPath->GetSplineComponent();
 	
 	// Calls Move to for the amount of spline points that are in the path. 
-	for (int SplineCount = 0; SplineCount < (Spline->GetNumberOfSplinePoints() - 1); SplineCount++) AAIController::MoveTo(GetLocationAtSplinePoint(SplineCount));
-	
 	while (FVector::Distance(playerPos, hintPos) <= activeMoveDist)
 	{
-		hintMoveSpeed = 5.0f; 
-		
-		 if (y == nodearray.getlength + 1)
+		for (int SplineCount = 0; SplineCount < (Spline->GetNumberOfSplinePoints() - 1); SplineCount++)
 		{
-			GetOwner->Destroy();
-		}   
-	}*/
+			//Spline->SetLocationAtSplinePoint(SplineCount,);
+			if (SplineCount > Spline->GetNumberOfSplinePoints());
 
-	//while(FVector::Distance(playerPos, hintPos) != activeMoveDist)
-		//hintMoveSpeed = 0.f; 
+		}
+	}
+	while(FVector::Distance(playerPos, hintPos) != activeMoveDist) hintMoveSpeed = 0.f; 
 }
 
 // Called to bind functionality to input
