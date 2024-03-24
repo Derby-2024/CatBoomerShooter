@@ -3,6 +3,7 @@
 #include "EnemyBaseCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "Director/AIDirectorGameMode.h"
+#include "Patrol/PatrolComponent.h"
 
 // Sets default values
 AEnemyBaseCharacter::AEnemyBaseCharacter()
@@ -11,6 +12,8 @@ AEnemyBaseCharacter::AEnemyBaseCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Tags.Add("Enemy");
+
+	PatrolComponent = CreateDefaultSubobject<UPatrolComponent>(TEXT("PatrolComponent"));
 }
 
 // Called when the game starts or when spawned

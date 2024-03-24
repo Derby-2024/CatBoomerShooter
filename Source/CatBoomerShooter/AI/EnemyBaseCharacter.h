@@ -28,18 +28,24 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class UPatrolComponent* PatrolComponent;
+
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EnemyBase")
 	EEnemySize EnemySize = EEnemySize::Medium;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnemyBase")
 	EEnemyType EnemyType = EEnemyType::Ranged;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnemyBase")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EnemyBase")
 	float WalkSpeed = 800.f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnemyBase")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "EnemyBase")
 	float RunSpeed = 1000.f;
 
+public:
 	// Implement Interface Functions
 	EEnemySize GetEnemySize_Implementation() override;
 	EEnemyType GetEnemyType_Implementation() override;

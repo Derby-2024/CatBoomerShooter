@@ -28,12 +28,16 @@ enum class EEnemyType : uint8
 	Boss
 };
 
+/**
+*
+*/
 UENUM(BlueprintType)
 enum class EMovementSpeed : uint8
 {
 	Walk,
 	Run
 };
+
 /**
 * 
 */
