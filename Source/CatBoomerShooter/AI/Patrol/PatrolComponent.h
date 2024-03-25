@@ -28,6 +28,10 @@ struct CATBOOMERSHOOTER_API FPatrolData
 	// Use Patrol Point Rotation
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool UsePatrolPointRotation = true;
+
+	// Random angle variance when facing patrol point direction on arival
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float RotationVariance = 10.f;
 };
 
 /**
