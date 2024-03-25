@@ -17,13 +17,8 @@ struct CATBOOMERSHOOTER_API FPatrolData
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	class APatrolPoint* PatrolPoint;
 
-	// Wait Time
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float WaitTime = 1.0f;
-
-	// Wait Time Variance
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float WaitTimeVariance = 0.0f;
+	float PatrolPointRange = 50.0f;
 
 	// Use Patrol Point Rotation
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
@@ -32,6 +27,14 @@ struct CATBOOMERSHOOTER_API FPatrolData
 	// Random angle variance when facing patrol point direction on arival
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float RotationVariance = 10.f;
+
+	// Wait Time
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float WaitTime = 1.0f;
+
+	// Wait Time Variance
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float WaitTimeVariance = 0.0f;
 };
 
 /**

@@ -14,10 +14,3 @@ APatrolPoint::APatrolPoint()
 	SetRootComponent(Arrow);
 
 }
-
-// Called when the game starts or when spawned
-void APatrolPoint::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}

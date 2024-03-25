@@ -17,13 +17,4 @@ class CATBOOMERSHOOTER_API APatrolPoint : public AActor
 public:	
 	// Sets default values for this actor's properties
 	APatrolPoint();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float PatrolPointRange = 100.0f;
-
 };

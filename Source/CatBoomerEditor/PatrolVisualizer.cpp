@@ -12,11 +12,13 @@ void FPatrolVisualizer::DrawVisualization(const UActorComponent* Component, cons
 	const UPatrolComponent* Patrol = Cast<UPatrolComponent>(Component);
 	if (!Patrol) return;
 
-	if (Patrol->PatrolPoints.Num() <= 1) return;
+	const TArray<FPatrolData> PatrolPoints = Patrol->PatrolPoints;
 
-	for (int x = 0; x < Patrol->PatrolPoints.Num() - 1; x++)
+	if (PatrolPoints.Num() <= 1) return;
+
+	for (int x = 0; x < PatrolPoints.Num() - 1; x++)
 	{
-		const FPatrolData PointData = Patrol->PatrolPoints[x];
+		const FPatrolData PointData = PatrolPoints[x];
 
 		if (!PointData.PatrolPoint) continue;
 
@@ -24,9 +26,9 @@ void FPatrolVisualizer::DrawVisualization(const UActorComponent* Component, cons
 
 		// Get next valid point
 		const APatrolPoint* NextPoint = nullptr;
-		while (x < Patrol->PatrolPoints.Num() - 1)
+		while (x < PatrolPoints.Num() - 1)
 		{
-			NextPoint = Patrol->PatrolPoints[x + 1].PatrolPoint;
+			NextPoint = PatrolPoints[x + 1].PatrolPoint;
 			if (NextPoint) break;
 
 			x++;
@@ -36,8 +38,8 @@ void FPatrolVisualizer::DrawVisualization(const UActorComponent* Component, cons
 		DrawConnection(PointData.PatrolPoint, NextPoint, PDI);
 	}
 
-	const APatrolPoint* FirstPoint = Patrol->PatrolPoints[0].PatrolPoint;
-	const FPatrolData LastPointData = Patrol->PatrolPoints.Last();
+	const APatrolPoint* FirstPoint = PatrolPoints[0].PatrolPoint;
+	const FPatrolData LastPointData = PatrolPoints.Last();
 	const APatrolPoint* LastPoint = LastPointData.PatrolPoint;
 
 	if (LastPoint) 
@@ -49,9 +51,8 @@ void FPatrolVisualizer::DrawVisualization(const UActorComponent* Component, cons
 
 void FPatrolVisualizer::DrawPoint(const FPatrolData Point, FPrimitiveDrawInterface* PDI)
 {
-	FVector StartPos = Point.PatrolPoint->GetActorLocation() + FVector(0., 0., 25.);
-	//FVector ForwardVector = Point.PatrolPoint->GetActorForwardVector();
-	FRotator Rotation = Point.PatrolPoint->GetActorRotation();
+	const FVector StartPos = Point.PatrolPoint->GetActorLocation() + FVector(0., 0., 25.);
+	const FRotator Rotation = Point.PatrolPoint->GetActorRotation();
 	float Angle = Rotation.Euler().Z;
 	
 
@@ -62,9 +63,9 @@ void FPatrolVisualizer::DrawPoint(const FPatrolData Point, FPrimitiveDrawInterfa
 		FVector::UnitY(),
 		FVector::UnitZ(),
 		FColorList::Red,
-		Point.PatrolPoint->PatrolPointRange,
+		Point.PatrolPointRange,
 		25.,	// Height
-		5,		// Num sides
+		6,		// Num sides
 		100		// Depth Priority
 	);
 
@@ -77,7 +78,7 @@ void FPatrolVisualizer::DrawPoint(const FPatrolData Point, FPrimitiveDrawInterfa
 			FVector::UnitY(),
 			Angle - Point.RotationVariance,
 			Angle + Point.RotationVariance,
-			Point.PatrolPoint->PatrolPointRange * 0.8,
+			Point.PatrolPointRange * 0.8,
 			4,
 			FColorList::Blue,
 			100
@@ -87,13 +88,13 @@ void FPatrolVisualizer::DrawPoint(const FPatrolData Point, FPrimitiveDrawInterfa
 
 void FPatrolVisualizer::DrawConnection(const APatrolPoint* StartPoint, const APatrolPoint* EndPoint, FPrimitiveDrawInterface* PDI)
 {
-	FVector Start = StartPoint->GetActorLocation();
-	FVector End = EndPoint->GetActorLocation();
+	const FVector Start = StartPoint->GetActorLocation();
+	const FVector End = EndPoint->GetActorLocation();
 
-	FRotator Rotation = UKismetMathLibrary::FindLookAtRotation(Start, End);
-	float Distance = FVector::Distance(Start, End) - EndPoint->PatrolPointRange;
+	const FRotator Rotation = UKismetMathLibrary::FindLookAtRotation(Start, End);
+	const float Distance = FVector::Distance(Start, End) * 0.8f;
 
-	FTransform Transform = FTransform(Rotation, Start + FVector(0., 0., 25.), FVector::One());
+	const FTransform Transform = FTransform(Rotation, Start + FVector(0., 0., 25.), FVector::One());
 
 	Transform.ToMatrixNoScale();
 
