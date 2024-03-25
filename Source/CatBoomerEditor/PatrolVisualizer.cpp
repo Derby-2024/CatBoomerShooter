@@ -12,9 +12,50 @@ void FPatrolVisualizer::DrawVisualization(const UActorComponent* Component, cons
 	const UPatrolComponent* Patrol = Cast<UPatrolComponent>(Component);
 	if (!Patrol) return;
 
-	const TArray<FPatrolData> PatrolPoints = Patrol->PatrolPoints;
+	if (Patrol->PatrolPoints.Num() > 1)
+	{
+		DrawPatrol(Patrol, PDI);
+		return;
+	}
 
-	if (PatrolPoints.Num() <= 1) return;
+	if (Patrol->WanderRandomly)
+	{
+		FVector Origin;
+		switch (Patrol->WanderAroundSpawnPoint)
+		{
+		case true: {
+			if (UWorld* World = Component->GetWorld())
+			{
+				if (World->WorldType != EWorldType::Editor)
+				{
+					Origin = Patrol->ActorSpawnPoint + FVector(0., 0., 25.);
+					break;
+				}
+			}
+		}
+		case false:
+			Origin = Patrol->GetOwner()->GetActorLocation() + FVector(0., 0., 25.);
+			break;
+		}
+
+		DrawWireCylinder(
+			PDI,
+			Origin,
+			FVector::UnitX(),
+			FVector::UnitY(),
+			FVector::UnitZ(),
+			FColorList::Red,
+			Patrol->WanderRange,
+			25.,	// Height
+			6,		// Num sides
+			100		// Depth Priority
+		);
+	}
+}
+
+void FPatrolVisualizer::DrawPatrol(const UPatrolComponent* PatrolComponent, FPrimitiveDrawInterface* PDI)
+{
+	const TArray<FPatrolData> PatrolPoints = PatrolComponent->PatrolPoints;
 
 	for (int x = 0; x < PatrolPoints.Num() - 1; x++)
 	{
@@ -42,11 +83,12 @@ void FPatrolVisualizer::DrawVisualization(const UActorComponent* Component, cons
 	const FPatrolData LastPointData = PatrolPoints.Last();
 	const APatrolPoint* LastPoint = LastPointData.PatrolPoint;
 
-	if (LastPoint) 
+	if (LastPoint)
 	{
 		DrawPoint(LastPointData, PDI);
 		if (FirstPoint) DrawConnection(LastPoint, FirstPoint, PDI);
 	}
+
 }
 
 void FPatrolVisualizer::DrawPoint(const FPatrolData Point, FPrimitiveDrawInterface* PDI)

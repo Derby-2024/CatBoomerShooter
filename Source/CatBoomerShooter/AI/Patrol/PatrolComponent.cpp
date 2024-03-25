@@ -32,6 +32,8 @@ void UPatrolComponent::BeginPlay()
 	}
 
 	CurrentPatrolIndex = FMath::Clamp(CurrentPatrolIndex, 0, PatrolPoints.Num() - 1);
+
+	ActorSpawnPoint = GetOwner()->GetActorLocation();
 }
 
 void UPatrolComponent::GetCurrentPatrolPoint(FPatrolData& PatrolData, bool& IsValid)

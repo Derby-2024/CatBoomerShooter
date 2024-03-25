@@ -58,6 +58,28 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Patrol")
 	int CurrentPatrolIndex = 0;
 
+	// Set on BeginPlay - Where the actor spawned
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Patrol")
+	FVector ActorSpawnPoint;
+
+	// If no patrol points set, actor will wander around randomly
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Patrol")
+	bool WanderRandomly = false;
+
+	/* If wander randomly is set and no patrol point are set, actor 
+	   will wander around their spawn point randomly. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Patrol")
+	bool WanderAroundSpawnPoint = false;
+
+	// How far the actor will wander from their location (or around spawn if set)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Patrol")
+	float WanderRange = 500.f;
+
+	// How long the actor will wait between wandering
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Patrol")
+	float WanderCooldown = 2.f;
+
+public:
 	UFUNCTION(BlueprintCallable)
 	void GetCurrentPatrolPoint(FPatrolData& PatrolData, bool& IsValid);
 
