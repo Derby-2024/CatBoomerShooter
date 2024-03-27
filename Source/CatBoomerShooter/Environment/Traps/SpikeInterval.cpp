@@ -23,7 +23,7 @@ void ASpikeInterval::BeginPlay()
 {
 	Super::BeginPlay();
 	if (Act != true) {
-		GetWorld()->GetTimerManager().SetTimer(ActTimerHandle, this, &ASpikeInterval::Activate, 5.0f, false);
+		GetWorld()->GetTimerManager().SetTimer(ActTimerHandle, this, &ASpikeInterval::Activate, TimeToActivate, false);
 	}
 }
 
@@ -31,7 +31,7 @@ void ASpikeInterval::Activate() {
 	FVector Location = GetActorLocation();
 	Location.Z += 100;
 	SetActorLocation(Location);
-	GetWorld()->GetTimerManager().SetTimer(ActTimerHandle, this, &ASpikeInterval::Deactivate, 2.5f, false);
+	GetWorld()->GetTimerManager().SetTimer(ActTimerHandle, this, &ASpikeInterval::Deactivate, TimeToDeactivate, false);
 
 }
 void ASpikeInterval::Deactivate()
@@ -40,14 +40,14 @@ void ASpikeInterval::Deactivate()
 	Location.Z -= 100;
 	SetActorLocation(Location);
 	Act = true;
-	GetWorld()->GetTimerManager().SetTimer(ActTimerHandle, this, &ASpikeInterval::Activate, 5.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(ActTimerHandle, this, &ASpikeInterval::Activate, TimeToActivate, false);
 
 }
 
 void ASpikeInterval::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (OtherActor && OtherActor != this) {
-		UE_LOG(LogTemp, Warning, TEXT("Damage"));
+		UE_LOG(LogTemp, Warning, TEXT("Damage from interval spike trap"));
 	}
 }
 

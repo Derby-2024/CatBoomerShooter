@@ -21,7 +21,11 @@ public:
 
 	FTimerHandle ActTimerHandle;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Traps")
+	float TimeToActivate = 2.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Traps")
+	float TimeToDeactivate = 2.0f;
 
 protected:
 	// Called when the game starts or when spawned
